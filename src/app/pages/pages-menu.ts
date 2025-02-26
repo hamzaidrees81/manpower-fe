@@ -1,17 +1,17 @@
 import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
-  {
-    title: 'E-commerce',
-    icon: 'shopping-cart-outline',
-    link: '/pages/dashboard',
-    home: true,
-  },
-  {
-    title: 'IoT Dashboard',
-    icon: 'home-outline',
-    link: '/pages/iot-dashboard',
-  },
+  // {
+  //   title: 'E-commerce',
+  //   icon: 'shopping-cart-outline',
+  //   link: '/pages/dashboard',
+  //   home: true,
+  // },
+  // {
+  //   title: 'IoT Dashboard',
+  //   icon: 'home-outline',
+  //   link: '/pages/iot-dashboard',
+  // },
   {
     title: 'FEATURES',
     group: true,
@@ -144,28 +144,28 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  {
-    title: 'Maps',
-    icon: 'map-outline',
-    children: [
-      {
-        title: 'Google Maps',
-        link: '/pages/maps/gmaps',
-      },
-      {
-        title: 'Leaflet Maps',
-        link: '/pages/maps/leaflet',
-      },
-      {
-        title: 'Bubble Maps',
-        link: '/pages/maps/bubble',
-      },
-      {
-        title: 'Search Maps',
-        link: '/pages/maps/searchmap',
-      },
-    ],
-  },
+  // {
+  //   title: 'Maps',
+  //   icon: 'map-outline',
+  //   children: [
+  //     {
+  //       title: 'Google Maps',
+  //       link: '/pages/maps/gmaps',
+  //     },
+  //     {
+  //       title: 'Leaflet Maps',
+  //       link: '/pages/maps/leaflet',
+  //     },
+  //     {
+  //       title: 'Bubble Maps',
+  //       link: '/pages/maps/bubble',
+  //     },
+  //     {
+  //       title: 'Search Maps',
+  //       link: '/pages/maps/searchmap',
+  //     },
+  //   ],
+  // },
   {
     title: 'Charts',
     icon: 'pie-chart-outline',
@@ -184,44 +184,52 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  // {
+  //   title: 'Editors',
+  //   icon: 'text-outline',
+  //   children: [
+  //     {
+  //       title: 'TinyMCE',
+  //       link: '/pages/editors/tinymce',
+  //     },
+  //     {
+  //       title: 'CKEditor',
+  //       link: '/pages/editors/ckeditor',
+  //     },
+  //   ],
+  // },
   {
-    title: 'Editors',
-    icon: 'text-outline',
-    children: [
-      {
-        title: 'TinyMCE',
-        link: '/pages/editors/tinymce',
-      },
-      {
-        title: 'CKEditor',
-        link: '/pages/editors/ckeditor',
-      },
-    ],
-  },
-  {
-    title: 'Tables & Data',
+    title: 'FEATURES',
     icon: 'grid-outline',
     children: [
       {
-        title: 'Smart Table',
-        link: '/pages/tables/smart-table',
+        title: 'Company',
+        link: '/pages/features/company',
       },
       {
-        title: 'Tree Grid',
-        link: '/pages/tables/tree-grid',
+        title: 'Users',
+        link: '/pages/features/users',
+      },
+      {
+        title: 'Projects',
+        link: '/pages/features/projects',
+      },
+      {
+        title: 'Asset',
+        link: '/pages/features/asset',
       },
     ],
   },
-  {
-    title: 'Miscellaneous',
-    icon: 'shuffle-2-outline',
-    children: [
-      {
-        title: '404',
-        link: '/pages/miscellaneous/404',
-      },
-    ],
-  },
+  // {
+  //   title: 'Miscellaneous',
+  //   icon: 'shuffle-2-outline',
+  //   children: [
+  //     {
+  //       title: '404',
+  //       link: '/pages/miscellaneous/404',
+  //     },
+  //   ],
+  // },
   {
     title: 'Auth',
     icon: 'lock-outline',

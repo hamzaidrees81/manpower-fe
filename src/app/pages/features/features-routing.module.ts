@@ -6,6 +6,7 @@ import { AssetComponent } from './asset/asset.component';
 import { CompanyComponent } from './company/company.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { UsersComponent } from './users/users.component';
+import { TimesheetComponent } from './timesheet/timesheet.component';
 
 const routes: Routes = [{
   path: '',
@@ -26,6 +27,10 @@ const routes: Routes = [{
     {
       path: 'asset',
       component: AssetComponent,
+    },
+    {
+      path: 'timesheet',
+      component: TimesheetComponent,
     }
   ],
 }];

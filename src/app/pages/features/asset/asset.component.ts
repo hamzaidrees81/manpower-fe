@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-asset',
@@ -78,13 +79,14 @@ export class AssetComponent {
         title: "Asset Number",
         type: "number",
       }, 
-    
-    }
+    },
+    mode: 'external', // Allows navigation on row click
+    selectMode: 'single', // Enables row selection
   }
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData) {
+  constructor(private service: SmartTableData,private router: Router) {
     const data = this.service.getAsset();
     this.source.load(data);
   }
@@ -96,4 +98,12 @@ export class AssetComponent {
       event.confirm.reject();
     }
   }
+
+// Handle row click
+onRowSelect(event: any) {
+  debugger;
+  const rowData = event.data; // Get selected row data
+  localStorage.setItem('selectedPerson', JSON.stringify(rowData)); // Save to local storage
+  this.router.navigate(['/pages/features/timesheet']); // Navigate to timesheet
+}
 }

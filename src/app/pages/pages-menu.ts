@@ -218,6 +218,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Asset',
         link: '/pages/features/asset',
       },
+      {
+        title: 'Timesheet',
+        link: '/pages/features/timesheet',
+      },
     ],
   },
   // {

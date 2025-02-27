@@ -516,7 +516,9 @@ export class SmartTableService extends SmartTableData {
   ];
   
   
-  
+  expenses = [
+    { id: 1, cost: '1000', amount: '5000', status: false, category: 'Fixed', rateType: 'Hourly', type: 'Amount or Percentage', value: 'idk' }
+  ];
   
   getData() {
     return this.data;
@@ -532,5 +534,9 @@ export class SmartTableService extends SmartTableData {
   }
   getAsset() {
     return this.asset;
+  }
+
+  getExpenses() {
+    return this.expenses;
   }
 }

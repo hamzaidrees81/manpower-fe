@@ -5,4 +5,6 @@ export abstract class SmartTableData {
   abstract getProjects(): any[];
   abstract getAsset(): any[];
   abstract getUsers(): any[];
+
+  abstract getExpenses(): any[];
 }

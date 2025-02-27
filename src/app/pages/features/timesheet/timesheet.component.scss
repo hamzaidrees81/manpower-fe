@@ -1,0 +1,126 @@
+nb-tabset {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  :host ::ng-deep ngx-tab1, :host ::ng-deep ngx-tab2 {
+    display: block;
+    padding: 1rem 2rem;
+  }
+  
+  .timesheet-container {
+    padding: 20px;
+  }
+  
+  label {
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+  
+  select, .btn {
+    height: 40px;
+  }
+  
+  .btn-primary {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  h2 {
+    text-align: center;
+    color: #333;
+  }
+  
+  .load-btn {
+    display: block;
+    width: 100%;
+    background: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .week-container {
+    background: #f9f9f9;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .week-header {
+    background: #3f51b5;
+    color: white;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    text-align: center;
+  }
+  
+  .add-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .ng2-smart-table {
+    margin-top: 10px;
+  }
+
+  .load-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .week-container {
+    margin-bottom: 30px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #f9f9f9;
+  }
+  
+  .add-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .add-btn:hover {
+    background-color: #218838;
+  }
+  
+  h4 {
+    color: #333;
+    font-weight: bold;
+  }
+  
+  

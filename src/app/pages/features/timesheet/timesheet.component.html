@@ -1,0 +1,69 @@
+<!-- <nb-card>
+    <nb-card-header>
+      Asset Information
+    </nb-card-header>
+  
+    <nb-card-body> -->
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+              <nb-card size="large">
+                <nb-tabset>
+                  <nb-tab tabTitle="Asset Information">
+                    <ng2-smart-table [settings]="settingsAsset" [source]="sourceAsset" >
+                    </ng2-smart-table>
+                  </nb-tab>
+                  <nb-tab tabTitle="Projects">
+                    <ng2-smart-table [settings]="settingsProjects" [source]="sourceProjects" (deleteConfirm)="onDeleteConfirm($event)"  >
+                    </ng2-smart-table>
+                  </nb-tab>
+                  <nb-tab tabTitle="Timesheet">
+                       <!-- Month & Year Selection -->
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                            <label for="month">Select Month</label>
+                            <select id="month" class="form-control" [(ngModel)]="selectedMonth">
+                                <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+                            </select>
+                            </div>
+                            <div class="col-md-4">
+                            <label for="year">Select Year</label>
+                            <select id="year" class="form-control" [(ngModel)]="selectedYear">
+                                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                            </select>
+                            </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" (click)="loadSheets()">Load Sheet</button>
+                            </div>
+                            
+                        </div>
+                    
+                        <div *ngFor="let week of weeks; let i = index" class="week-container">
+                            <h4>Week {{ week.weekNumber }}</h4>
+                            
+                            <ng2-smart-table 
+                              [settings]="tableSettings" 
+                              [source]="week.data" 
+                              (deleteConfirm)="onDeleteExpense($event, i)">
+                            </ng2-smart-table>
+                          
+                            <button (click)="addRow(i)" class="btn btn-success mt-3"><i class="nb-checkmark"></i> Add More</button>
+                          </div>
+                    
+                  </nb-tab>
+                  <nb-tab tabTitle="Summary">
+                    <nb-card>
+                        <nb-card-header>Summery Information</nb-card-header>
+                        <nb-card-body>
+                          <input type="text" nbInput fullWidth fieldSize="large"  placeholder="Total Calculation Here">
+                        </nb-card-body>
+                      </nb-card>
+                  </nb-tab>
+                  <nb-tab tabTitle="Expenses">
+                        <ng2-smart-table [settings]="settingsExpenses" [source]="sourceExpenses" (deleteConfirm)="onDeleteExpenseConfirm($event)"></ng2-smart-table>
+                  </nb-tab>
+                </nb-tabset>
+              </nb-card>
+            </div>
+            </div>
+    <!-- </nb-card-body>
+  </nb-card> -->

@@ -31,3 +31,16 @@
 
   @include nb-overrides();
 };
+
+
+.custom-header {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Space between icon and text */
+  font-size: 20px;
+  font-weight: bold;
+  background: linear-gradient(135deg, #007bff, #00d4ff); /* Gradient effect */
+  color: white;
+  padding: 15px;
+  border-radius: 8px 8px 0 0; /* Rounded corners */
+}

@@ -1,0 +1,7 @@
+<input 
+  nbInput 
+  placeholder="Form Picker" 
+  [nbDatepicker]="formpicker" 
+  [(ngModel)]="inputModel"
+  (ngModelChange)="onDateChange()">
+<nb-datepicker #formpicker></nb-datepicker>

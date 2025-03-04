@@ -1,11 +1,15 @@
 import { NgModule } from '@angular/core';
-import { NbCardModule, NbIconModule, NbInputModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
+import { NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { FeaturesRoutingModule, routedComponents } from './features-routing.module';
 import { TimesheetComponent } from './timesheet/timesheet.component';
 import { FormsModule } from '@angular/forms';
+import { ClientComponent } from './client/client.component';
+import { CustomDatepickerComponent } from '../../components/custom-datepicker/custom-datepicker.component';
+import { SponsorComponent } from './sponsor/sponsor.component';
+import { DesignationComponent } from './designation/designation.component';
 
 @NgModule({
   imports: [
@@ -17,11 +21,18 @@ import { FormsModule } from '@angular/forms';
     FeaturesRoutingModule,
     Ng2SmartTableModule,
     NbTabsetModule,
-    FormsModule
+    FormsModule,
+    NbDatepickerModule, // ✅ Remove .forRoot() (it should only be in AppModule)
   ],
   declarations: [
     ...routedComponents,
     TimesheetComponent,
+    ClientComponent,
+    CustomDatepickerComponent,
+    SponsorComponent,
+    DesignationComponent
+    
   ],
+  exports: [CustomDatepickerComponent], // Export it if used in other modules
 })
 export class FeaturesModule { }

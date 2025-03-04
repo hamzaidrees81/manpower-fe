@@ -427,26 +427,26 @@ export class SmartTableService extends SmartTableData {
   }];
 
   company = [
-    { id: 1, name: "John Doe", address: "123 Main St, NY", max_asset_count: 5 },
-    { id: 2, name: "Jane Smith", address: "456 Elm St, CA", max_asset_count: 10 },
-    { id: 3, name: "Alice Johnson", address: "789 Oak St, TX", max_asset_count: 8 },
-    { id: 4, name: "Bob Brown", address: "321 Pine St, FL", max_asset_count: 7 },
-    { id: 5, name: "Charlie White", address: "654 Cedar St, AZ", max_asset_count: 12 },
-    { id: 6, name: "David Black", address: "987 Birch St, IL", max_asset_count: 15 },
-    { id: 7, name: "Emma Green", address: "741 Maple St, WA", max_asset_count: 6 },
-    { id: 8, name: "Frank Harris", address: "852 Walnut St, OR", max_asset_count: 9 },
-    { id: 9, name: "Grace Lee", address: "963 Spruce St, NV", max_asset_count: 11 },
-    { id: 10, name: "Henry Adams", address: "159 Redwood St, CO", max_asset_count: 4 },
-    { id: 11, name: "Isabella Martinez", address: "753 Cypress St, GA", max_asset_count: 8 },
-    { id: 12, name: "Jack Wilson", address: "357 Palm St, NC", max_asset_count: 14 },
-    { id: 13, name: "Kelly Thompson", address: "258 Hickory St, MI", max_asset_count: 3 },
-    { id: 14, name: "Liam Scott", address: "951 Aspen St, OH", max_asset_count: 7 },
-    { id: 15, name: "Mia Brown", address: "852 Chestnut St, VA", max_asset_count: 6 },
-    { id: 16, name: "Noah Walker", address: "369 Poplar St, PA", max_asset_count: 9 },
-    { id: 17, name: "Olivia Hall", address: "147 Magnolia St, MA", max_asset_count: 13 },
-    { id: 18, name: "Paul Young", address: "258 Juniper St, TN", max_asset_count: 2 },
-    { id: 19, name: "Quinn King", address: "369 Dogwood St, MN", max_asset_count: 5 },
-    { id: 20, name: "Rachel Parker", address: "741 Fir St, WI", max_asset_count: 10 }
+    { id: 1, name: "John Doe", address: "123 Main St, NY", maxAssetCount: 5 },
+    { id: 2, name: "Jane Smith", address: "456 Elm St, CA", maxAssetCount: 10 },
+    { id: 3, name: "Alice Johnson", address: "789 Oak St, TX", maxAssetCount: 8 },
+    { id: 4, name: "Bob Brown", address: "321 Pine St, FL", maxAssetCount: 7 },
+    { id: 5, name: "Charlie White", address: "654 Cedar St, AZ", maxAssetCount: 12 },
+    { id: 6, name: "David Black", address: "987 Birch St, IL", maxAssetCount: 15 },
+    { id: 7, name: "Emma Green", address: "741 Maple St, WA", maxAssetCount: 6 },
+    { id: 8, name: "Frank Harris", address: "852 Walnut St, OR", maxAssetCount: 9 },
+    { id: 9, name: "Grace Lee", address: "963 Spruce St, NV", maxAssetCount: 11 },
+    { id: 10, name: "Henry Adams", address: "159 Redwood St, CO", maxAssetCount: 4 },
+    { id: 11, name: "Isabella Martinez", address: "753 Cypress St, GA", maxAssetCount: 8 },
+    { id: 12, name: "Jack Wilson", address: "357 Palm St, NC", maxAssetCount: 14 },
+    { id: 13, name: "Kelly Thompson", address: "258 Hickory St, MI", maxAssetCount: 3 },
+    { id: 14, name: "Liam Scott", address: "951 Aspen St, OH", maxAssetCount: 7 },
+    { id: 15, name: "Mia Brown", address: "852 Chestnut St, VA", maxAssetCount: 6 },
+    { id: 16, name: "Noah Walker", address: "369 Poplar St, PA", maxAssetCount: 9 },
+    { id: 17, name: "Olivia Hall", address: "147 Magnolia St, MA", maxAssetCount: 13 },
+    { id: 18, name: "Paul Young", address: "258 Juniper St, TN", maxAssetCount: 2 },
+    { id: 19, name: "Quinn King", address: "369 Dogwood St, MN", maxAssetCount: 5 },
+    { id: 20, name: "Rachel Parker", address: "741 Fir St, WI", maxAssetCount: 10 }
   ];
 
   asset = [

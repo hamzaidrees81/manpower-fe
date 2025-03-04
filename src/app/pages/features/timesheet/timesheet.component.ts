@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../@core/data/smart-table';
+import { DatePickerService } from '../../../@core/services/date-picker.service';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../components/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { CustomDatepickerComponent } from '../../../components/custom-datepicker/custom-datepicker.component';
+import { ProjectService } from '../../../@core/services/projects.service';
+import { DesignationService } from '../../../@core/services/designation.service';
+import { AssetService } from '../../../@core/services/asset.service';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -8,7 +14,8 @@ import { SmartTableData } from '../../../@core/data/smart-table';
   styleUrls: ['./timesheet.component.scss']
 })
 export class TimesheetComponent  implements OnInit {
-
+  projects: any[] = []; // Store company list
+  designation: any[] = []; // Store company list
   personData: any;
   selectedMonth: string;
   selectedYear: number;
@@ -36,16 +43,12 @@ export class TimesheetComponent  implements OnInit {
   settingsAsset = {
     actions:false,
    hideSubHeader: true,
-    columns : {
-      id: {
-        title: "ID",
-        type: "number",
-      },
-      company_id: {
+    columns : { 
+      company: {
         title: "Company ID",
         type: "number",
       },
-      sponsored_by: {
+      sponsoredBy: {
         title: "Sponsored By",
         type: "number",
       },
@@ -53,17 +56,20 @@ export class TimesheetComponent  implements OnInit {
         title: "Name",
         type: "string",
       },
-      id_number: {
+      idNumber: {
         title: "ID Number",
         type: "string",
+        filter: false,
       },
-      iqama_expiry: {
+      iqamaExpiry: {
         title: "Iqama Expiry",
         type: "string",
+        filter: false,
       },
       phone: {
         title: "Phone",
         type: "string",
+        filter: false,
       },
       designation: {
         title: "Designation",
@@ -72,22 +78,27 @@ export class TimesheetComponent  implements OnInit {
       passport: {
         title: "Passport",
         type: "number",
+        filter: false,
       },
-      passport_expiry: {
+      passportExpiry: {
         title: "Passport Expiry",
         type: "string",
+        filter: false,
       },
-      joining_date: {
+      joiningDate: {
         title: "Joining Date",
         type: "string",
+        filter: false,
       },
-      asset_type: {
+      assetType: {
         title: "Asset Type",
         type: "number",
+        filter: false,
       },
-      asset_number: {
+      assetNumber: {
         title: "Asset Number",
         type: "number",
+        filter: false,
       }, 
     },
   }
@@ -97,60 +108,110 @@ export class TimesheetComponent  implements OnInit {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true,
+      
     },
     edit: {
       editButtonContent: '<i class="nb-edit"></i>',
       saveButtonContent: '<i class="nb-checkmark"></i>',
       cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
     },
     columns: {
-      id: {
-        title: "Sr#",
-        type: "number",
-        editable: false,
-        addable: false
-      },
-      project_name: {
-        title: "Project Name",
+      // name: {
+      //   title: "Asset Name",
+      //   type: "string"
+      // },
+      project: {
+        title: 'Project Name',
+        type: 'html',
+        valuePrepareFunction: (project) => project.name,
         editor: {
-          type: "list",
-          config: { selectText: "Select...", list: this.projectOptions }
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
+      },
+      designation: {
+        title: 'Designation',
+        type: 'html',
+        valuePrepareFunction: (designation) => designation.name,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
+      },
+      regularRate: {
+        title: "RegularRate",
+        type: "number",
+        filter: false,
+      },
+      overtimeRate: {
+        title: "Over Time Rate",
+        type: "number",
+        filter: false,
+      },
+      regularRatePaid: {
+        title: "Regular Rate Paid",
+        type: "number",
+        filter: false,
+      },
+      overtimeRatePaid: {
+        title: "Over Time Rate Paid",
+        type: "number",
+        filter: false,
+      },
+      startDate: {
+        title: 'Start Time',
+        type: 'custom',
+        renderComponent: SmartTableDatepickerRenderComponentComponent,
+        filter: false,
+        editor: {
+          type: 'custom',
+          component: CustomDatepickerComponent,
         }
       },
-      position: {
-        title: "Position",
-        type: "string"
+      endDate: {
+        title: 'End Time',
+        type: 'custom',
+        renderComponent: SmartTableDatepickerRenderComponentComponent,
+        filter: false,
+        editor: {
+          type: 'custom',
+          component: CustomDatepickerComponent,
+        },
       },
-      hourly_rate_charged: {
-        title: "Hourly Rate Charged",
-        type: "number"
-      },
-      overtime_rate_charged: {
-        title: "Overtime Rate Charged",
-        type: "number"
-      },
-      hourly_rate_paid: {
-        title: "Hourly Rate Paid",
-        type: "number"
-      },
-      overtime_rate_paid: {
-        title: "Overtime Rate Paid",
-        type: "number"
-      },
-      is_active: {
+      isActive: {
         title: "Is Active",
         type: "html",
+        filter: false,
         editor: {
           type: "checkbox"
         },
         valuePrepareFunction: (value: boolean) => {
           return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
         }
-      }
+      },
+      status: {
+        title: "Status",
+        type: "html",
+        filter: false,
+        editor: {
+          type: "checkbox"
+        },
+        valuePrepareFunction: (value: boolean) => {
+          return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
+        }
+      },
     }
   };
 
@@ -256,17 +317,33 @@ export class TimesheetComponent  implements OnInit {
       sun: { title: 'Sun', type: 'string' },
     }
   };
+  customStartDate: Date;
+  customEndDate: Date;
 
 
-  constructor(private service: SmartTableData) {}
+  constructor(private service: SmartTableData,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService) {}
 
   ngOnInit(): void {
     
     this.getExpenses();
     this.initYears();
-    this.getProject();
     this.getAsset();
 
+    this.loadDropdowns();
+    this.loadAssetProjects();
+
+  }
+
+  // Load all Assets Projects
+  loadAssetProjects(): void {
+    this.assetService.getAssetProjects().subscribe(
+      (data) => {
+        this.sourceProjects.load(data);
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
   }
 
   getExpenses(){
@@ -274,20 +351,18 @@ export class TimesheetComponent  implements OnInit {
     this.sourceExpenses.load(data);
   }
 
-  getProject(){
-    const projectData = [
-      { id: 1, project_name: "AI Development", position: "Developer", hourly_rate_charged: 50, overtime_rate_charged: 75, hourly_rate_paid: 40, overtime_rate_paid: 60, is_active: true },
-      { id: 2, project_name: "E-Commerce Platform", position: "Manager", hourly_rate_charged: 60, overtime_rate_charged: 90, hourly_rate_paid: 50, overtime_rate_paid: 70, is_active: false }
-    ];
-    this.sourceProjects.load(projectData);
-  }
-
   getAsset(){
     const storedData = localStorage.getItem('selectedPerson');
     if (storedData) {
       this.personData = JSON.parse(storedData);
     }
-    this.sourceAsset.load([this.personData]);
+    const updatedAssetData = {
+      ...this.personData,
+      company:this.personData.company.name,
+      sponsoredBy:this.personData.sponsoredBy.name
+    }
+    this.sourceAsset.load([updatedAssetData]);
+    console.log("44",this.personData);
   }
 
   initYears() {
@@ -317,17 +392,39 @@ export class TimesheetComponent  implements OnInit {
   
 
   loadSheets() {
-      this.weeks = [];
-      for (let i = 1; i <= 4; i++) {
-        this.weeks.push({
-          weekNumber: i,
-          data: new LocalDataSource([
-            { srNo: 1, projectName: this.list[0].value, rateType: 'Regular', mon: 2, tue: 3, wed: 5, thu: 4, fri: 2, sat: 0, sun: 1 },
-            { srNo: 1, projectName: this.list[0].value, rateType: 'OT', mon: 1, tue: 2, wed: 2, thu: 3, fri: 1, sat: 0, sun: 0 }
-          ])
-        });
-      }
+    this.weeks = [];
+  
+    if (!this.selectedMonth || !this.selectedYear) {
+      return;
     }
+  
+    const monthIndex = this.months.indexOf(this.selectedMonth);
+    const firstDay = new Date(this.selectedYear, monthIndex, 1);
+    const lastDay = new Date(this.selectedYear, monthIndex + 1, 0);
+    let currentDay = new Date(firstDay);
+    let weekCounter = 1;
+  
+    while (currentDay <= lastDay) {
+      let weekStart = new Date(currentDay);
+      let weekEnd = new Date(currentDay);
+      weekEnd.setDate(weekEnd.getDate() + 6);
+      if (weekEnd > lastDay) {
+        weekEnd = lastDay;
+      }
+  
+      this.weeks.push({
+        weekNumber: weekCounter,
+        dateRange: `${weekStart.toDateString()} - ${weekEnd.toDateString()}`,
+        data: new LocalDataSource([
+          { srNo: 1, projectName: this.list[0].value, rateType: 'Regular', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' },
+          { srNo: 1, projectName: this.list[0].value, rateType: 'OT', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }
+        ])
+      });
+  
+      currentDay.setDate(currentDay.getDate() + 7);
+      weekCounter++;
+    }
+  }
   
     // Add row function (adds 2 rows: Regular & OT)
   onAddRow(weekIndex: number) {
@@ -419,5 +516,144 @@ export class TimesheetComponent  implements OnInit {
         event.confirm.reject();
       }
     }
+
+
+    // -------- PROJECTS 
+    handleStartDate() {
+      // START DATE
+      this.datePickerService.selectedStartDate$.subscribe(event => {
+        if (event) {
+          this.customStartDate = event.date;
+        }
+      });
+    }
+  
+    handleEndDate() {
+      // START DATE
+      this.datePickerService.selectedEndDate$.subscribe(event => {
+        if (event) {
+          this.customEndDate = event.date;
+        }
+      });
+    }
+      // Fetch Companies and Clients
+  loadDropdowns(): void {
+    this.projectService.getProjects().subscribe((data) => {
+      this.projects = data;
+      this.settingsProjects = {
+        ...this.settingsProjects,
+        columns: {
+          ...this.settingsProjects.columns,
+          project: {
+            ...this.settingsProjects.columns.project,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
+
+    this.designationService.getDesignations().subscribe((data) => {
+      this.designation = data;
+      this.settingsProjects = {
+        ...this.settingsProjects,
+        columns: {
+          ...this.settingsProjects.columns,
+          designation: {
+            ...this.settingsProjects.columns.designation,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
+  }
+      // Add project
+onProjectCreateConfirm(event: any): void {
+  // Update start and end dates
+  this.handleStartDate();
+  this.handleEndDate();
+
+  // Parse necessary fields and prepare request data
+  const newProject = {
+    ...event.newData,
+    designation: JSON.parse(event.newData.designation),
+    project: JSON.parse(event.newData.project),
+    startDate: this.customStartDate,
+    endDate: this.customEndDate,
+    asset: {id:this.personData.id},
+    company: {id:this.personData.company.id},
+    status: event.newData.status === true ? 1 : 0, // Convert boolean to number
+    isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
+  };
+
+  // Call service to add the project
+  this.assetService.addAssetProject(newProject).subscribe({
+    next: (data) => event.confirm.resolve(data),
+    error: (error) => {
+      console.error('Error adding project:', error);
+      event.confirm.reject();
+    }
+  });
+}
+
+  
+onProjectEditConfirm(event: any): void {
+  const updatedProject = {
+    ...event.newData,
+    designation: JSON.parse(event.newData.designation),
+    project: JSON.parse(event.newData.project),
+    startDate: this.customStartDate,
+    endDate: this.customEndDate,
+    asset: {id:this.personData.id},
+    company: {id:this.personData.company.id},
+    status: event.newData.status === true ? 1 : 0, // Convert boolean to number
+    isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
+  };
+
+  this.assetService.updateAssetProject(updatedProject.id, updatedProject).subscribe({
+    next: (data) => event.confirm.resolve(data),
+    error: (error) => {
+      console.error('Error updating project:', error);
+      event.confirm.reject();
+    }
+  });
+}
+
+  
+  
+
+  // Delete project
+  onProjectDeleteConfirm(event: any): void {
+    if (window.confirm('Are you sure you want to delete this project?')) {
+      this.assetService.deleteAssetProject(event.data.id).subscribe(
+        () => {
+          event.confirm.resolve();
+        },
+        (error) => {
+          console.error('Error deleting project:', error);
+          event.confirm.reject();
+        }
+      );
+    } else {
+      event.confirm.reject();
+    }
+  }
 }
 

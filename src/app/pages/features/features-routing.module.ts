@@ -7,6 +7,9 @@ import { CompanyComponent } from './company/company.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { UsersComponent } from './users/users.component';
 import { TimesheetComponent } from './timesheet/timesheet.component';
+import { ClientComponent } from './client/client.component';
+import { SponsorComponent } from './sponsor/sponsor.component';
+import { DesignationComponent } from './designation/designation.component';
 
 const routes: Routes = [{
   path: '',
@@ -17,8 +20,20 @@ const routes: Routes = [{
       component: CompanyComponent,
     },
     {
+      path: 'client',
+      component: ClientComponent,
+    },
+    {
+      path: 'sponsor',
+      component: SponsorComponent,
+    },
+    {
       path: 'users',
       component: UsersComponent,
+    },
+    {
+      path: 'designations',
+      component: DesignationComponent,
     },
     {
       path: 'projects',

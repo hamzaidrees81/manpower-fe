@@ -1,10 +1,15 @@
-<nb-card>
-  <nb-card-header>
-    Projects
+<div class="card">
+  <nb-card-header class="custom-header">
+    <nb-icon icon="clipboard-outline"></nb-icon>
+    <span>Project Management</span>
   </nb-card-header>
-
-  <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source" (deleteConfirm)="onDeleteConfirm($event)">
+  <div class="card-body">
+    <ng2-smart-table 
+      [settings]="settings" 
+      [source]="source" 
+      (createConfirm)="onCreateConfirm($event)"
+      (editConfirm)="onEditConfirm($event)"
+      (deleteConfirm)="onDeleteConfirm($event)">
     </ng2-smart-table>
-  </nb-card-body>
-</nb-card>
+  </div>
+</div>

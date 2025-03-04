@@ -30,7 +30,7 @@ import { FormsModule as ngFormsModule } from '@angular/forms';
     NbUserModule,
     NbCheckboxModule,
     NbRadioModule,
-    NbDatepickerModule,
+    NbDatepickerModule.forRoot(),
     FormsRoutingModule,
     NbSelectModule,
     NbIconModule,
@@ -41,7 +41,11 @@ import { FormsModule as ngFormsModule } from '@angular/forms';
     ButtonsComponent,
     FormInputsComponent,
     FormLayoutsComponent,
-    DatepickerComponent,
+    DatepickerComponent,  
+  ],
+  exports: [
+    DatepickerComponent, // ✅ Exported to be used in other modules
+    NbDatepickerModule,  // ✅ Export Nebular Datepicker for other modules
   ],
 })
 export class FormsModule { }

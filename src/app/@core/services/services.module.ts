@@ -7,6 +7,7 @@ import { DatePickerService } from './date-picker.service';
 import { SponsorService } from './sponsor.service';
 import { AssetService } from './asset.service';
 import { DesignationService } from './designation.service';
+import { TimesheetService } from './timesheet.service';
 
 
 
@@ -17,7 +18,8 @@ const SERVICES = [
   DatePickerService,
   SponsorService,
   AssetService,
-  DesignationService
+  DesignationService,
+  TimesheetService
 ];
 
 @NgModule({

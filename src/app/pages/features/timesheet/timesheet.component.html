@@ -4,68 +4,122 @@
     </nb-card-header>
   
     <nb-card-body> -->
-        <div class="row">
-            <div class="col-md-12 col-lg-12">
-              <nb-card size="large">
-                <nb-tabset>
-                  <nb-tab tabTitle="Asset Information">
-                    <ng2-smart-table [settings]="settingsAsset" [source]="sourceAsset" >
-                    </ng2-smart-table>
-                  </nb-tab>
-                  <nb-tab tabTitle="Projects">
-                    <ng2-smart-table [settings]="settingsProjects" [source]="sourceProjects"  (createConfirm)="onProjectCreateConfirm($event)"
-                    (editConfirm)="onProjectEditConfirm($event)"
-                    (deleteConfirm)="onProjectDeleteConfirm($event)"  >
-                    </ng2-smart-table>
-                  </nb-tab>
-                  <nb-tab tabTitle="Timesheet">
-                       <!-- Month & Year Selection -->
-                        <div class="row mb-3">
-                            <div class="col-md-4">
-                            <label for="month">Select Month</label>
-                            <select id="month" class="form-control" [(ngModel)]="selectedMonth">
-                                <option *ngFor="let month of months" [value]="month">{{ month }}</option>
-                            </select>
-                            </div>
-                            <div class="col-md-4">
-                            <label for="year">Select Year</label>
-                            <select id="year" class="form-control" [(ngModel)]="selectedYear">
-                                <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-                            </select>
-                            </div>
-                            <div class="col-md-4 d-flex align-items-end">
-                            <button class="btn btn-primary w-100" (click)="loadSheets()">Load Sheet</button>
-                            </div>
-                            
-                        </div>
-                    
-                        <div *ngFor="let week of weeks; let i = index" class="week-container">
-                            <h4>Week {{ week.weekNumber }} - ({{ week.dateRange }})</h4>
-                            
-                            <ng2-smart-table 
-                              [settings]="tableSettings" 
-                              [source]="week.data" 
-                              (deleteConfirm)="onDeleteExpense($event, i)">
-                            </ng2-smart-table>
-                          
-                            <button (click)="addRow(i)" class="btn btn-success mt-3"><i class="nb-checkmark"></i> Add More</button>
-                          </div>
-                    
-                  </nb-tab>
-                  <nb-tab tabTitle="Summary">
-                    <nb-card>
-                        <nb-card-header>Summery Information</nb-card-header>
-                        <nb-card-body>
-                          <input type="text" nbInput fullWidth fieldSize="large"  placeholder="Total Calculation Here">
-                        </nb-card-body>
-                      </nb-card>
-                  </nb-tab>
-                  <nb-tab tabTitle="Expenses">
-                        <ng2-smart-table [settings]="settingsExpenses" [source]="sourceExpenses" (deleteConfirm)="onDeleteExpenseConfirm($event)"></ng2-smart-table>
-                  </nb-tab>
-                </nb-tabset>
-              </nb-card>
+<div class="row">
+  <div class="col-md-12 col-lg-12">
+    <nb-card size="large">
+      <nb-tabset>
+        <nb-tab tabTitle="Asset Information">
+          <ng2-smart-table [settings]="settingsAsset" [source]="sourceAsset">
+          </ng2-smart-table>
+        </nb-tab>
+        <nb-tab tabTitle="Projects">
+          <ng2-smart-table [settings]="settingsProjects" [source]="sourceProjects"
+            (createConfirm)="onProjectCreateConfirm($event)" (editConfirm)="onProjectEditConfirm($event)"
+            (deleteConfirm)="onProjectDeleteConfirm($event)">
+          </ng2-smart-table>
+        </nb-tab>
+        <nb-tab tabTitle="Timesheet">
+          <div class="container mt-4">
+            <div class="row justify-content-center g-3">
+
+              <!-- Month Selection -->
+              <div class="form-group col-md-4">
+                <label for="monthSelect" class="fw-bold">Month</label>
+                <select id="monthSelect" class="form-control" [(ngModel)]="selectedMonth">
+                  <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+                </select>
+              </div>
+
+              <!-- Year Selection -->
+              <div class="form-group col-md-4">
+                <label for="yearSelect" class="fw-bold">Year</label>
+                <select id="yearSelect" class="form-control" [(ngModel)]="selectedYear">
+                  <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                </select>
+              </div>
+
+              <!-- Load Timesheet Button -->
+              <div class="form-group col-md-4 d-flex align-items-end">
+                <button class="btn btn-primary w-100" (click)="loadSheet()">
+                  <i class="bi bi-arrow-repeat me-2"></i> Load Timesheet
+                </button>
+              </div>
+
             </div>
+          </div>
+
+          <div *ngFor="let week of weeks">
+            <h3 class="text-primary mt-3">{{ week.title }}</h3>
+
+            <!-- Responsive Scrollable Table -->
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Project Name</th>
+                    <th>Rate Type</th>
+                    <th *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-header' : 'active-header'">
+                      {{ day.date }}
+                    </th>
+
+
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <ng-container *ngFor="let row of week.rows; let i = index">
+                    <tr>
+                      <td>
+                        <select class="form-select form-control" [(ngModel)]="row.projectName" (change)="updateProjectSelection(row)">
+                          <option *ngFor="let project of getProjects" [value]="project.id" >{{ project?.project?.name }}
+                          </option>
+                        </select>
+                      </td>
+                      <td>{{ row.rateType }}</td>
+                      <td *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-field' : 'active-field'">
+                        <input *ngIf="!day.isDisabled" type="number" min="0" [(ngModel)]="row.days[day.date]"
+                          class="form-control" (change)="updateTimesheet(row.projectName, row.rateType, day.date, row.days[day.date],row)">
+                        <span *ngIf="day.isDisabled">--</span>
+                      </td>
+
+
+                      <td>
+                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1"
+                          (click)="deleteRow(week, i)">
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
             </div>
-    <!-- </nb-card-body>
+
+            <button class="btn btn-success btn-sm mt-2" (click)="addMoreRows(week)">+ Add More</button>
+          </div>
+          <div class="d-flex justify-content-end" *ngIf="isTimeSheetSubmit">
+            <button class="btn btn-success btn-sm mt-2" (click)="submitTimeSheet()" [disabled]="timeSheetCollection.length === 0">+ Submit Timesheet</button>
+          </div>
+        </nb-tab>
+
+
+
+        <nb-tab tabTitle="Summary">
+          <nb-card>
+            <nb-card-header>Summery Information</nb-card-header>
+            <nb-card-body>
+              <input type="text" nbInput fullWidth fieldSize="large" placeholder="Total Calculation Here">
+            </nb-card-body>
+          </nb-card>
+        </nb-tab>
+        <nb-tab tabTitle="Expenses">
+          <ng2-smart-table [settings]="settingsExpenses" [source]="sourceExpenses"
+            (deleteConfirm)="onDeleteExpenseConfirm($event)"></ng2-smart-table>
+        </nb-tab>
+      </nb-tabset>
+    </nb-card>
+  </div>
+</div>
+<!-- </nb-card-body>
   </nb-card> -->

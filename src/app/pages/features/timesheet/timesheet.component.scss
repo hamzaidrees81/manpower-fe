@@ -9,118 +9,122 @@ nb-tabset {
     padding: 1rem 2rem;
   }
   
-  .timesheet-container {
-    padding: 20px;
-  }
-  
-  label {
-    font-weight: 600;
-    margin-bottom: 5px;
-  }
-  
-  select, .btn {
-    height: 40px;
-  }
-  
-  .btn-primary {
-    font-size: 16px;
-    font-weight: bold;
-  }
-  
-
-  .container {
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-    font-family: Arial, sans-serif;
-  }
-  
-  h2 {
-    text-align: center;
-    color: #333;
-  }
-  
-  .load-btn {
-    display: block;
-    width: 100%;
-    background: #4CAF50;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
+  .timesheet-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
+    max-width: 500px;
+  }
+  
+  .styled-select {
+    padding: 8px;
+    border-radius: 5px;
+    font-size: 14px;
+    min-width: 120px;
   }
   
   .week-container {
-    background: #f9f9f9;
-    padding: 15px;
     margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .week-header {
-    background: #3f51b5;
-    color: white;
-    padding: 10px;
-    font-size: 18px;
-    border-radius: 5px;
-    text-align: center;
-  }
-  
-  .add-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    margin: 10px 0;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .ng2-smart-table {
-    margin-top: 10px;
-  }
-
-  .load-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 8px 15px;
-    margin-bottom: 20px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-  
-  .week-container {
-    margin-bottom: 30px;
     padding: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    background: #f9f9f9;
+    background-color: #f9f9f9;
   }
   
-  .add-btn {
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+  
+  .styled-table th, .styled-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  .input-hours {
+    width: 50px;
+    padding: 5px;
+    text-align: center;
+  }
+  
+  .disabled-day {
+    color: gray;
+  }
+  
+  .btn-primary, .btn-danger, .btn-add {
+    padding: 8px 12px;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  
+  .btn-primary {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .btn-add {
     background-color: #28a745;
     color: white;
-    border: none;
-    padding: 8px 12px;
-    cursor: pointer;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
   }
   
-  .add-btn:hover {
-    background-color: #218838;
+
+/* For available day headers (Sat, Sun) */
+.active-header {
+  background-color: #007bff !important; /* Blue background */
+  color: white !important;
+  font-weight: bold;
+}
+
+/* For disabled day headers */
+.disabled-header {
+  background-color: #6c757d !important; /* Grey background */
+  color: #e0e0e0 !important;
+  font-weight: bold;
+}
+
+/* Available fields */
+.active-field {
+  background-color: #ffffff !important; /* White for available inputs */
+}
+
+/* Disabled fields with grey styling */
+.disabled-field {
+  background-color: #f0f0f0 !important; /* Light grey for disabled fields */
+  color: #6c757d !important;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Default: Full width for larger screens */
+.table-responsive table {
+  width: 100%;
+  min-width: 1200px; /* Ensures it doesn’t shrink on larger screens */
+  table-layout: auto;
+}
+
+/* Apply fixed width for tablets (max 1024px) and mobile (max 768px) */
+@media (max-width: 1024px) {
+  .table-responsive table {
+      width: 1800px; /* Forces table to be wider */
   }
-  
-  h4 {
-    color: #333;
-    font-weight: bold;
-  }
-  
-  
+}
+
+
+
+
+
+
+

@@ -2,11 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
-import { SmartTableDatepickerRenderComponentComponent } from '../../../components/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
-import { CustomDatepickerComponent } from '../../../components/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
 import { ProjectService } from '../../../@core/services/projects.service';
 import { DesignationService } from '../../../@core/services/designation.service';
 import { AssetService } from '../../../@core/services/asset.service';
+import { TimesheetService } from '../../../@core/services/timesheet.service';
+import { ToasterService } from '../../../@core/services/toaster.service';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -16,12 +18,10 @@ import { AssetService } from '../../../@core/services/asset.service';
 export class TimesheetComponent  implements OnInit {
   projects: any[] = []; // Store company list
   designation: any[] = []; // Store company list
-  personData: any;
-  selectedMonth: string;
-  selectedYear: number;
-  months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  years: number[] = [];
-  weeks: any[] = []; // Store 4 weeks data
+  assetData: any;
+  isTimeSheetSubmit = false;
+  timeSheetCollection: any[] = []; // Array to store timesheet data
+
 
   sourceAsset: LocalDataSource = new LocalDataSource();
   sourceProjects: LocalDataSource = new LocalDataSource();
@@ -34,11 +34,7 @@ export class TimesheetComponent  implements OnInit {
     { value: 'CRM System', title: 'CRM System' }
   ];
 
-  list= [
-    { value: 'Project A', title: 'Project A' },
-    { value: 'Project B', title: 'Project B' },
-    { value: 'Project C', title: 'Project C' }
-  ]
+  list: { id: string; name: string }[] = [];
 
   settingsAsset = {
     actions:false,
@@ -293,58 +289,354 @@ export class TimesheetComponent  implements OnInit {
     }
   };
 
-  tableSettings = {
-    hideSubHeader: true,
-    edit: {
-      editButtonContent: '<i class="nb-edit"></i>',
-      saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
-    },
-    columns: {
-      srNo: { title: 'S#', type: 'number', editable: false },
-      projectName: { title: 'Project Name', type: 'string', editor: { type: 'list', config: { list: this.list } } },
-      rateType: { title: 'Rate Type', type: 'string', editor: { type: 'list', config: { list: [{ value: 'Regular', title: 'Regular' }, { value: 'OT', title: 'OT' }] } } },
-      mon: { title: 'Mon', type: 'string' },
-      tue: { title: 'Tue', type: 'string' },
-      wed: { title: 'Wed', type: 'string' },
-      thu: { title: 'Thu', type: 'string' },
-      fri: { title: 'Fri', type: 'string' },
-      sat: { title: 'Sat', type: 'string' },
-      sun: { title: 'Sun', type: 'string' },
-    }
-  };
+
+  // TIME SHEET CONFIG
   customStartDate: Date;
   customEndDate: Date;
 
+  months = [
+    { name: 'January', value: 1 }, { name: 'February', value: 2 },
+    { name: 'March', value: 3 }, { name: 'April', value: 4 },
+    { name: 'May', value: 5 }, { name: 'June', value: 6 },
+    { name: 'July', value: 7 }, { name: 'August', value: 8 },
+    { name: 'September', value: 9 }, { name: 'October', value: 10 },
+    { name: 'November', value: 11 }, { name: 'December', value: 12 }
+  ];
+  
+  years: number[] = [];
+  selectedMonth = new Date().getMonth() + 1;
+  selectedYear = new Date().getFullYear();
+  weeks: any[] = [];
+  getProjects: { id: string; name: string }[] = [];
 
-  constructor(private service: SmartTableData,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService) {}
+  // TIME SHEET CONFIG END
+
+
+  constructor(private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
 
   ngOnInit(): void {
     
     this.getExpenses();
-    this.initYears();
     this.getAsset();
 
     this.loadDropdowns();
     this.loadAssetProjects();
+    this.populateYears();
 
   }
+
+  populateYears() {
+    const currentYear = new Date().getFullYear();
+    this.years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+  }
+  
+  async loadSheet() {
+    this.timeSheetCollection = [];
+    this.isTimeSheetSubmit = true;
+    this.weeks = [];
+  
+    let date = new Date(this.selectedYear, this.selectedMonth - 1, 1);
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
+  
+    if (date.getDay() !== 1) {
+      date.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1));
+    }
+  
+    let weekIndex = 1;
+    let srNo = 1; // Serial number starts from 1
+  
+    while (date.getMonth() === this.selectedMonth - 1 || (weekIndex === 1 && date.getDate() !== 1)) {
+      let startOfWeek = new Date(date);
+      let endOfWeek = new Date(startOfWeek);
+      endOfWeek.setDate(startOfWeek.getDate() + 6);
+  
+      if (endOfWeek.getMonth() !== this.selectedMonth - 1) {
+        endOfWeek = new Date(this.selectedYear, this.selectedMonth, 0);
+      }
+  
+      const weekData = {
+        title: `Week ${weekIndex}`,
+        weekIndex: weekIndex,
+        days: this.getWeekDays(startOfWeek, weekIndex),
+        rows: []
+      };
+  
+      const id = Date.now();
+  
+      weekData.rows.push({
+        id: id,
+        rowSrNo: srNo, // Same SR No for both rows
+        weekIndex: weekIndex, // Store the week index
+        projectName: defaultProjectId,
+        rateType: 'Regular',
+        days: {}
+      });
+  
+      weekData.rows.push({
+        id: id, // Different ID but same SR No
+        rowSrNo: srNo, // Same SR No for both rows
+        weekIndex: weekIndex, // Store the week index
+        projectName: defaultProjectId,
+        rateType: 'OT',
+        days: {}
+      });
+  
+      this.weeks.push(weekData);
+      srNo++; // Increment SR No for the next pair
+      weekIndex++;
+      date.setDate(date.getDate() + 7);
+    }
+  
+    await this.getTimeSheetList(); 
+    this.mapTimesheetData();
+  
+  }
+  
+  mapTimesheetData() {
+    if (!this.timeSheetCollection || !this.weeks) return;
+  
+    this.weeks.forEach(week => {
+      const weekData = this.timeSheetCollection.filter(item => item.weekIndex === week.weekIndex);
+  
+      weekData.forEach(item => {
+        const formattedDate = this.formatDateToDisplay(item.timesheetDate);
+  
+        // Find the corresponding row based on rowSrNo AND rateType
+        let targetRow = week.rows.find(row => row.rowSrNo === item.rowSrNo && row.rateType === (item.rateType === 1 ? 'Regular' : 'OT'));
+  
+        // If the row doesn't exist, add it
+        if (!targetRow) {
+          this.addMoreRows(week);
+          targetRow = week.rows.find(row => row.rowSrNo === item.rowSrNo && row.rateType === (item.rateType === 1 ? 'Regular' : 'OT'));
+        }
+  
+        // Assign hours to the correct date in the correct row
+        if (targetRow) {
+          targetRow.days[formattedDate] = item.hours;
+        }
+      });
+    });
+  }
+  
+  
+  
+  formatDateToDisplay(dateString: string): string {
+    if (!dateString) return "";
+    
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { weekday: "short" }; // Get short weekday name (e.g., "Tue")
+    const day = date.getDate(); // Get day number (e.g., 1)
+  
+    return `${date.toLocaleDateString("en-US", options)} (${day})`; // Format "Tue (1)"
+  }
+  
+  getTimeSheetList(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.timesheetService.getTimesheetByEmpIdYearMonth(this.assetData?.id, this.selectedYear, this.selectedMonth)
+        .subscribe(
+          (data) => {
+            this.timeSheetCollection = data;
+            console.log("✅ Data fetched in getTimeSheetList:", this.timeSheetCollection);
+            resolve(data); // ✅ Resolve the Promise when data is received
+          },
+          (error) => {
+            console.error('❌ Error loading projects:', error);
+            reject(error); // ❌ Reject the Promise if there's an error
+          }
+        );
+    });
+  }
+  addMoreRows(week: any,) {
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
+  
+    // Find the next SR No
+    let srNo = week.rows.length > 0 ? Math.max(...week.rows.map(r => r.rowSrNo)) + 1 : 1;
+  
+    const id = Date.now();
+  
+    week.rows.push({
+      id: id,
+      rowSrNo: srNo,  // Same SR No for both rows
+      weekIndex: week?.weekIndex,  // Store the week index
+      projectName: defaultProjectId,
+      rateType: 'Regular',
+      days: {}
+    });
+    week.rows.push({
+      id: id,  // Different ID but same SR No
+      rowSrNo: srNo,  // Same SR No for both rows
+      weekIndex: week?.weekIndex,  // Store the week index
+      projectName: defaultProjectId,
+      rateType: 'OT',
+      days: {}
+    });
+  }
+ 
+  updateProjectSelection(row: any) {
+    if (!row.projectName) return;
+  
+    this.timeSheetCollection.forEach((item) => {
+      if (
+        item.weekIndex === row.weekIndex &&  // Match week
+        item.rowSrNo === row.rowSrNo &&            // Match serial number
+        item.rateType === (row.rateType === "Regular" ? "1" : "2") // Match rate type
+      ) {
+        item.assetProject.id = row.projectName; // Update project ID
+      }
+    });
+  
+    console.log("Updated timeSheetCollection after project change:", this.timeSheetCollection);
+  }
+  
+  
+  updateTimesheet(projectId: number, rateType: string, date: string, hours: number,row:any) {
+    if (!projectId || !rateType || !date) return;
+  
+    const formattedDate = this.extractDate(date); // Convert date to YYYY-MM-DD
+    const rateTypeValue = rateType === "Regular" ? "1" : "2";
+  
+    const existingIndex = this.timeSheetCollection.findIndex(
+      item => item.timesheetDate === formattedDate && item.rateType === rateTypeValue && item.assetProject.id === projectId && item.rowSrNo === row.rowSrNoValue
+    );
+  
+    if (hours > 0) {
+      const newEntry = {
+        asset: { id: this.assetData?.id },
+        assetProject: { id: projectId },
+        timesheetDate: formattedDate,
+        rateType: rateTypeValue,
+        hours,
+        rowSrNo:row.rowSrNo,
+        weekIndex:row.weekIndex,
+        invoiceNumber: 0,
+      };
+  
+      if (existingIndex !== -1) {
+        this.timeSheetCollection[existingIndex] = newEntry;
+      } else {
+        this.timeSheetCollection.push(newEntry);
+      }
+    } else {
+      if (existingIndex !== -1) {
+        this.timeSheetCollection.splice(existingIndex, 1);
+      }
+    }
+  
+    console.log("Updated timeSheetCollection:", this.timeSheetCollection);
+  }
+  
+  extractDate(dateString: string): string {
+    const match = dateString.match(/\d+/); // Extracts the numeric part (day)
+    if (!match) return "";
+  
+    const day = parseInt(match[0], 10);
+    const currentMonth = this.selectedMonth.toString().padStart(2, "0");
+    const currentYear = this.selectedYear;
+  
+    return `${currentYear}-${currentMonth}-${day.toString().padStart(2, "0")}`; // Format YYYY-MM-DD
+  }
+  
+
+  deleteRow(week: any, rowIndex: number) {
+    if (!week || !week.rows[rowIndex]) return; // Safety check
+    
+    const deletedRow = week.rows[rowIndex]; 
+    const srNoToDelete = deletedRow.rowSrNo;
+    const weekIndexToDelete = week.weekIndex;
+  
+    // Find all matching entries in timeSheetCollection to delete from backend
+    const rowsToDelete = this.timeSheetCollection.filter(
+      entry => entry.weekIndex === weekIndexToDelete && entry.rowSrNo === srNoToDelete
+    );
+    // Call backend delete function for each entry
+    rowsToDelete.forEach(entry => {
+      this.onDeleteTimesheetWeekData(entry.id); // Assuming 'id' exists in timesheet data
+    });
+  
+    // Remove the row pair (Regular & OT)
+    if (rowIndex % 2 === 0) {
+      week.rows.splice(rowIndex, 2);
+    } else {
+      week.rows.splice(rowIndex - 1, 2);
+    }
+  
+    // Remove corresponding data from timeSheetCollection
+    this.timeSheetCollection = this.timeSheetCollection.filter(
+      entry => !(entry.weekIndex === weekIndexToDelete && entry.rowSrNo === srNoToDelete)
+    );
+  
+    console.log("Updated timeSheetCollection:", this.timeSheetCollection);
+  }
+  
+
+  onDeleteTimesheetWeekData(id: number) {
+    if (!id) return;
+  
+    this.timesheetService.deleteTimesheet(id).subscribe({
+      next: () => {
+        this.toasterService.showSuccess("Timesheet entry deleted successfully!");
+      },
+      error: (err) => {
+        console.error("Error deleting timesheet entry:", err);
+        this.toasterService.showError("Failed to delete timesheet entry. Please try again.");
+      }
+    });
+  }
+  
+  
+  
+  getWeekDays(startOfWeek: Date, weekIndex: number) {
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      let day = new Date(startOfWeek);
+      day.setDate(startOfWeek.getDate() + i);
+  
+      let isDisabled = day.getMonth() !== this.selectedMonth - 1;
+      let isWeekend = day.getDay() === 6 || day.getDay() === 0;
+  
+      days.push({
+        date: `${day.toLocaleDateString('en-US', { weekday: 'short' })} (${day.getDate()})`,
+        isDisabled,
+        isWeekend
+      });
+    }
+    return days;
+  }
+  
+  
 
   // Load all Assets Projects
   loadAssetProjects(): void {
     this.assetService.getAssetProjects().subscribe(
       (data) => {
         this.sourceProjects.load(data);
+        this.getProjects = data
       },
       (error) => {
         console.error('Error loading projects:', error);
       }
     );
   }
+
+  submitTimeSheet() {
+    console.log("this.timeSheetCollection",this.timeSheetCollection);
+    if (!this.timeSheetCollection || this.timeSheetCollection.length === 0) {
+      console.warn("No timesheet data to submit.");
+      return;
+    }
+  
+    this.timesheetService.updateTimesheet(this.timeSheetCollection).subscribe({
+      next: (response) => {
+        console.log("Timesheet submitted successfully:", response);
+        this.toasterService.showSuccess('Timesheet submitted successfully!');
+      },
+      error: (error) => {
+        console.error("Error submitting timesheet:", error);
+        this.toasterService.showError('Failed to submit timesheet.');
+      }
+    });
+  }
+  
 
   getExpenses(){
     const data = this.service.getExpenses();
@@ -354,24 +646,14 @@ export class TimesheetComponent  implements OnInit {
   getAsset(){
     const storedData = localStorage.getItem('selectedPerson');
     if (storedData) {
-      this.personData = JSON.parse(storedData);
+      this.assetData = JSON.parse(storedData);
     }
     const updatedAssetData = {
-      ...this.personData,
-      company:this.personData.company.name,
-      sponsoredBy:this.personData.sponsoredBy.name
+      ...this.assetData,
+      company:this.assetData.company.name,
+      sponsoredBy:this.assetData.sponsoredBy.name
     }
     this.sourceAsset.load([updatedAssetData]);
-    console.log("44",this.personData);
-  }
-
-  initYears() {
-    const currentYear = new Date().getFullYear();
-    for (let i = currentYear - 10; i <= currentYear + 1; i++) {
-      this.years.push(i);
-    }
-    this.selectedYear = currentYear;
-    this.selectedMonth = this.months[new Date().getMonth()];
   }
 
   onDeleteConfirm(event): void {
@@ -389,79 +671,7 @@ export class TimesheetComponent  implements OnInit {
       event.confirm.reject();
     }
   }
-  
-
-  loadSheets() {
-    this.weeks = [];
-  
-    if (!this.selectedMonth || !this.selectedYear) {
-      return;
-    }
-  
-    const monthIndex = this.months.indexOf(this.selectedMonth);
-    const firstDay = new Date(this.selectedYear, monthIndex, 1);
-    const lastDay = new Date(this.selectedYear, monthIndex + 1, 0);
-    let currentDay = new Date(firstDay);
-    let weekCounter = 1;
-  
-    while (currentDay <= lastDay) {
-      let weekStart = new Date(currentDay);
-      let weekEnd = new Date(currentDay);
-      weekEnd.setDate(weekEnd.getDate() + 6);
-      if (weekEnd > lastDay) {
-        weekEnd = lastDay;
-      }
-  
-      this.weeks.push({
-        weekNumber: weekCounter,
-        dateRange: `${weekStart.toDateString()} - ${weekEnd.toDateString()}`,
-        data: new LocalDataSource([
-          { srNo: 1, projectName: this.list[0].value, rateType: 'Regular', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' },
-          { srNo: 1, projectName: this.list[0].value, rateType: 'OT', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }
-        ])
-      });
-  
-      currentDay.setDate(currentDay.getDate() + 7);
-      weekCounter++;
-    }
-  }
-  
-    // Add row function (adds 2 rows: Regular & OT)
-  onAddRow(weekIndex: number) {
-      let maxId = this.weeks[weekIndex].data['data'].length > 0 
-        ? Math.max(...this.weeks[weekIndex].data['data'].map((row: any) => row.srNo)) + 1 
-        : 1;
-  
-      const newRegularRow = {
-        srNo: maxId,
-        projectName: 'Project B', // Dummy Data
-        rateType: 'Regular',
-        mon: Math.floor(Math.random() * 5),
-        tue: Math.floor(Math.random() * 5),
-        wed: Math.floor(Math.random() * 5),
-        thu: Math.floor(Math.random() * 5),
-        fri: Math.floor(Math.random() * 5),
-        sat: Math.floor(Math.random() * 3),
-        sun: Math.floor(Math.random() * 3)
-      };
-  
-      const newOTRow = {
-        srNo: maxId,
-        projectName: 'Project B', // Dummy Data
-        rateType: 'OT',
-        mon: Math.floor(Math.random() * 3),
-        tue: Math.floor(Math.random() * 3),
-        wed: Math.floor(Math.random() * 3),
-        thu: Math.floor(Math.random() * 3),
-        fri: Math.floor(Math.random() * 3),
-        sat: Math.floor(Math.random() * 2),
-        sun: Math.floor(Math.random() * 2)
-      };
-  
-      this.weeks[weekIndex].data.add(newRegularRow);
-      this.weeks[weekIndex].data.add(newOTRow);
-    }
-  
+   
     // Delete function to remove both rows with the same Sr#
   onDelete(event: any, weekIndex: number) {
       let srNo = event.data.srNo;
@@ -470,35 +680,6 @@ export class TimesheetComponent  implements OnInit {
       // Filter out rows with the same Sr#
       let updatedData = currentData.filter((row: any) => row.srNo !== srNo);
       this.weeks[weekIndex].data.load(updatedData);
-    }
-    
-    loadTimesheet() {
-      this.weeks = [];
-      for (let i = 1; i <= 4; i++) {
-        this.weeks.push({
-          weekNumber: i,
-          data: new LocalDataSource([
-            { srNo: 1, projectName: 'Project A', rateType: 'Regular', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' },
-            { srNo: 2, projectName: 'Project A', rateType: 'OT', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }
-          ])
-        });
-      }
-    }
-  
-    addRow(weekIndex: number) {
-      const week = this.weeks[weekIndex];
-  
-      // Ensure source data is properly updated
-      week.data.getAll().then(data => {
-        const newSrNo = data.length + 1;
-        const newRows = [
-          { srNo: newSrNo, projectName: this.list[0].value, rateType: 'Regular', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' },
-          { srNo: newSrNo, projectName: this.list[0].value, rateType: 'OT', mon: '', tue: '', wed: '', thu: '', fri: '', sat: '', sun: '' }
-        ];
-  
-        // Update the table data properly
-        week.data.load([...data, ...newRows]);
-      });
     }
   
     onDeleteExpense(event, weekIndex: number) {
@@ -516,7 +697,6 @@ export class TimesheetComponent  implements OnInit {
         event.confirm.reject();
       }
     }
-
 
     // -------- PROJECTS 
     handleStartDate() {
@@ -597,8 +777,8 @@ onProjectCreateConfirm(event: any): void {
     project: JSON.parse(event.newData.project),
     startDate: this.customStartDate,
     endDate: this.customEndDate,
-    asset: {id:this.personData.id},
-    company: {id:this.personData.company.id},
+    asset: {id:this.assetData.id},
+    company: {id:this.assetData.company.id},
     status: event.newData.status === true ? 1 : 0, // Convert boolean to number
     isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
   };
@@ -612,7 +792,6 @@ onProjectCreateConfirm(event: any): void {
     }
   });
 }
-
   
 onProjectEditConfirm(event: any): void {
   const updatedProject = {
@@ -621,8 +800,8 @@ onProjectEditConfirm(event: any): void {
     project: JSON.parse(event.newData.project),
     startDate: this.customStartDate,
     endDate: this.customEndDate,
-    asset: {id:this.personData.id},
-    company: {id:this.personData.company.id},
+    asset: {id:this.assetData.id},
+    company: {id:this.assetData.company.id},
     status: event.newData.status === true ? 1 : 0, // Convert boolean to number
     isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
   };
@@ -635,9 +814,6 @@ onProjectEditConfirm(event: any): void {
     }
   });
 }
-
-  
-  
 
   // Delete project
   onProjectDeleteConfirm(event: any): void {

@@ -4,8 +4,8 @@ import { ProjectService } from '../../../@core/services/projects.service';
 import { ClientService } from '../../../@core/services/client.service';
 import { CompanyService } from '../../../@core/services/company.service';
 import { DatepickerComponent } from '../../forms/datepicker/datepicker.component';
-import { CustomDatepickerComponent } from '../../../components/custom-datepicker/custom-datepicker.component';
-import { SmartTableDatepickerRenderComponentComponent } from '../../../components/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
 
 @Component({

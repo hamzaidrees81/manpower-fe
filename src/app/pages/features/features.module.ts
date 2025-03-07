@@ -7,7 +7,7 @@ import { FeaturesRoutingModule, routedComponents } from './features-routing.modu
 import { TimesheetComponent } from './timesheet/timesheet.component';
 import { FormsModule } from '@angular/forms';
 import { ClientComponent } from './client/client.component';
-import { CustomDatepickerComponent } from '../../components/custom-datepicker/custom-datepicker.component';
+import { CustomDatepickerComponent } from '../../shared/custom-datepicker/custom-datepicker.component';
 import { SponsorComponent } from './sponsor/sponsor.component';
 import { DesignationComponent } from './designation/designation.component';
 

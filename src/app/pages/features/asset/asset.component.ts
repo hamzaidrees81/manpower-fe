@@ -4,8 +4,8 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
 import { CompanyService } from '../../../@core/services/company.service';
 import { AssetService } from '../../../@core/services/asset.service';
-import { CustomDatepickerComponent } from '../../../components/custom-datepicker/custom-datepicker.component';
-import { SmartTableDatepickerRenderComponentComponent } from '../../../components/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
 import { SponsorService } from '../../../@core/services/sponsor.service';
 

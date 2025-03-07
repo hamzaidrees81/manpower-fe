@@ -237,11 +237,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
         icon: 'cube-outline', 
         link: '/pages/features/asset',
       },
-      {
-        title: 'Timesheet',
-        icon: 'calendar-outline', 
-        link: '/pages/features/timesheet',
-      },
+      // {
+      //   title: 'Timesheet',
+      //   icon: 'calendar-outline', 
+      //   link: '/pages/features/timesheet',
+      // },
     
   
   // {

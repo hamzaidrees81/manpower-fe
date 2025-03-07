@@ -20,7 +20,7 @@ import {
   NbToastrModule,
   NbWindowModule,
 } from '@nebular/theme';
-import { SmartTableDatepickerRenderComponentComponent } from './components/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { SmartTableDatepickerRenderComponentComponent } from './shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 
 @NgModule({
   declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent],

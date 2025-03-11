@@ -237,6 +237,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
         icon: 'cube-outline', 
         link: '/pages/features/asset',
       },
+      {
+        title: 'Invoice',
+        icon: 'file-text-outline', 
+        link: '/pages/features/invoice',
+      },
+      {
+        title: 'Print Invoice',
+        icon: 'file-text-outline', 
+        link: '/pages/features/print-invoice',
+      },
       // {
       //   title: 'Timesheet',
       //   icon: 'calendar-outline', 

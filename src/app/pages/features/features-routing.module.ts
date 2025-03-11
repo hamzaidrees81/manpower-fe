@@ -10,6 +10,8 @@ import { TimesheetComponent } from './timesheet/timesheet.component';
 import { ClientComponent } from './client/client.component';
 import { SponsorComponent } from './sponsor/sponsor.component';
 import { DesignationComponent } from './designation/designation.component';
+import { InvoiceComponent } from './invoice/invoice.component';
+import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 
 const routes: Routes = [{
   path: '',
@@ -46,6 +48,14 @@ const routes: Routes = [{
     {
       path: 'timesheet',
       component: TimesheetComponent,
+    },
+    {
+      path: 'invoice',
+      component: InvoiceComponent,
+    },
+    {
+      path: 'print-invoice',
+      component: PrintInvoiceComponent,
     }
   ],
 }];

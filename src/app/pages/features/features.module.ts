@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
+import { NbAccordionModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbSelectModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -10,6 +10,8 @@ import { ClientComponent } from './client/client.component';
 import { CustomDatepickerComponent } from '../../shared/custom-datepicker/custom-datepicker.component';
 import { SponsorComponent } from './sponsor/sponsor.component';
 import { DesignationComponent } from './designation/designation.component';
+import { InvoiceComponent } from './invoice/invoice.component';
+import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 
 @NgModule({
   imports: [
@@ -22,6 +24,8 @@ import { DesignationComponent } from './designation/designation.component';
     Ng2SmartTableModule,
     NbTabsetModule,
     FormsModule,
+    NbAccordionModule,
+    NbSelectModule,
     NbDatepickerModule, // ✅ Remove .forRoot() (it should only be in AppModule)
   ],
   declarations: [
@@ -30,7 +34,9 @@ import { DesignationComponent } from './designation/designation.component';
     ClientComponent,
     CustomDatepickerComponent,
     SponsorComponent,
-    DesignationComponent
+    DesignationComponent,
+    InvoiceComponent,
+    PrintInvoiceComponent
     
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules

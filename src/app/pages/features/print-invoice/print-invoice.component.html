@@ -1,0 +1,66 @@
+<div id="invoice-content" class="invoice-container">
+    <h2 class="invoice-title">INVOICE</h2>
+  
+    <div class="invoice-header">
+      <div class="company-info">
+        <p><strong>{{ invoiceData.company.name }}</strong></p>
+        <p>{{ invoiceData.company.address }}</p>
+        <p>{{ invoiceData.company.city }}, {{ invoiceData.company.zip }}</p>
+      </div>
+  
+      <div class="invoice-details">
+        <p><strong>Invoice #: </strong> {{ invoiceData.invoiceNumber }}</p>
+        <p><strong>Date: </strong> {{ invoiceData.date }}</p>
+        <p><strong>Due Date: </strong> {{ invoiceData.dueDate }}</p>
+      </div>
+    </div>
+  
+    <div class="bill-ship">
+      <div>
+        <p><strong>Bill To:</strong></p>
+        <p>{{ invoiceData.customer.name }}</p>
+        <p>{{ invoiceData.customer.address }}</p>
+        <p>{{ invoiceData.customer.city }}, {{ invoiceData.customer.zip }}</p>
+      </div>
+      
+      <div>
+        <p><strong>Ship To:</strong></p>
+        <p>{{ invoiceData.shipping.name }}</p>
+        <p>{{ invoiceData.shipping.address }}</p>
+        <p>{{ invoiceData.shipping.city }}, {{ invoiceData.shipping.zip }}</p>
+      </div>
+    </div>
+  
+    <table>
+      <thead>
+        <tr>
+          <th>QTY</th>
+          <th>DESCRIPTION</th>
+          <th>UNIT PRICE</th>
+          <th>AMOUNT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of invoiceData.items">
+          <td>{{ item.qty }}</td>
+          <td>{{ item.description }}</td>
+          <td>{{ item.unitPrice | currency: 'USD' }}</td>
+          <td>{{ item.amount | currency: 'USD' }}</td>
+        </tr>
+      </tbody>
+    </table>
+  
+    <div class="total-section">
+      <p><strong>Subtotal:</strong> {{ invoiceData.subtotal | currency: 'USD' }}</p>
+      <p><strong>Tax ({{ invoiceData.taxRate }}%):</strong> {{ invoiceData.tax | currency: 'USD' }}</p>
+      <p><strong>Total:</strong> {{ invoiceData.total | currency: 'USD' }}</p>
+    </div>
+  
+    <div class="terms">
+      <p><strong>TERMS & CONDITIONS:</strong></p>
+      <p>{{ invoiceData.terms }}</p>
+    </div>
+  </div>
+  
+  <button (click)="printInvoice()" class="print-btn">Print Invoice</button>
+  

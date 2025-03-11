@@ -1,0 +1,75 @@
+<nb-card>
+  <nb-card-header class="custom-header d-flex align-items-center">
+    <nb-icon icon="file-text-outline"></nb-icon>
+    <span class="ms-2 fw-bold">Invoice Generator</span>
+  </nb-card-header>
+
+  <nb-card-body>
+    <!-- Dropdowns: Client & Date Range (Side by Side on Large Screens) -->
+    <div class="d-flex justify-content-center g-3 align-items-center">
+      
+      <!-- Client Selection -->
+      <div class="col-md-4 col-sm-12">
+        <label for="clientSelect" class="fw-bold">Select Client</label>
+        <select id="clientSelect" class="form-control" [(ngModel)]="selectedClient" (ngModelChange)="onClientSelect()">
+          <option *ngFor="let client of clients" [ngValue]="client">{{ client.name }}</option>
+        </select>
+      </div>
+
+      <!-- Date Range Selection -->
+      <div class="col-md-4 col-sm-12">
+        <label for="dateRangePicker" class="fw-bold">Select Date Range</label>
+        <input nbInput placeholder="Select Date Range" class="form-control date-picker" [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
+        <nb-rangepicker #rangepicker></nb-rangepicker>
+      </div>
+    
+    </div>
+
+    <!-- Prepare Invoice Button -->
+    <div class="text-center mt-4">
+      <button class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
+        <i class="fas fa-file-invoice"></i> Prepare Invoice
+      </button>
+    </div>
+
+    <!-- Client Info Section -->
+    <!-- <div *ngIf="selectedClient" class="client-info-card mt-4 p-3 border rounded shadow-sm bg-light">
+      <h5 class="text-primary fw-bold text-center mb-2">{{ selectedClient.name }}</h5>
+      <div class="d-flex justify-content-around text-secondary">
+        <p><strong>Registration Date:</strong> {{ selectedClient.registrationDate }}</p>
+        <p><strong>Last Invoice Date:</strong> {{ selectedClient.lastInvoice }}</p>
+      </div>
+    </div> -->
+
+    <!-- Accordion for Project Details -->
+    <div *ngIf="showDetails" class="mt-4">
+      <nb-accordion>
+        
+        <!-- Generate an Accordion for Each Project -->
+        <nb-accordion-item *ngFor="let project of selectedClientProjects; let i = index">
+          <nb-accordion-item-header>
+            <i class="fas fa-project-diagram mr-2"></i> {{ project.name }}
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            
+            <!-- Smart Table for Assets in the Project -->
+            <ng2-smart-table [settings]="assetSettings" [source]="project.assets"
+              (editConfirm)="onAssetEdit($event, i)"
+              (deleteConfirm)="onAssetDelete($event, i)">
+            </ng2-smart-table>
+
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+
+      </nb-accordion>
+    </div>
+
+    <!-- Submit Invoice Button -->
+    <div *ngIf="showDetails" class="text-center mt-4">
+      <button class="btn btn-primary px-4 py-2 fw-bold">
+        <i class="fas fa-paper-plane"></i> Submit Invoice
+      </button>
+    </div>
+
+  </nb-card-body>
+</nb-card>

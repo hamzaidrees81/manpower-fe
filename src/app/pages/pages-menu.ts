@@ -242,11 +242,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
         icon: 'file-text-outline', 
         link: '/pages/features/invoice',
       },
-      {
-        title: 'Print Invoice',
-        icon: 'file-text-outline', 
-        link: '/pages/features/print-invoice',
-      },
+      // {
+      //   title: 'Print Invoice',
+      //   icon: 'file-text-outline', 
+      //   link: '/pages/features/print-invoice',
+      // },
       // {
       //   title: 'Timesheet',
       //   icon: 'calendar-outline', 

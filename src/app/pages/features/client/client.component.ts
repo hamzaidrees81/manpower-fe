@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ClientService } from '../../../@core/services/client.service';
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-client',
@@ -44,7 +47,7 @@ export class ClientComponent implements OnInit {
     },
   };
 
-  constructor(private clientService: ClientService) {}
+  constructor(private clientService: ClientService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
 
   ngOnInit(): void {
     this.loadClients();
@@ -68,9 +71,12 @@ export class ClientComponent implements OnInit {
     this.clientService.addClient(newClient).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Client created successfully!');
+
       },
       (error) => {
         console.error('Error adding client:', error);
+        this.toasterService.showError('Failed to create client.');
         event.confirm.reject();
       }
     );
@@ -82,9 +88,11 @@ export class ClientComponent implements OnInit {
     this.clientService.updateClient(updatedClient.id, updatedClient).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Client updated successfully!');
       },
       (error) => {
         console.error('Error updating client:', error);
+        this.toasterService.showError('Failed to update client.');
         event.confirm.reject();
       }
     );
@@ -92,18 +100,27 @@ export class ClientComponent implements OnInit {
 
   // Delete client
   onDeleteConfirm(event: any): void {
-    if (window.confirm('Are you sure you want to delete this client?')) {
-      this.clientService.deleteClient(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting client:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Confirmation',
+        message: 'Are you sure you want to delete this client?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.clientService.deleteClient(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Client deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting client:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete client.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }

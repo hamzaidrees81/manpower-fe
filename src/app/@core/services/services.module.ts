@@ -8,6 +8,7 @@ import { SponsorService } from './sponsor.service';
 import { AssetService } from './asset.service';
 import { DesignationService } from './designation.service';
 import { TimesheetService } from './timesheet.service';
+import { InvoiceService } from './invoice.service';
 
 
 
@@ -19,7 +20,8 @@ const SERVICES = [
   SponsorService,
   AssetService,
   DesignationService,
-  TimesheetService
+  TimesheetService,
+  InvoiceService
 ];
 
 @NgModule({

@@ -1,66 +1,188 @@
-<div id="invoice-content" class="invoice-container">
-    <h2 class="invoice-title">INVOICE</h2>
-  
-    <div class="invoice-header">
-      <div class="company-info">
-        <p><strong>{{ invoiceData.company.name }}</strong></p>
-        <p>{{ invoiceData.company.address }}</p>
-        <p>{{ invoiceData.company.city }}, {{ invoiceData.company.zip }}</p>
-      </div>
-  
-      <div class="invoice-details">
-        <p><strong>Invoice #: </strong> {{ invoiceData.invoiceNumber }}</p>
-        <p><strong>Date: </strong> {{ invoiceData.date }}</p>
-        <p><strong>Due Date: </strong> {{ invoiceData.dueDate }}</p>
-      </div>
-    </div>
-  
-    <div class="bill-ship">
-      <div>
-        <p><strong>Bill To:</strong></p>
-        <p>{{ invoiceData.customer.name }}</p>
-        <p>{{ invoiceData.customer.address }}</p>
-        <p>{{ invoiceData.customer.city }}, {{ invoiceData.customer.zip }}</p>
-      </div>
-      
-      <div>
-        <p><strong>Ship To:</strong></p>
-        <p>{{ invoiceData.shipping.name }}</p>
-        <p>{{ invoiceData.shipping.address }}</p>
-        <p>{{ invoiceData.shipping.city }}, {{ invoiceData.shipping.zip }}</p>
-      </div>
-    </div>
-  
-    <table>
-      <thead>
-        <tr>
-          <th>QTY</th>
-          <th>DESCRIPTION</th>
-          <th>UNIT PRICE</th>
-          <th>AMOUNT</th>
-        </tr>
-      </thead>
+<!-- Invoice Container -->
+<div class="d-flex justify-content-end">
+  <button nbButton class="btn btn-primary" outline>
+    <nb-icon icon="printer-outline"></nb-icon> Print
+  </button>
+</div>
+
+<div class="container invoice p-5">
+  <!-- Fixed Header -->
+  <div class="header text-center">
+    <img src="assets/header.png" class="img-fluid w-100" alt="Header">
+  </div>
+
+  <!-- Center Section (Background Logo + Content) -->
+  <div class="position-relative text-center my-4 bg-container">
+    <!-- Background Image -->
+    <img src="assets/fav.jpg" class="bg-logo" alt="Background Logo">
+
+    <!-- Content Overlay -->
+    <div class="content position-relative ">
+<!-- Invoice & QR Code Section -->
+<div class="row align-items-center inv-detail-mt">
+  <!-- QR Code -->
+  <div class="col-md-2 text-center">
+    <img src="assets/qr.png" class="qr-code img-fluid" alt="QR Code">
+  </div>
+
+  <!-- Invoice Title -->
+  <div class="col-md-4 text-center">
+    <p class="small-title">Simplified Tax Invoice</p>
+  </div>
+
+  <!-- Invoice Table -->
+    <div class="col-md-6">
+      <table class="bank-table table table-bordered small-table">
+        <tbody>
+            <tr>
+                <td><strong>Invoice No :</strong></td>
+                <td>Saad Ayed AlMutairi Contracting Est</td>
+            </tr>
+            <tr>
+                <td><strong>Invoice Date :</strong></td>
+                <td>306000010006086103328</td>
+            </tr>
+            <tr>
+                <td><strong>Payment Method :</strong></td>
+                <td>SA7580000306608016103328</td>
+            </tr>
+            <tr>
+                <td><strong>Salesman :</strong></td>
+                <td>Alrajhi Bank &nbsp; مصرف الراجحي</td>
+            </tr>
+        </tbody>
+    </table>
+     </div>
+</div>
+
+<!-- New Customer Information Table -->
+<div class="row mt-2">
+  <div class="col-12">
+    <table class="table table-bordered text-center small-table">
       <tbody>
-        <tr *ngFor="let item of invoiceData.items">
-          <td>{{ item.qty }}</td>
-          <td>{{ item.description }}</td>
-          <td>{{ item.unitPrice | currency: 'USD' }}</td>
-          <td>{{ item.amount | currency: 'USD' }}</td>
+        <!-- Customer ID & Name -->
+        <tr>
+          <th class="fw-bold  disabled-header">Customer ID</th>
+          <td class="">CUST-001</td>
+          <th class="fw-bold  disabled-header">Customer Name</th>
+          <td class="">Jane Doe</td>
+        </tr>
+
+        <!-- Contact & Location -->
+        <tr>
+          <th class="fw-bold  disabled-header">Contact</th>
+          <td class="">+123 456 7890</td>
+          <th class="fw-bold  disabled-header">Location</th>
+          <td class="">New York, USA</td>
         </tr>
       </tbody>
     </table>
-  
-    <div class="total-section">
-      <p><strong>Subtotal:</strong> {{ invoiceData.subtotal | currency: 'USD' }}</p>
-      <p><strong>Tax ({{ invoiceData.taxRate }}%):</strong> {{ invoiceData.tax | currency: 'USD' }}</p>
-      <p><strong>Total:</strong> {{ invoiceData.total | currency: 'USD' }}</p>
-    </div>
-  
-    <div class="terms">
-      <p><strong>TERMS & CONDITIONS:</strong></p>
-      <p>{{ invoiceData.terms }}</p>
-    </div>
   </div>
-  
-  <button (click)="printInvoice()" class="print-btn">Print Invoice</button>
-  
+</div>
+
+
+<!-- New Invoice Table -->
+<!-- New Invoice Table -->
+<div class="row mt-3">
+  <div class="col-12">
+    <table class="table table-bordered text-center small-table">
+      <thead>
+        <tr>
+          <th rowspan="2">مسلسل<br>Sr.</th>
+          <th rowspan="2">تفصيل<br>Item Description</th>
+          <th rowspan="2">وحدة<br>Unit</th>
+          <th rowspan="2">سعر الوحدة<br>Unit Price</th>
+          <th rowspan="2">الكمية<br>Qty</th>
+          <th rowspan="2">خصم<br>Discount</th>
+          <th rowspan="2">المبلغ الخاضع للضريبة<br>Taxable Amount</th>
+          <th rowspan="2">مبلغ الضريبة (15%)<br>Tax Amount (15%)</th>
+          <th rowspan="2">المجموع (شامل ضريبة القيمة المضافة)<br>Total Including VAT</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Safety Officers, Timesheet, December 2024</td>
+          <td>P/H</td>
+          <td>37.00</td>
+          <td>438.00</td>
+          <td>0.00</td>
+          <td>16,206.00</td>
+          <td>2,430.90</td>
+          <td>18,636.90</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Summary Table -->
+ <div class="row">
+  <div class="col-md-6 offset-md-6">
+    <table class="table table-bordered text-start small-table">
+      <tbody>
+        <tr>
+          <td class="fw-bold">Total Taxable Amount (Excluding VAT)</td>
+          <td class="text-end">16,206.00 SR</td>
+        </tr>
+        <tr>
+          <td class="fw-bold">الإجمالي الخاضع للضريبة غير شامل ضريبة القيمة المضافة</td>
+          <td class="text-end">16,206.00 SR</td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Total VAT ضريبة القيمة المضافة</td>
+          <td class="text-end">2,430.90 SR</td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Total Amt Due (شامل ضريبة القيمة المضافة)</td>
+          <td class="text-end">18,636.90 SR</td>
+        </tr>
+        <tr>
+          <td class="fw-bold">Eighteen Thousand, Six Hundred And Thirty-Six Point Nine Only</td>
+          <td class="text-end"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+    </div>
+
+    
+  </div>
+
+  <!-- Fixed Footer -->
+  <div class="footer text-center">
+    <div class="row container">
+      <div class="offset-md-6 col-md-6">
+       <table class="bank-table table table-bordered small-table">
+         <thead>
+             <tr>
+                 <th colspan="2">Bank Account &nbsp; | &nbsp; حساب البنك</th>
+             </tr>
+         </thead>
+         <tbody>
+             <tr>
+                 <td><strong>Title :</strong></td>
+                 <td>Saad Ayed AlMutairi Contracting Est</td>
+             </tr>
+             <tr>
+                 <td><strong>ACC :</strong></td>
+                 <td>306000010006086103328</td>
+             </tr>
+             <tr>
+                 <td><strong>IBAN :</strong></td>
+                 <td>SA7580000306608016103328</td>
+             </tr>
+             <tr>
+                 <td><strong>Bank :</strong></td>
+                 <td>Alrajhi Bank &nbsp; مصرف الراجحي</td>
+             </tr>
+         </tbody>
+     </table>
+      </div>
+     </div>
+    <img src="assets/footer.png" class="img-fluid w-100" alt="Footer">
+  </div>
+</div>

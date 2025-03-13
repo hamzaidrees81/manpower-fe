@@ -7,6 +7,9 @@ import { DatepickerComponent } from '../../forms/datepicker/datepicker.component
 import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
 import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'app-project',
@@ -100,7 +103,7 @@ export class ProjectsComponent implements OnInit {
   customEndDate: Date;
   
 
-  constructor(private projectService: ProjectService,private clientService: ClientService,private companyService: CompanyService,private datePickerService: DatePickerService) {}
+  constructor(private projectService: ProjectService,private clientService: ClientService,private companyService: CompanyService,private datePickerService: DatePickerService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
 
   ngOnInit(): void {
     this.loadProjects();
@@ -205,9 +208,13 @@ onCreateConfirm(event: any): void {
 
   // Call service to add the project
   this.projectService.addProject(newProject).subscribe({
-    next: (data) => event.confirm.resolve(data),
+    next: (data) => {
+      event.confirm.resolve(data)
+      this.toasterService.showSuccess('Project created successfully!');
+    },
     error: (error) => {
       console.error('Error adding project:', error);
+      this.toasterService.showError('Failed to create project.');
       event.confirm.reject();
     }
   });
@@ -224,9 +231,13 @@ onEditConfirm(event: any): void {
   };
 
   this.projectService.updateProject(updatedProject.id, updatedProject).subscribe({
-    next: (data) => event.confirm.resolve(data),
+    next: (data) => {
+      event.confirm.resolve(data)
+      this.toasterService.showSuccess('Project updated successfully!');
+    },
     error: (error) => {
       console.error('Error updating project:', error);
+      this.toasterService.showError('Failed to update project.');
       event.confirm.reject();
     }
   });
@@ -237,18 +248,27 @@ onEditConfirm(event: any): void {
 
   // Delete project
   onDeleteConfirm(event: any): void {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      this.projectService.deleteProject(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting project:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Project',
+        message: 'Are you sure you want to delete this project?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.projectService.deleteProject(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Project deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting project:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete project.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }

@@ -3,6 +3,9 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { DesignationService } from '../../../@core/services/designation.service';
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'ngx-designation',
@@ -37,7 +40,7 @@ export class DesignationComponent  implements OnInit {
     },
   };
 
-  constructor(private designationService: DesignationService) {}
+  constructor(private designationService: DesignationService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
 
   ngOnInit(): void {
     this.loadDesignations();
@@ -61,9 +64,11 @@ export class DesignationComponent  implements OnInit {
     this.designationService.addDesignation(newDesignation).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Designation created successfully!');
       },
       (error) => {
         console.error('Error adding Designation:', error);
+        this.toasterService.showError('Failed to create designation.');
         event.confirm.reject();
       }
     );
@@ -75,9 +80,11 @@ export class DesignationComponent  implements OnInit {
     this.designationService.updateDesignation(updatedDesignation.id, updatedDesignation).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Designation updated successfully!');
       },
       (error) => {
         console.error('Error updating Designation:', error);
+        this.toasterService.showError('Failed to updated designation.');
         event.confirm.reject();
       }
     );
@@ -85,19 +92,28 @@ export class DesignationComponent  implements OnInit {
 
   // Delete Designation
   onDeleteConfirm(event: any): void {
-    if (window.confirm('Are you sure you want to delete this Designation?')) {
-      this.designationService.deleteDesignation(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting Designation:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Confirmation',
+        message: 'Are you sure you want to delete this Designation?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.designationService.deleteDesignation(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Designation deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting Designation:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete Designation.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }
 

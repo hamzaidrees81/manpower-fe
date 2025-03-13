@@ -12,23 +12,30 @@ import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
+  NbCardModule,
   NbChatModule,
   NbDatepickerModule,
   NbDialogModule,
+  NbIconModule,
   NbMenuModule,
   NbSidebarModule,
   NbToastrModule,
   NbWindowModule,
 } from '@nebular/theme';
 import { SmartTableDatepickerRenderComponentComponent } from './shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { FormsModule } from '@angular/forms';
+import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 
 @NgModule({
-  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent],
+  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
+    FormsModule,
+    NbIconModule,
+    NbCardModule,
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),

@@ -11,7 +11,8 @@
       <!-- Client Selection -->
       <div class="col-md-4 col-sm-12">
         <label for="clientSelect" class="fw-bold">Select Client</label>
-        <select id="clientSelect" class="form-control" [(ngModel)]="selectedClient" (ngModelChange)="onClientSelect()">
+        <select id="clientSelect" class="form-control"  [(ngModel)]="selectedClient" (ngModelChange)="onClientSelect()">
+          <option [ngValue]="null" disabled>Select a client</option>
           <option *ngFor="let client of clients" [ngValue]="client">{{ client.name }}</option>
         </select>
       </div>
@@ -27,7 +28,7 @@
 
     <!-- Prepare Invoice Button -->
     <div class="text-center mt-4">
-      <button class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
+      <button  class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
         <i class="fas fa-file-invoice"></i> Prepare Invoice
       </button>
     </div>
@@ -46,16 +47,16 @@
       <nb-accordion>
         
         <!-- Generate an Accordion for Each Project -->
-        <nb-accordion-item *ngFor="let project of selectedClientProjects; let i = index">
+        <nb-accordion-item *ngFor="let project of invoiceData?.detailedProjectInvoiceList; let i = index">
           <nb-accordion-item-header>
-            <i class="fas fa-project-diagram mr-2"></i> {{ project.name }}
+            <i class="fas fa-project-diagram mr-2"></i> {{ project?.projectName }}
           </nb-accordion-item-header>
           <nb-accordion-item-body>
             
             <!-- Smart Table for Assets in the Project -->
-            <ng2-smart-table [settings]="assetSettings" [source]="project.assets"
-              (editConfirm)="onAssetEdit($event, i)"
-              (deleteConfirm)="onAssetDelete($event, i)">
+            <ng2-smart-table [settings]="assetSettings" [source]="project?.assetInvoicesList"
+              (editConfirm)="onAssetEdit($event,i,project?.projectId)"
+              (deleteConfirm)="onAssetDelete($event, i,project?.projectId)">
             </ng2-smart-table>
 
           </nb-accordion-item-body>
@@ -64,9 +65,19 @@
       </nb-accordion>
     </div>
 
+    <div class="mt-4" *ngIf="this.invoiceData?.detailedProjectInvoiceList?.length === 0">
+      <p>No Record Fond</p>
+    </div>
+
+        <!-- Summary Section -->
+        <div *ngIf="showDetails" class="summary-card mt-4 p-3 border rounded shadow-sm bg-light text-center">
+          <h5 class="fw-bold text-primary">Invoice Summary</h5>
+          <p class="fw-bold text-secondary mt-2">Total Amount: <span class="text-success fs-4">{{summeryTotalAmount}}</span></p>
+        </div>
+
     <!-- Submit Invoice Button -->
     <div *ngIf="showDetails" class="text-center mt-4">
-      <button class="btn btn-primary px-4 py-2 fw-bold">
+      <button class="btn btn-primary px-4 py-2 fw-bold" (click)="submitInvoice()">
         <i class="fas fa-paper-plane"></i> Submit Invoice
       </button>
     </div>

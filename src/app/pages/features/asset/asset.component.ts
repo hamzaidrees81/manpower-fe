@@ -8,6 +8,10 @@ import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/cus
 import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
 import { SponsorService } from '../../../@core/services/sponsor.service';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { NbDialogService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-asset',
@@ -134,7 +138,7 @@ export class AssetComponent implements OnInit{
   customSelectedPassportExpiryDate: Date;
   customSelectedJoiningDate: Date;
 
-  constructor(private router: Router,private companyService: CompanyService,private assetService: AssetService,private datePickerService: DatePickerService,private sponsorService:SponsorService) {}
+  constructor(private dialogService:NbDialogService,private toasterService:ToasterService,private router: Router,private companyService: CompanyService,private assetService: AssetService,private datePickerService: DatePickerService,private sponsorService:SponsorService) {}
 
   ngOnInit(): void {
     this.loadDropdowns();
@@ -234,6 +238,12 @@ export class AssetComponent implements OnInit{
     this.handleSelectedIqamaExpiryDate();
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
+
+       const numericFields = ["idNumber","phone","assetType","assetNumber"];
+            
+            if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+              return; // Stop execution if validation fails
+            }
     // Parse selected company data
     const selectedCompany = JSON.parse(event.newData.company);
     const selectedSponsoredBy = JSON.parse(event.newData.sponsoredBy);
@@ -250,9 +260,13 @@ export class AssetComponent implements OnInit{
   
     // Call service to add the asset
     this.assetService.addAsset(newAsset).subscribe({
-      next: (data) => event.confirm.resolve(data),
+      next: (data) => {
+        event.confirm.resolve(data)
+        this.toasterService.showSuccess('Asset created successfully!');
+      },
       error: (error) => {
         console.error('Error adding asset:', error);
+        this.toasterService.showError('Failed to create asset.');
         event.confirm.reject();
       }
     });
@@ -264,6 +278,12 @@ export class AssetComponent implements OnInit{
     this.handleSelectedIqamaExpiryDate();
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
+
+    const numericFields = ["idNumber","phone","assetType","assetNumber"];
+            
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     // Parse selected company data
     const selectedCompany = JSON.parse(event.newData.company);
     const selectedSponsoredBy = JSON.parse(event.newData.sponsoredBy);
@@ -278,30 +298,42 @@ export class AssetComponent implements OnInit{
       sponsoredBy: selectedSponsoredBy
     };
     this.assetService.updateAsset(updatedAsset.id, updatedAsset).subscribe({
-      next: (data) => event.confirm.resolve(data),
+      next: (data) => {
+        event.confirm.resolve(data)
+        this.toasterService.showSuccess('Asset updated successfully!');
+      },
       error: (error) => {
         console.error('Error updating asset:', error);
+        this.toasterService.showError('Failed to update asset.');
         event.confirm.reject();
       }
     });
   }
-  
-    // Delete asset
-    onDeleteConfirm(event: any): void {
-      if (window.confirm('Are you sure you want to delete this asset?')) {
-        this.assetService.deleteAsset(event.data.id).subscribe(
-          () => {
-            event.confirm.resolve();
+
+     onDeleteConfirm(event): void {
+        this.dialogService.open(ConfirmDialogComponent, {
+          context: {
+            title: 'Delete Confirmation',
+            message: 'Are you sure you want to delete this asset?',
           },
-          (error) => {
-            console.error('Error deleting asset:', error);
+        }).onClose.subscribe((confirmed) => {
+          if (confirmed) {
+            this.assetService.deleteAsset(event.data.id).subscribe(
+              () => {
+                event.confirm.resolve();
+                this.toasterService.showSuccess('Asset deleted successfully!');
+              },
+              (error) => {
+                console.error('Error deleting asset:', error);
+                event.confirm.reject();
+                this.toasterService.showError('Failed to delete asset.');
+              }
+            );
+          } else {
             event.confirm.reject();
           }
-        );
-      } else {
-        event.confirm.reject();
+        });
       }
-    }
 
 // Handle row click
 onRowSelect(event: any) {

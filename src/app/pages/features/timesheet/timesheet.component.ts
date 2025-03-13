@@ -9,6 +9,8 @@ import { DesignationService } from '../../../@core/services/designation.service'
 import { AssetService } from '../../../@core/services/asset.service';
 import { TimesheetService } from '../../../@core/services/timesheet.service';
 import { ToasterService } from '../../../@core/services/toaster.service';
+import { NbDialogService } from '@nebular/theme';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -25,14 +27,7 @@ export class TimesheetComponent  implements OnInit {
 
   sourceAsset: LocalDataSource = new LocalDataSource();
   sourceProjects: LocalDataSource = new LocalDataSource();
-  timesheetSource: LocalDataSource = new LocalDataSource();
   sourceExpenses: LocalDataSource = new LocalDataSource();
-
-  projectOptions = [
-    { value: 'AI Development', title: 'AI Development' },
-    { value: 'E-Commerce Platform', title: 'E-Commerce Platform' },
-    { value: 'CRM System', title: 'CRM System' }
-  ];
 
   list: { id: string; name: string }[] = [];
 
@@ -312,7 +307,7 @@ export class TimesheetComponent  implements OnInit {
   // TIME SHEET CONFIG END
 
 
-  constructor(private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
+  constructor(private dialogService: NbDialogService,private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
 
   ngOnInit(): void {
     
@@ -436,7 +431,6 @@ export class TimesheetComponent  implements OnInit {
         .subscribe(
           (data) => {
             this.timeSheetCollection = data;
-            console.log("✅ Data fetched in getTimeSheetList:", this.timeSheetCollection);
             resolve(data); // ✅ Resolve the Promise when data is received
           },
           (error) => {
@@ -484,8 +478,6 @@ export class TimesheetComponent  implements OnInit {
         item.assetProject.id = row.projectName; // Update project ID
       }
     });
-  
-    console.log("Updated timeSheetCollection after project change:", this.timeSheetCollection);
   }
   
   
@@ -522,7 +514,6 @@ export class TimesheetComponent  implements OnInit {
       }
     }
   
-    console.log("Updated timeSheetCollection:", this.timeSheetCollection);
   }
   
   extractDate(dateString: string): string {
@@ -565,7 +556,6 @@ export class TimesheetComponent  implements OnInit {
       entry => !(entry.weekIndex === weekIndexToDelete && entry.rowSrNo === srNoToDelete)
     );
   
-    console.log("Updated timeSheetCollection:", this.timeSheetCollection);
   }
   
 
@@ -619,7 +609,6 @@ export class TimesheetComponent  implements OnInit {
   }
 
   submitTimeSheet() {
-    console.log("this.timeSheetCollection",this.timeSheetCollection);
     if (!this.timeSheetCollection || this.timeSheetCollection.length === 0) {
       console.warn("No timesheet data to submit.");
       return;
@@ -817,19 +806,28 @@ onProjectEditConfirm(event: any): void {
 
   // Delete project
   onProjectDeleteConfirm(event: any): void {
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      this.assetService.deleteAssetProject(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting project:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Project',
+        message: 'Are you sure you want to delete this project?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.assetService.deleteAssetProject(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Project deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting project:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete project.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }
 

@@ -1,59 +1,172 @@
-.invoice-container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    background: #fff;
+/* Base styles */
+@import '../../../@theme/styles/themes';
+
+@include nb-install-component() {
+  nb-card {
+    transform: translate3d(0, 0, 0);
   }
-  
-  .invoice-title {
-    text-align: center;
-    color: #2d4e85;
-    font-size: 24px;
-    margin-bottom: 10px;
+}
+
+
+
+
+body {
+  background: #f9f9f9;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Invoice Container - A4 Size */
+.invoice {
+  width: 210mm; /* A4 Width */
+  height: 297mm; /* A4 Height */
+  background: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden; /* Prevent content overflow */
+  position: relative;
+  padding-top: 80px; /* Ensure space for header */
+  padding-bottom: 60px; /* Ensure space for footer */
+}
+
+/* Fixed Header */
+.header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Background Logo (Centered & Scaled) */
+.bg-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.bg-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%; /* Adjust size */
+  opacity: 0.2;
+  z-index: 0;
+}
+
+/* Content Over Background */
+.content {
+  z-index: 1;
+}
+
+/* Table Styling */
+.table-sm th,
+.table-sm td {
+  padding: 6px;
+  font-size: 14px;
+  white-space: nowrap; /* Prevent text wrapping */
+}
+
+/* QR Code */
+.qr-code {
+  max-width: 80px;
+  height: auto;
+}
+
+/* Fixed Footer */
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Print Button */
+.print-btn {
+  font-size: 16px;
+}
+
+/* Responsive Scaling - Shrink Without Wrapping */
+@media (max-width: 1024px) {
+  .invoice {
+    transform: scale(1); /* Reduce size for tablet */
+    transform-origin: top center;
   }
-  
-  .invoice-header, .bill-ship {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .invoice {
+    transform: scale(1); /* Reduce size for mobile */
+    transform-origin: top center;
   }
-  
-  .invoice-header div, .bill-ship div {
-    width: 45%;
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  th, td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  th {
-    background: #2d4e85;
-    color: white;
-  }
-  
-  .total-section {
-    text-align: right;
-    font-size: 18px;
-    margin-top: 20px;
-  }
-  
-  .print-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    background: #2d4e85;
-    color: white;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    margin-top: 20px;
-  }
-  
+}
+
+.inv-detail-mt {
+  margin-top: 10% !important;
+}
+
+/* Disabled Header Style */
+.disabled-header {
+  background-color: #ccc !important; /* Gray color for disabled effect */
+  color: #666; /* Slightly faded text */
+}
+
+/* Small & Compact Table */
+.small-table {
+  font-size: 8px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.small-table th, .small-table td {
+  border: 1px solid black;
+  padding: 3px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Align text properly in summary table */
+.text-end {
+  text-align: right;
+}
+
+/* Header Background */
+.table thead th {
+  background-color: #f2f2f2; /* Light Gray Background */
+}
+
+/* Small & Compact Table */
+.small-text {
+  font-size: 12px; /* Reduced font size */
+}
+
+.table-sm th, .table-sm td {
+  padding: 3px; /* Smaller padding */
+}
+
+/* QR Code Adjustments */
+.qr-code {
+  max-width: 100px; /* Smaller QR Code */
+  height: auto;
+}
+
+/* Invoice Title */
+.small-title {
+  font-size: 14px; /* Reduced title size */
+  font-weight: bold;
+  margin-bottom: 0;
+}
+
+/* Table Header */
+.disabled-header {
+  background-color: #f8f8f8 !important;
+}
+
+/* Reduce spacing in invoice details row */
+.inv-detail-mt {
+  margin-top: 10px;
+}
+
+
+

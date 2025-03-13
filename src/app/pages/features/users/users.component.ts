@@ -3,6 +3,10 @@ import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { UserService } from '../../../@core/services/user.service';
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-users',
@@ -63,7 +67,7 @@ export class UsersComponent {
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -87,46 +91,90 @@ export class UsersComponent {
   onCreateConfirm(event): void {
     const newData = event.newData;
 
-  // Transform data
-  const requestData = {
-    ...newData,
-    company: { id: newData.company }, // Convert company to an object
-  };
-
-  // Remove unwanted fields
-  if (!requestData.createDate) delete requestData.createDate;
-  if (!requestData.updateDate) delete requestData.updateDate;
-    this.userService.addUser(requestData).subscribe(() => {
-      event.confirm.resolve(event.newData);
-    });
+        const numericFields = ["company"];
+        
+        if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+          return; // Stop execution if validation fails
+        }
+  
+    // Transform data
+    const requestData = {
+      ...newData,
+      company: { id: newData.company }, // Convert company to an object
+    };
+  
+    // Remove unwanted fields
+    if (!requestData.createDate) delete requestData.createDate;
+    if (!requestData.updateDate) delete requestData.updateDate;
+  
+    this.userService.addUser(requestData).subscribe(
+      () => {
+        event.confirm.resolve(event.newData);
+        this.toasterService.showSuccess('User created successfully!');
+      },
+      (error) => {
+        console.error('Error creating user:', error);
+        event.confirm.reject();
+        this.toasterService.showError('Failed to create user.');
+      }
+    );
   }
 
   // Edit user
   onEditConfirm(event): void {
+    const numericFields = ["company"];
+        
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     const newData = event.newData;
-
-  // Transform data
-  const requestData = {
-    ...newData,
-    company: { id: newData.company }, // Convert company to an object
-  };
-
-  // Remove unwanted fields
-  if (!requestData.createDate) delete requestData.createDate;
-  if (!requestData.updateDate) delete requestData.updateDate;
-    this.userService.updateUser(newData.id, requestData).subscribe(() => {
-      event.confirm.resolve(event.newData);
-    });
+  
+    // Transform data
+    const requestData = {
+      ...newData,
+      company: { id: newData.company }, // Convert company to an object
+    };
+  
+    // Remove unwanted fields
+    if (!requestData.createDate) delete requestData.createDate;
+    if (!requestData.updateDate) delete requestData.updateDate;
+  
+    this.userService.updateUser(newData.id, requestData).subscribe(
+      () => {
+        event.confirm.resolve(event.newData);
+        this.toasterService.showSuccess('User updated successfully!');
+      },
+      (error) => {
+        console.error('Error updating user:', error);
+        event.confirm.reject();
+        this.toasterService.showError('Failed to update user.');
+      }
+    );
   }
 
   // Delete user
-  onDeleteConfirm(event): void {
-    if (window.confirm('Are you sure you want to delete?')) {
-      this.userService.deleteUser(event.data.id).subscribe(() => {
-        event.confirm.resolve();
-      });
-    } else {
-      event.confirm.reject();
-    }
+  onDeleteConfirm(event: any): void {
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete User',
+        message: 'Are you sure you want to delete this user?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.userService.deleteUser(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('User deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting user:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete user.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }

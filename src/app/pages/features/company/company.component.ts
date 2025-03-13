@@ -3,7 +3,10 @@ import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { Company, CompanyService } from '../../../@core/services/company.service';
-
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
 @Component({
   selector: 'ngx-company',
   templateUrl: './company.component.html',
@@ -48,7 +51,7 @@ export class CompanyComponent {
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData,private companyService: CompanyService) {}
+  constructor(private service: SmartTableData,private companyService: CompanyService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
   
 
   ngOnInit(): void {
@@ -68,13 +71,24 @@ export class CompanyComponent {
 
   // Handle adding a new company
   onCreateConfirm(event): void {
+
+// ✅ Fields to validate
+const numericFields = ["maxAssetCount"];
+
+if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+  return; // Stop execution if validation fails
+}
+  
     const newCompany: Company = event.newData;
     this.companyService.addCompany(newCompany).subscribe(
       (createdCompany) => {
         event.confirm.resolve(createdCompany);
+        this.toasterService.showSuccess('Company created successfully!');
+
       },
       (error) => {
         console.error('Error adding company:', error);
+        this.toasterService.showError('Failed to create company.');
         event.confirm.reject();
       }
     );
@@ -82,13 +96,21 @@ export class CompanyComponent {
 
   // Handle editing an existing company
   onEditConfirm(event): void {
+    // ✅ Fields to validate
+const numericFields = ["maxAssetCount"];
+
+if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+  return; // Stop execution if validation fails
+}
     const updatedCompany: Company = event.newData;
     this.companyService.updateCompany(updatedCompany).subscribe(
       (response) => {
         event.confirm.resolve(response);
+        this.toasterService.showSuccess('Company updated successfully!');
       },
       (error) => {
         console.error('Error updating company:', error);
+        this.toasterService.showError('Failed to update company.');
         event.confirm.reject();
       }
     );
@@ -96,18 +118,28 @@ export class CompanyComponent {
 
   // Handle deleting a company
   onDeleteConfirm(event): void {
-    if (window.confirm('Are you sure you want to delete?')) {
-      this.companyService.deleteCompany(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting company:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Confirmation',
+        message: 'Are you sure you want to delete this company?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.companyService.deleteCompany(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Company deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting company:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete company.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
+  
 }

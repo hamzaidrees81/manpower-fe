@@ -1,4 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ClientService } from '../../../@core/services/client.service';
+import { InvoiceService } from '../../../@core/services/invoice.service';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { NbDialogService } from '@nebular/theme';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-invoice',
@@ -6,60 +13,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./invoice.component.scss']
 })
 export class InvoiceComponent implements OnInit {
-  selectedClient: any = null; // Stores selected client object
-  selectedDateRange: string = ''; // Stores selected date range
+  selectedClient; // Stores selected client object
+  selectedDateRange; // Stores selected date range
   showDetails = false; // Controls the accordion visibility
   selectedClientProjects: any[] = []; // Stores projects of selected client
 
-  // Mock Clients Data
-  clients = [
-    { 
-      id: '1', name: 'John Doe', registrationDate: '2021-06-15', lastInvoice: '2024-02-20' 
-    },
-    { 
-      id: '2', name: 'Jane Smith', registrationDate: '2020-04-10', lastInvoice: '2024-01-10' 
-    },
-    { 
-      id: '3', name: 'Michael Johnson', registrationDate: '2019-08-25', lastInvoice: '2023-12-05' 
-    }
-  ];
-
-  // Mock Date Ranges
-  dateRanges = ['Last 7 Days', 'Last 30 Days', 'This Quarter', 'Last Quarter', 'This Year'];
-
-  // Mock Projects Data (Each Client Has Multiple Projects)
-  projects = {
-    '1': [
-      { 
-        id: 'P001', name: 'Project Alpha', 
-        assets: [
-          { name: 'Asset A', regularHrs: 40, otHrs: 5, regularPrice: 50, otPrice: 75 },
-          { name: 'Asset B', regularHrs: 35, otHrs: 10, regularPrice: 60, otPrice: 90 }
-        ] 
-      },
-      { 
-        id: 'P002', name: 'Project Beta', 
-        assets: [
-          { name: 'Asset C', regularHrs: 45, otHrs: 8, regularPrice: 55, otPrice: 82.5 }
-        ] 
-      }
-    ],
-    '2': [
-      { 
-        id: 'P003', name: 'Project Gamma', 
-        assets: [
-          { name: 'Asset D', regularHrs: 30, otHrs: 12, regularPrice: 48, otPrice: 72 }
-        ] 
-      },
-      { 
-        id: 'P004', name: 'Project Delta', 
-        assets: [
-          { name: 'Asset E', regularHrs: 38, otHrs: 7, regularPrice: 52, otPrice: 78 },
-          { name: 'Asset F', regularHrs: 50, otHrs: 6, regularPrice: 45, otPrice: 67.5 }
-        ] 
-      }
-    ]
-  };
+  clients = [];
 
   // Smart Table Settings
   assetSettings = {
@@ -75,32 +34,67 @@ export class InvoiceComponent implements OnInit {
       confirmDelete: true
     },
     columns: {
-      name: { title: 'Asset Name', type: 'string' },
-      regularHrs: { title: 'Regular Hours', type: 'number' },
-      otHrs: { title: 'OT Hours', type: 'number' },
-      regularPrice: { title: 'Regular Price ($)', type: 'number' },
-      otPrice: { title: 'OT Price ($)', type: 'number' },
-      totalHrs: { 
-        title: 'Total Hours', 
-        type: 'number',
-        valuePrepareFunction: (cell, row) => row.regularHrs + row.otHrs
-      },
-      totalCost: { 
+      assetName: { title: 'Asset Name', type: 'string',filter:false },
+      assetType: { title: 'Asset Type', type: 'string',filter:false },
+      regularHours: { title: 'Regular Hours', type: 'number' ,filter:false},
+      overtimeHours: { title: 'OT Hours', type: 'number' ,filter:false},
+      regularRate: { title: 'Regular Price ($)', type: 'number' ,filter:false},
+      overtimeRate: { title: 'OT Price ($)', type: 'number' ,filter:false},
+      totalAmount: { 
         title: 'Total Cost ($)', 
-        type: 'number',
-        valuePrepareFunction: (cell, row) => (row.regularHrs * row.regularPrice) + (row.otHrs * row.otPrice)
+        type: 'number',filter:false,
+        editable: false, // 👈 Disable editing
+        addable: false, // 👈 Hide in add form
+        valuePrepareFunction: (cell, row) => (row.regularHours * row.regularRate) + (row.overtimeHours * row.overtimeRate)
       }
     }
   };
+  invoiceData: any;
+  summeryTotalAmount: any;
 
-  constructor() {}
+  constructor(private router: Router,private clientService : ClientService,private invoiceService : InvoiceService,private toasterService: ToasterService,private dialogService: NbDialogService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.loadClients();
+  }
+
+  submitInvoice(){
+    
+    const updatedInvoice = {
+      ...this.invoiceData, // Copy existing data
+      totalAmount: this.summeryTotalAmount, // Update totalAmount
+      invoiceDate: new Date().toISOString().split('T')[0] // Set to current date (YYYY-MM-DD)
+    };
+
+    this.invoiceService.addInvoice(updatedInvoice).subscribe({
+      next: (response) => {
+        this.toasterService.showSuccess('Invoice submitted successfully!');
+        // ✅ Store invoice in service
+      this.invoiceService.setInvoice(response);
+        this.router.navigate(['/pages/features/print-invoice']);
+      },
+      error: (error) => {
+        console.error("Error submitting timesheet:", error);
+        this.toasterService.showError('Failed to submit invoice.');
+      }
+    });
+  }
+
+  loadClients(): void {
+    this.clientService.getClients().subscribe(
+      (data) => {
+        this.clients = data;
+        this.selectedClient = data[0]
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
 
   // Handle Client Selection
   onClientSelect() {
     if (this.selectedClient) {
-      this.selectedClientProjects = this.projects[this.selectedClient.id] || [];
       this.selectedDateRange = ''; // Reset date selection when client changes
       this.showDetails = false; // Hide accordion when changing client
     } else {
@@ -111,25 +105,138 @@ export class InvoiceComponent implements OnInit {
   // Toggle Invoice Details
   toggleDetails() {
     if (this.selectedClient && this.selectedDateRange) {
-      this.showDetails = true;
+      this.prepareInvoice(this.selectedClient,this.selectedDateRange);
     }
   }
 
-  // Handle Smart Table Edit Confirmation
-  onAssetEdit(event: any) {
-    if (window.confirm('Are you sure you want to edit?')) {
-      event.confirm.resolve();
-    } else {
-      event.confirm.reject();
-    }
+  prepareInvoice(selectedClient, selectedDate): void {
+    const data = {
+      client: {
+        id: selectedClient?.id
+      },
+      startDate: selectedDate?.start,
+      endDate: selectedDate?.end
+    };
+
+    this.invoiceService.prepareInvoic(data).subscribe(
+      (data) => {
+        this.invoiceData = data;
+        if (this.invoiceData?.detailedProjectInvoiceList) {
+          this.showDetails = true;
+            this.calculateTotalAmount();
+        }
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+}
+
+calculateTotalAmount() {
+  if (!this.invoiceData?.detailedProjectInvoiceList) {
+    this.summeryTotalAmount = 0; // Handle cases where no projects exist
+    return;
   }
+
+  this.summeryTotalAmount = this.invoiceData.detailedProjectInvoiceList.reduce((projectTotal, project) => {
+    const projectAmount = (project.assetInvoicesList || []).reduce((sum, asset) => {
+      return sum + (asset?.totalAmount ?? 0); // Use `??` to handle undefined/null values
+    }, 0);
+
+    return projectTotal + projectAmount;
+  }, 0);
+}
+
+
+
+onAssetEdit(event: any, index: number, pId?: number) {
+  const newData = event.newData;
+  const assetId = newData.assetId;
+
+ // ✅ Validate numeric fields
+ const numericFields = ["regularRate", "regularHours", "overtimeRate", "overtimeHours"];
+if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+  return; // Stop execution if validation fails
+}
+
+  // ✅ Calculate Total Amount
+  newData.totalAmount = (parseInt(newData.regularHours) * parseInt(newData.regularRate)) + 
+                        (parseInt(newData.overtimeHours) * parseInt(newData.overtimeRate));
+
+  let isUpdated = false;
+
+  // ✅ Iterate through projects
+  this.invoiceData.detailedProjectInvoiceList.forEach((project: any) => {
+    if (project.projectId === pId) {
+      project.assetInvoicesList.forEach((asset: any) => {
+        if (asset.assetId === assetId) {
+          // ✅ Update asset properties before resolving
+          Object.assign(asset, newData);
+          isUpdated = true;
+        }
+      });
+    }
+  });
+
+  if (isUpdated) {
+    // ✅ Recalculate total after updating invoiceData
+    this.calculateTotalAmount();
+
+    // ✅ Now resolve the event AFTER updating data
+    event.confirm.resolve(event.newData);
+  } else {
+    event.confirm.reject();
+    console.warn(`No matching asset found for assetId: ${assetId} inside projectId: ${pId}`);
+  }
+}
+
+
+  
 
   // Handle Smart Table Delete Confirmation
-  onAssetDelete(event: any) {
-    if (window.confirm('Are you sure you want to delete?')) {
-      event.confirm.resolve();
-    } else {
-      event.confirm.reject();
-    }
+  onAssetDelete(event: any, index: number, pId: number) {
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Confirm Delete',
+        message: 'Are you sure you want to delete this asset?',
+      },
+    }).onClose.subscribe((confirmed: boolean) => {
+      if (!confirmed) {
+        event.confirm.reject();
+        return;
+      }
+  
+      const assetId = event.data.assetId;
+      let isDeleted = false;
+  
+      // ✅ Iterate through all projects
+      this.invoiceData.detailedProjectInvoiceList = this.invoiceData.detailedProjectInvoiceList.filter((project: any) => {
+        if (project.projectId === pId) {
+          // ✅ Remove asset from assetInvoicesList
+          project.assetInvoicesList = project.assetInvoicesList.filter(
+            (asset: any) => asset.assetId !== assetId
+          );
+  
+          // ✅ If assetInvoicesList is empty, remove the project
+          if (project.assetInvoicesList.length === 0) {
+            return false; // ❌ Remove this project
+          }
+  
+          isDeleted = true;
+        }
+        return true; // ✅ Keep this project
+      });
+  
+      if (isDeleted) {
+        event.confirm.resolve();
+        this.calculateTotalAmount();
+      } else {
+        event.confirm.reject();
+        console.warn(`No matching asset found for assetId: ${assetId} inside projectId: ${pId}`);
+      }
+    });
   }
+  
+  
+  
 }

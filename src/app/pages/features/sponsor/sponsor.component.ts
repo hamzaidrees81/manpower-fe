@@ -2,6 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { CompanyService } from '../../../@core/services/company.service';
 import { SponsorService } from '../../../@core/services/sponsor.service';
+import { NbDialogService } from '@nebular/theme';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-sponsor',
@@ -60,7 +64,7 @@ export class SponsorComponent implements OnInit {
   };
   companies: any[] = []; // Store company list
 
-  constructor(private companyService: CompanyService,private sponsorService: SponsorService) {}
+  constructor(private companyService: CompanyService,private sponsorService: SponsorService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
 
   ngOnInit(): void {
     this.loadSponsors();
@@ -106,6 +110,11 @@ export class SponsorComponent implements OnInit {
 
   // Add Sponsors
   onCreateConfirm(event: any): void {
+    const numericFields = ["sponsorId","phone"];
+    
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     const newSponsors = event.newData;
     const updateSponsor = {
       ...newSponsors,
@@ -114,9 +123,11 @@ export class SponsorComponent implements OnInit {
     this.sponsorService.addSponsors(updateSponsor).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Sponsor created successfully!');
       },
       (error) => {
         console.error('Error adding Sponsors:', error);
+        this.toasterService.showError('Failed to create sponsor.');
         event.confirm.reject();
       }
     );
@@ -124,6 +135,11 @@ export class SponsorComponent implements OnInit {
 
   // Update Sponsors
   onEditConfirm(event: any): void {
+    const numericFields = ["sponsorId","phone"];
+    
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     const updatedSponsors = event.newData;
     const updateSponsor = {
       ...updatedSponsors,
@@ -132,9 +148,11 @@ export class SponsorComponent implements OnInit {
     this.sponsorService.updateSponsors(updateSponsor.id, updateSponsor).subscribe(
       (data) => {
         event.confirm.resolve(data);
+        this.toasterService.showSuccess('Sponsor updated successfully!');
       },
       (error) => {
         console.error('Error updating Sponsors:', error);
+        this.toasterService.showError('Failed to update sponsor.');
         event.confirm.reject();
       }
     );
@@ -142,18 +160,27 @@ export class SponsorComponent implements OnInit {
 
   // Delete Sponsors
   onDeleteConfirm(event: any): void {
-    if (window.confirm('Are you sure you want to delete this Sponsors?')) {
-      this.sponsorService.deleteSponsors(event.data.id).subscribe(
-        () => {
-          event.confirm.resolve();
-        },
-        (error) => {
-          console.error('Error deleting Sponsors:', error);
-          event.confirm.reject();
-        }
-      );
-    } else {
-      event.confirm.reject();
-    }
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Sponsor',
+        message: 'Are you sure you want to delete this sponsor?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.sponsorService.deleteSponsors(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Sponsor deleted successfully!');
+          },
+          (error) => {
+            console.error('Error deleting sponsor:', error);
+            event.confirm.reject();
+            this.toasterService.showError('Failed to delete sponsor.');
+          }
+        );
+      } else {
+        event.confirm.reject();
+      }
+    });
   }
 }

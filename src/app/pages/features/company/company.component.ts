@@ -46,6 +46,36 @@ export class CompanyComponent {
         type: 'number',
         filter: false,
       },
+      headerImageUrl: {
+        title: 'Header Image',
+        type: 'string',
+        filter: false,
+      },
+      footerImageUrl: {
+        title: 'Footer Image',
+        type: 'string',
+        filter: false,
+      },
+      bankAccountTitle: {
+        title: 'Account Title',
+        type: 'string',
+        filter: false,
+      },
+      bankAccountNumber: {
+        title: 'Account Number',
+        type: 'string',
+        filter: false,
+      },
+      bankIban: {
+        title: 'Bank Iban',
+        type: 'string',
+        filter: false,
+      },
+      bankName: {
+        title: 'Bank Name',
+        type: 'string',
+        filter: false,
+      },
     },
   };
 

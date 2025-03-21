@@ -25,6 +25,7 @@ import {
 import { SmartTableDatepickerRenderComponentComponent } from './shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { FormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { ServicesModule } from './@core/services/services.module';
 
 @NgModule({
   declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent],
@@ -36,6 +37,7 @@ import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.c
     FormsModule,
     NbIconModule,
     NbCardModule,
+    ServicesModule.forRoot(),
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),
     NbDatepickerModule.forRoot(),

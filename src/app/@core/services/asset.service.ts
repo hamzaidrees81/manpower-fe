@@ -17,6 +17,10 @@ export class AssetService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getAssetsByCompany(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl+"/assetsByCompany");
+  }
+
   // Add a new Asset
   addAsset(asset: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, asset);
@@ -35,6 +39,11 @@ export class AssetService {
   // Get all Asset Projects
 getAssetProjects(): Observable<any[]> {
   return this.http.get<any[]>(this.customApiUrl);
+}
+
+// get asset by status
+getAssetProjectsByAssetAndActiveStatus(id,status): Observable<any[]> {
+  return this.http.get<any>(`${this.customApiUrl}/${id}/${status}`);
 }
 
 // Add a new Asset Project

@@ -38,21 +38,21 @@ export class AssetComponent implements OnInit{
       confirmDelete: true,
     },
     columns : {
-      company: {
-        title: 'Company',
-        type: 'html',
-        filter: false,
-        valuePrepareFunction: (company) => company.name,
-        editor: {
-          type: 'list',
-          config: {
-            selectText: 'Select...',
-            list: [],
-          },
-        },
-      },
+      // company: {
+      //   title: 'Company',
+      //   type: 'html',
+      //   filter: false,
+      //   valuePrepareFunction: (company) => company.name,
+      //   editor: {
+      //     type: 'list',
+      //     config: {
+      //       selectText: 'Select...',
+      //       list: [],
+      //     },
+      //   },
+      // },
       sponsoredBy: {
-        title: 'sponsored By',
+        title: 'Sponsored By',
         type: 'html',
         filter: false,
         valuePrepareFunction: (sponsor) => sponsor.name,
@@ -117,15 +117,43 @@ export class AssetComponent implements OnInit{
         }
       },
       assetType: {
-        title: "Asset Type",
-        type: "string",
-        filter: false,
+        title: 'Asset Type',
+        type: 'html',
+        filter: false, // No filter needed
+        valuePrepareFunction: (value) => value, // Directly show stored value
+        editor: {
+          type: 'list', // 'list' works if 'select' doesn't
+          config: {
+            selectText: 'Select...',
+            list: [
+              { value: 'MANPOWER', title: 'Manpower' },
+              { value: 'ITEM', title: 'Item' }
+            ],
+          },
+        },
       },
+      
       assetNumber: {
         title: "Asset Number",
         type: "number",
         filter: false,
       }, 
+      assetOwnership: {
+        title: 'Asset Ownership',
+        type: 'html',
+        filter: false,
+        valuePrepareFunction: (value) => value,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [
+              { value: 'SELF', title: 'Self' },
+              { value: 'RENTAL', title: 'Rental' }
+            ],
+          },
+        },
+      },
     },
     selectMode: 'single', // Enables row selection
   }
@@ -147,9 +175,17 @@ export class AssetComponent implements OnInit{
 
     // Load all clients
     loadAssets(): void {
-      this.assetService.getAssets().subscribe(
+      this.assetService.getAssetsByCompany().subscribe(
         (data) => {
-          this.source.load(data);
+          const newData = data.map(item => ({
+            ...item,
+            sponsoredBy : {
+              id : item?.sponsoredById,
+              name : item?.sponsoredName
+            }
+          }));
+          this.source.load(newData);
+          console.log("asset",newData);
         },
         (error) => {
           console.error('Error loading clients:', error);
@@ -158,28 +194,28 @@ export class AssetComponent implements OnInit{
     }
 
   loadDropdowns(): void {
-    this.companyService.getCompanies().subscribe((data) => {
-      this.companies = data;
-      this.settings = {
-        ...this.settings,
-        columns: {
-          ...this.settings.columns,
-          company: {
-            ...this.settings.columns.company,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
-    });
+    // this.companyService.getCompanies().subscribe((data) => {
+    //   this.companies = data;
+    //   this.settings = {
+    //     ...this.settings,
+    //     columns: {
+    //       ...this.settings.columns,
+    //       company: {
+    //         ...this.settings.columns.company,
+    //         editor: {
+    //           type: 'list',
+    //           config: {
+    //             selectText: 'Select...',
+    //             list: data.map((c) => ({
+    //               value: JSON.stringify(c), // Store whole object as string
+    //               title: c.name, // Display name
+    //             })),
+    //           },
+    //         },
+    //       },
+    //     },
+    //   };
+    // });
 
     // FETCH SPONSOR LIST
     this.sponsorService.getSponsors().subscribe((data) => {

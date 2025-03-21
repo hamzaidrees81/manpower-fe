@@ -56,12 +56,12 @@ export class UsersComponent {
         editable: false, // 👈 Disable editing
         addable: false, // 👈 Hide in add form
       },
-      company: {
-        title: 'Company ID',
-        type: 'number',
-        filter: false,
+      // company: {
+      //   title: 'Company ID',
+      //   type: 'number',
+      //   filter: false,
         
-      },
+      // },
     },
   };
 

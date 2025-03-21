@@ -3,6 +3,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import html2canvas from 'html2canvas';
 import { InvoiceService } from '../../../@core/services/invoice.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-print-invoice',
@@ -11,22 +12,40 @@ import { InvoiceService } from '../../../@core/services/invoice.service';
 })
 export class PrintInvoiceComponent implements OnInit {
   invoiceData: any;
+  invoiceList;
 
   
-  constructor(private invoiceService : InvoiceService){}
+  constructor(private invoiceService : InvoiceService,private router:Router){}
 
   ngOnInit() {
     this.invoiceData = this.invoiceService.getInvoice();
-    console.log(" this.invoiceData", JSON.stringify(this.invoiceData));
+    this.loadInvoiceData(this.invoiceData?.id)
 
-    if (!this.invoiceData) {
-      console.warn('No invoice data found! Fetching from API if needed.');
-      // Fetch from API if the page was loaded directly
-      // this.fetchInvoiceFromApi();
+  }
+  loadInvoiceData(id): void {
+    if(!id){
+        this.router.navigate(['/pages/features/invoice']); 
     }
+    this.invoiceService.getInvoiceById(id).subscribe(
+      (data) => {
+        this.invoiceList = data;
+      },
+      (error) => {
+        console.error('Error loading clients:', error);
+      }
+    );
   }
 
   printInvoice() {
-    window.print(); // Triggers the print dialog
+    const printContents = document.getElementById('invoiceSection')?.innerHTML;
+    const originalContents = document.body.innerHTML;
+  
+    document.body.innerHTML = printContents || '';
+    window.print();
+    document.body.innerHTML = originalContents;
+    window.location.reload(); // Ensures the page returns to its original state
   }
+  
+
+  
 }

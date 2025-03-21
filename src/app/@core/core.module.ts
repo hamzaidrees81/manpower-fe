@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy } from '@nebular/auth';
+import { NbAuthJWTToken, NbAuthModule, NbDummyAuthStrategy, NbPasswordAuthStrategy } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
@@ -53,6 +53,7 @@ import { VisitorsAnalyticsService } from './mock/visitors-analytics.service';
 import { SecurityCamerasService } from './mock/security-cameras.service';
 import { MockDataModule } from './mock/mock-data.module';
 import { ServicesModule } from './services/services.module';
+import { environment } from '../../environments/environment';
 
 const socialLinks = [
   {
@@ -106,19 +107,54 @@ export const NB_CORE_PROVIDERS = [
   ...MockDataModule.forRoot().providers,
   ...DATA_SERVICES,
   ...NbAuthModule.forRoot({
-
     strategies: [
-      NbDummyAuthStrategy.setup({
-        name: 'email',
-        delay: 3000,
+      NbPasswordAuthStrategy.setup({
+        name: 'email',  
+        baseEndpoint: environment.apiUrl,  
+        login: {
+          endpoint: '/login',  
+          method: 'post',
+          redirect: {
+            success: '/pages/dashboard', 
+            failure: null,  
+          },
+          defaultErrors: ['Login failed, please try again.'],
+          defaultMessages: ['Login successful!'],
+        },
+        // register: {
+        //   endpoint: '/auth/register',
+        //   method: 'post',
+        // },
+        // logout: {
+        //   endpoint: '/auth/logout',
+        //   method: 'post',
+        // },
+        // requestPass: {
+        //   endpoint: '/auth/request-pass',
+        //   method: 'post',
+        // },
+        // resetPass: {
+        //   endpoint: '/auth/reset-pass',
+        //   method: 'post',
+        // },
+        token: {
+          class: NbAuthJWTToken,  
+          key: 'jwtoken',  
+        },
       }),
     ],
     forms: {
       login: {
-        socialLinks: socialLinks,
-      },
-      register: {
-        socialLinks: socialLinks,
+        strategy: 'email',
+        redirectDelay: 1000, 
+        showMessages: {
+          success: true,
+          error: true,
+        },
+        socialLinks: [], 
+        rememberMe: false, // Remove Remember Me checkbox
+        showForgotPasswordLink: false, // Remove Forgot Password
+        showRegisterLink: false, // Remove "Don't have an account? Register"
       },
     },
   }).providers,

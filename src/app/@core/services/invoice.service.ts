@@ -28,6 +28,11 @@ export class InvoiceService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  // get invoice by id 
+  getInvoiceById(id): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/${id}`);
+  }
+
   // Add a new Invoice
   addInvoice(invoice: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, invoice);

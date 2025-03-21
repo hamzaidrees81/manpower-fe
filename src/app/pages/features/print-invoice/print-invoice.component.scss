@@ -15,6 +15,22 @@ body {
   font-family: 'Arial', sans-serif;
 }
 
+.disabled-header {
+  background-color: #ccc !important; /* Gray color for disabled effect */
+  color: #666; /* Slightly faded text */
+}
+
+.transparent-table {
+  background-color: transparent !important;
+  border-collapse: collapse !important;
+}
+
+.transparent-table th,
+.transparent-table td {
+  background-color: transparent !important;
+}
+
+
 /* Invoice Container - A4 Size */
 .invoice {
   width: 210mm; /* A4 Width */
@@ -103,13 +119,33 @@ body {
 }
 
 .inv-detail-mt {
-  margin-top: 10% !important;
+  margin-top: 15% !important;
 }
 
 /* Disabled Header Style */
 .disabled-header {
   background-color: #ccc !important; /* Gray color for disabled effect */
   color: #666; /* Slightly faded text */
+}
+
+
+@media (max-width: 800px) {
+  .mobile {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+    .invoice {
+    width: 210mm; /* A4 Width */
+    height: 310mm !important; /* A4 Height */
+    background: #fff;
+    box-shadow: none !important;
+    border-radius: 8px;
+    overflow: hidden; /* Prevent content overflow */
+    position: relative;
+    padding-top: 80px; /* Ensure space for header */
+    padding-bottom: 60px; /* Ensure space for footer */
+  }
+  
 }
 
 /* Small & Compact Table */
@@ -158,14 +194,222 @@ body {
   margin-bottom: 0;
 }
 
-/* Table Header */
-.disabled-header {
-  background-color: #f8f8f8 !important;
-}
+
 
 /* Reduce spacing in invoice details row */
 .inv-detail-mt {
   margin-top: 10px;
+}
+
+@media print {
+
+  body {
+    background: #f9f9f9;
+    font-family: 'Arial', sans-serif;
+  }
+
+  .disabled-header {
+    background-color: #ccc !important; /* Gray color for disabled effect */
+    color: #666; /* Slightly faded text */
+  }
+  
+  /* Invoice Container - A4 Size */
+  .invoice {
+    width: 210mm; /* A4 Width */
+    height: 297mm; /* A4 Height */
+    background: #fff;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden; /* Prevent content overflow */
+    position: relative;
+    padding-top: 80px; /* Ensure space for header */
+    padding-bottom: 60px; /* Ensure space for footer */
+  }
+  
+  /* Fixed Header */
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  
+  /* Background Logo (Centered & Scaled) */
+  .bg-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .mlight {
+    margin-right: 30px;
+  }
+  
+  .bg-logo {
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%; /* Adjust size */
+    opacity: 0.2;
+    z-index: 0;
+  }
+  
+  /* Content Over Background */
+  .content {
+    z-index: 1;
+  }
+  
+  /* Table Styling */
+  .table-sm th,
+  .table-sm td {
+    padding: 6px;
+    font-size: 14px;
+    white-space: nowrap; /* Prevent text wrapping */
+  }
+   
+  /* Fixed Footer */
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+  
+  /* Print Button */
+  .print-btn {
+    font-size: 16px;
+  }
+
+  .inv-detail-mt {
+    margin-top: 20% !important;
+  }
+  
+
+  
+  /* Small & Compact Table */
+  .small-table {
+    font-size: 8px;
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .small-table th, .small-table td {
+    border: 1px solid black;
+    padding: 3px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  /* Align text properly in summary table */
+  .text-end {
+    text-align: right;
+  }
+  
+  /* Header Background */
+  .table thead th {
+    background-color: #f2f2f2; /* Light Gray Background */
+  }
+  
+  /* Small & Compact Table */
+  .small-text {
+    font-size: 12px; /* Reduced font size */
+  }
+  
+  .table-sm th, .table-sm td {
+    padding: 3px; /* Smaller padding */
+  }
+  
+  /* QR Code Adjustments */
+  .qr-code {
+    width: 100% !important; /* Smaller QR Code */
+    height: auto !important;
+  }
+
+  .img-fluid {
+    max-width: 100% !important;  /* Ensures the image does not exceed its container */
+    height: auto !important;  /* Maintains aspect ratio */
+    page-break-inside: avoid;  /* Prevents images from splitting across pages */
+
+  }
+  
+  /* Invoice Title */
+  .small-title {
+    font-size: 14px; /* Reduced title size */
+    font-weight: bold;
+    margin-bottom: 0;
+  }
+
+
+  .invoice {
+    width: 100%;
+    max-width: 210mm;
+    padding: 20px;
+  }
+
+  /* Ensure full-width rows in print */
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  /* Set up a column system for printing */
+  .col-md-6 {
+    width: 50% !important;
+  }
+
+  /* Mimic Bootstrap's offset-md-6 for right alignment */
+  .offset-md-6 {
+    margin-left: 50% !important;
+  }
+
+  /* Ensure tables remain responsive */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  /* Small font for compact tables */
+  .small-table th, 
+  .small-table td {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .col-md-4 {
+    width: 33.33% !important;
+    float: left !important;
+  }
+
+  .col-md-2 {
+    width: 16.66% !important;
+    float: left !important;
+  }
+
+  .col-md-12 {
+    width: 100% !important;
+    float: left;
+  }
+  .transparent-table {
+    background-color: transparent !important;
+    border-collapse: collapse !important;
+  }
+  
+  .transparent-table th,
+  .transparent-table td {
+    background-color: transparent !important;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: 1200px !important; /* Adjust based on your layout */
+    margin: 0 auto !important; /* Center the container */
+    padding: 0 15px !important; /* Add padding on both sides */
+}
+
 }
 
 

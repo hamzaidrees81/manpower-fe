@@ -12,6 +12,7 @@ import { SponsorComponent } from './sponsor/sponsor.component';
 import { DesignationComponent } from './designation/designation.component';
 import { InvoiceComponent } from './invoice/invoice.component';
 import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
+import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.component';
 
 @NgModule({
   imports: [
@@ -36,7 +37,8 @@ import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
     SponsorComponent,
     DesignationComponent,
     InvoiceComponent,
-    PrintInvoiceComponent
+    PrintInvoiceComponent,
+    InvoiceDetailComponent
     
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules

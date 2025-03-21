@@ -35,10 +35,10 @@ export class TimesheetComponent  implements OnInit {
     actions:false,
    hideSubHeader: true,
     columns : { 
-      company: {
-        title: "Company ID",
-        type: "number",
-      },
+      // company: {
+      //   title: "Company ID",
+      //   type: "number",
+      // },
       sponsoredBy: {
         title: "Sponsored By",
         type: "number",
@@ -120,7 +120,7 @@ export class TimesheetComponent  implements OnInit {
       project: {
         title: 'Project Name',
         type: 'html',
-        valuePrepareFunction: (project) => project.name,
+        valuePrepareFunction: (project) => project.name ,
         editor: {
           type: 'list',
           config: {
@@ -192,17 +192,17 @@ export class TimesheetComponent  implements OnInit {
           return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
         }
       },
-      status: {
-        title: "Status",
-        type: "html",
-        filter: false,
-        editor: {
-          type: "checkbox"
-        },
-        valuePrepareFunction: (value: boolean) => {
-          return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
-        }
-      },
+      // status: {
+      //   title: "Status",
+      //   type: "html",
+      //   filter: false,
+      //   editor: {
+      //     type: "checkbox"
+      //   },
+      //   valuePrepareFunction: (value: boolean) => {
+      //     return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
+      //   }
+      // },
     }
   };
 
@@ -302,7 +302,7 @@ export class TimesheetComponent  implements OnInit {
   selectedMonth = new Date().getMonth() + 1;
   selectedYear = new Date().getFullYear();
   weeks: any[] = [];
-  getProjects: { id: string; name: string }[] = [];
+  getProjects: { projectId: string; projectName: string }[] = [];
 
   // TIME SHEET CONFIG END
 
@@ -313,9 +313,8 @@ export class TimesheetComponent  implements OnInit {
     
     this.getExpenses();
     this.getAsset();
-
-    this.loadDropdowns();
     this.loadAssetProjects();
+    this.loadDropdowns();
     this.populateYears();
 
   }
@@ -331,7 +330,7 @@ export class TimesheetComponent  implements OnInit {
     this.weeks = [];
   
     let date = new Date(this.selectedYear, this.selectedMonth - 1, 1);
-    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].projectId : '';
   
     if (date.getDay() !== 1) {
       date.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1));
@@ -441,7 +440,7 @@ export class TimesheetComponent  implements OnInit {
     });
   }
   addMoreRows(week: any,) {
-    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].projectId : '';
   
     // Find the next SR No
     let srNo = week.rows.length > 0 ? Math.max(...week.rows.map(r => r.rowSrNo)) + 1 : 1;
@@ -597,10 +596,24 @@ export class TimesheetComponent  implements OnInit {
 
   // Load all Assets Projects
   loadAssetProjects(): void {
-    this.assetService.getAssetProjects().subscribe(
+    this.assetService.getAssetProjectsByAssetAndActiveStatus(this.assetData?.id,'ACTIVE').subscribe(
       (data) => {
-        this.sourceProjects.load(data);
+        console.log("data",data);
+        const newData = data.map(item => ({
+          ...item,
+          project:{
+            id: item?.projectId,
+            name: item?.projectName,
+          },
+          designation:{
+            id: item?.designationId,
+            name: item?.designationName,
+          }
+        }));
+        
+        this.sourceProjects.load(newData);
         this.getProjects = data
+        console.log("this.getProjects",this.getProjects);
       },
       (error) => {
         console.error('Error loading projects:', error);
@@ -635,12 +648,13 @@ export class TimesheetComponent  implements OnInit {
   getAsset(){
     const storedData = localStorage.getItem('selectedPerson');
     if (storedData) {
+      debugger;
       this.assetData = JSON.parse(storedData);
     }
     const updatedAssetData = {
       ...this.assetData,
-      company:this.assetData.company.name,
-      sponsoredBy:this.assetData.sponsoredBy.name
+      // company:this.assetData.company.name,
+      sponsoredBy:this.assetData?.sponsoredBy?.name
     }
     this.sourceAsset.load([updatedAssetData]);
   }
@@ -768,8 +782,8 @@ onProjectCreateConfirm(event: any): void {
     endDate: this.customEndDate,
     asset: {id:this.assetData.id},
     company: {id:this.assetData.company.id},
-    status: event.newData.status === true ? 1 : 0, // Convert boolean to number
-    isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
+    // status: event.newData.status === true ? 'ACTIVE' : 'INACTIVE', 
+    isActive: event.newData.isActive === true ? "ACTIVE" : "INACTIVE", 
   };
 
   // Call service to add the project
@@ -783,6 +797,7 @@ onProjectCreateConfirm(event: any): void {
 }
   
 onProjectEditConfirm(event: any): void {
+  debugger;
   const updatedProject = {
     ...event.newData,
     designation: JSON.parse(event.newData.designation),
@@ -791,8 +806,8 @@ onProjectEditConfirm(event: any): void {
     endDate: this.customEndDate,
     asset: {id:this.assetData.id},
     company: {id:this.assetData.company.id},
-    status: event.newData.status === true ? 1 : 0, // Convert boolean to number
-    isActive: event.newData.isActive === true ? 1 : 0, // Convert boolean to number
+    // status: event.newData.status === true ? 1 : 0, 
+    isActive: event.newData.isActive === true ? "ACTIVE" : "INACTIVE", 
   };
 
   this.assetService.updateAssetProject(updatedProject.id, updatedProject).subscribe({

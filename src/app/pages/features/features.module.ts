@@ -38,7 +38,7 @@ import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.componen
     DesignationComponent,
     InvoiceComponent,
     PrintInvoiceComponent,
-    InvoiceDetailComponent
+    InvoiceDetailComponent,
     
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules

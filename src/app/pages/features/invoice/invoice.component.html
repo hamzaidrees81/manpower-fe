@@ -6,7 +6,7 @@
 
   <nb-card-body>
     <!-- Dropdowns: Client & Date Range (Side by Side on Large Screens) -->
-    <div class="d-flex justify-content-center g-3 align-items-center">
+    <div class="d-flex justify-content-center g-3 align-items-center" *ngIf="!this.routedInvoiceData?.view">
       
       <!-- Client Selection -->
       <div class="col-md-4 col-sm-12">
@@ -27,7 +27,7 @@
     </div>
 
     <!-- Prepare Invoice Button -->
-    <div class="text-center mt-4">
+    <div class="text-center mt-4" *ngIf="!this.routedInvoiceData?.view">
       <button  class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
         <i class="fas fa-file-invoice"></i> Prepare Invoice
       </button>
@@ -65,18 +65,18 @@
       </nb-accordion>
     </div>
 
-    <div class="mt-4" *ngIf="this.invoiceData?.detailedProjectInvoiceList?.length === 0">
+    <div class="mt-4 text-center" *ngIf="!this.invoiceData?.detailedProjectInvoiceList || this.invoiceData?.detailedProjectInvoiceList?.length === 0">
       <p>No Record Fond</p>
     </div>
 
         <!-- Summary Section -->
-        <div *ngIf="showDetails" class="summary-card mt-4 p-3 border rounded shadow-sm bg-light text-center">
+        <div *ngIf="showDetails && !this.invoiceData?.detailedProjectInvoiceList" class="summary-card mt-4 p-3 border rounded shadow-sm bg-light text-center">
           <h5 class="fw-bold text-primary">Invoice Summary</h5>
           <p class="fw-bold text-secondary mt-2">Total Amount: <span class="text-success fs-4">{{summeryTotalAmount}}</span></p>
         </div>
 
     <!-- Submit Invoice Button -->
-    <div *ngIf="showDetails" class="text-center mt-4">
+    <div *ngIf="showDetails && !this.routedInvoiceData?.view && !this.invoiceData?.detailedProjectInvoiceList" class="text-center mt-4">
       <button class="btn btn-primary px-4 py-2 fw-bold" (click)="submitInvoice()">
         <i class="fas fa-paper-plane"></i> Submit Invoice
       </button>

@@ -51,19 +51,6 @@ export class AssetComponent implements OnInit{
       //     },
       //   },
       // },
-      sponsoredBy: {
-        title: 'Sponsored By',
-        type: 'html',
-        filter: false,
-        valuePrepareFunction: (sponsor) => sponsor.name,
-        editor: {
-          type: 'list',
-          config: {
-            selectText: 'Select...',
-            list: [],
-          },
-        },
-      },
       name: {
         title: "Name",
         type: "string",
@@ -139,7 +126,7 @@ export class AssetComponent implements OnInit{
         filter: false,
       }, 
       assetOwnership: {
-        title: 'Asset Ownership',
+        title: 'Ownership',
         type: 'html',
         filter: false,
         valuePrepareFunction: (value) => value,
@@ -154,6 +141,40 @@ export class AssetComponent implements OnInit{
           },
         },
       },
+      sponsoredBy: {
+        title: 'Sponsored By',
+        type: 'html',
+        filter: false,
+        valuePrepareFunction: (sponsor) => sponsor.name,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
+      },
+      sponsorshipType: {
+        title: "Sponsorship Type",
+        type: "string", // Change type to "string" since it's a dropdown
+        filter: false,
+        editor: {
+          type: "list",
+          config: {
+            selectText: "Select Type", // Placeholder text
+            list: [
+              { value: "FIXED", title: "Fixed" },
+              { value: "PERCENTAGE", title: "Percentage" },
+            ],
+          },
+        },
+      },
+      sponsorshipValue: {
+        title: "sponsorship Value",
+        type: "number",
+        filter: false,
+      }, 
+      
     },
     selectMode: 'single', // Enables row selection
   }
@@ -275,23 +296,23 @@ export class AssetComponent implements OnInit{
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-       const numericFields = ["idNumber","phone","assetType","assetNumber"];
+       const numericFields = ["idNumber","phone","assetNumber"];
             
             if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
               return; // Stop execution if validation fails
             }
     // Parse selected company data
-    const selectedCompany = JSON.parse(event.newData.company);
-    const selectedSponsoredBy = JSON.parse(event.newData.sponsoredBy);
+    const latestData = event.newData?.sponsoredBy;
+    const parseLatestData = JSON.parse(latestData);
   
     // Prepare new asset object with dynamic company data
     const newAsset = {
       ...event.newData,
-      company: selectedCompany, // Assign selected company
+      company: parseLatestData?.company, // Assign selected company
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
-      sponsoredBy: selectedSponsoredBy
+      sponsoredBy: parseLatestData?.sponsorId
     };
   
     // Call service to add the asset
@@ -315,23 +336,23 @@ export class AssetComponent implements OnInit{
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    const numericFields = ["idNumber","phone","assetType","assetNumber"];
+    const numericFields = ["idNumber","phone","assetNumber"];
             
     if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       return; // Stop execution if validation fails
     }
     // Parse selected company data
-    const selectedCompany = JSON.parse(event.newData.company);
-    const selectedSponsoredBy = JSON.parse(event.newData.sponsoredBy);
+    const latestData = event.newData?.sponsoredBy;
+    const parseLatestData = JSON.parse(latestData);
   
     // Prepare new asset object with dynamic company data
     const updatedAsset = {
       ...event.newData,
-      company: selectedCompany, // Assign selected company
+      company: parseLatestData?.company, // Assign selected company
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
-      sponsoredBy: selectedSponsoredBy
+      sponsoredBy: parseLatestData?.sponsorId
     };
     this.assetService.updateAsset(updatedAsset.id, updatedAsset).subscribe({
       next: (data) => {
@@ -372,9 +393,17 @@ export class AssetComponent implements OnInit{
       }
 
 // Handle row click
-onRowSelect(event: any) {
-  const rowData = event.data; // Get selected row data
-  localStorage.setItem('selectedPerson', JSON.stringify(rowData)); // Save to local storage
-  this.router.navigate(['/pages/features/timesheet']); // Navigate to timesheet
+onRowSelect(event: any, mouseEvent: MouseEvent) {
+  const target = mouseEvent.target as HTMLElement;
+  
+  // Ignore clicks inside input fields (edit mode)
+  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.ng2-smart-table-editor')) {
+    return;
+  }
+
+  const rowData = event.data;
+  localStorage.setItem('selectedPerson', JSON.stringify(rowData));
+  this.router.navigate(['/pages/features/timesheet']);
 }
+
 }

@@ -51,10 +51,21 @@ export class InvoiceComponent implements OnInit {
   };
   invoiceData: any;
   summeryTotalAmount: any;
+  routedInvoiceData: any;
 
   constructor(private router: Router,private clientService : ClientService,private invoiceService : InvoiceService,private toasterService: ToasterService,private dialogService: NbDialogService) {}
 
   ngOnInit(): void {
+debugger;
+    this.routedInvoiceData = this.invoiceService.getInvoice();
+    // For View 
+    if(this.routedInvoiceData?.view){
+      this.invoiceData = this.routedInvoiceData;
+        if (this.invoiceData?.detailedProjectInvoiceList) {
+          this.showDetails = true;
+            this.calculateTotalAmount();
+        }
+    }
     this.loadClients();
   }
 
@@ -121,9 +132,11 @@ export class InvoiceComponent implements OnInit {
     this.invoiceService.prepareInvoic(data).subscribe(
       (data) => {
         this.invoiceData = data;
-        if (this.invoiceData?.detailedProjectInvoiceList) {
+        if (this.invoiceData?.detailedProjectInvoiceList?.length != 0) {
           this.showDetails = true;
             this.calculateTotalAmount();
+        }else{
+          this.toasterService.showSuccess('No Record Found!');
         }
       },
       (error) => {

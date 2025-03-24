@@ -1,94 +1,90 @@
 <nb-card>
-    <nb-card-header class="custom-header d-flex align-items-center">
-      <nb-icon icon="file-text-outline"></nb-icon>
-      <span class="ms-2 fw-bold">Invoice Detail</span>
-    </nb-card-header>
-  
-    <nb-card-body>
-      <!-- Dropdowns: Client & Date Range (Side by Side on Large Screens) -->
-      <div class="rowv d-flex justify-content-evenly">
-        
-        <!-- Client Selection -->
-        <div class="col-md-4">
-          <label for="clientSelect" class="fw-bold">Select Client</label>
-          <select id="clientSelect" class="form-control"  [(ngModel)]="selectedClient" (ngModelChange)="onClientSelect()">
-            <option [ngValue]="null" disabled>Select a client</option>
-            <option *ngFor="let client of clients" [ngValue]="client">{{ client.name }}</option>
-          </select>
-        </div>
-  
-        <div class="col-md-4">
-            <label for="clientSelect" class="fw-bold">Select Invoice</label>
-            <select id="clientSelect" class="form-control"  [(ngModel)]="selectedClient" (ngModelChange)="onClientSelect()">
-              <option value="ACTIVE" >Active</option>
-              <option value="INACTIVE" >In Active</option>
-            </select>
-          </div>
+  <nb-card-header class="custom-header d-flex align-items-center">
+    <nb-icon icon="file-text-outline"></nb-icon>
+    <span class="ms-2 fw-bold">Invoice Detail</span>
+  </nb-card-header>
 
-          <div class="col-md-4">
-            <label for="dateRangePicker" class="fw-bold">Select Date Range</label>
-            <input nbInput placeholder="Select Date Range" class="form-control date-picker" [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
-            <nb-rangepicker #rangepicker></nb-rangepicker>
-          </div>
-      
+  <nb-card-body>
+    <div class="row d-flex justify-content-center">
+      <div class="col-md-4">
+        <label for="clientSelect" class="fw-bold">Select</label>
+        <select id="clientSelect" class="form-control" [(ngModel)]="selectedType" (ngModelChange)="onClientSelect()">
+          <option value="All">All</option>
+          <option value="PAID">Paid</option>
+          <option value="UNPAID">Unpaid</option>
+          <option value="DELETED">Deleted</option>
+          <option value="clientId">By Client ID</option>
+        </select>
       </div>
-  
-      <!-- Prepare Invoice Button -->
-      <div class="text-center mt-4">
-        <button  class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
-          <i class="fas fa-file-invoice"></i> Prepare Invoice
-        </button>
+    </div>
+
+    <div class="text-center mt-4">
+      <button class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedType">
+        <i class="fas fa-file-invoice"></i> Get All Invoices
+      </button>
+    </div>
+
+    <div *ngIf="showDetails" class="mt-4">
+      <div class="table-responsive table-container" style="max-height: 400px; overflow-y: auto;">
+        <table class="invoice-table table table-striped table-bordered">
+          <thead class="thead-dark">
+            <tr>
+              <th>#</th>
+              <th>Invoice ID</th>
+              <th>Creation Date</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Status</th>
+              <th>Payable Amount</th>
+              <th>Tax Amount</th>
+              <th>Total Amount</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let invoice of invoiceData?.content; let i = index">
+              <td>{{ (invoiceData.number * invoiceData.size) + i + 1 }}</td>
+              <td>{{ invoice.id }}</td>
+              <td>{{ invoice.creationDate }}</td>
+              <td>{{ invoice.startDate }}</td>
+              <td>{{ invoice.endDate }}</td>
+              <td>
+                <span [ngClass]="{ 'text-success': invoice.invoiceStatus === 'PAID', 'text-danger': invoice.invoiceStatus === 'UNPAID' }">
+                  {{ invoice.invoiceStatus }}
+                </span>
+              </td>
+              <td>{{ invoice.payableAmount }}</td>
+              <td>{{ invoice.taxAmount || 'N/A' }}</td>
+              <td>{{ invoice.totalAmountWithTax || 'N/A' }}</td>
+              <td>
+                <button class="btn btn-sm btn-primary" (click)="editInvoice(invoice)">
+                  <nb-icon icon="edit-outline"></nb-icon>
+                </button>
+                <button class="btn btn-sm btn-info ml-2 mr-2" (click)="viewInvoice(invoice)">
+                  <nb-icon icon="eye-outline"></nb-icon>
+                </button>
+                <button class="btn btn-sm btn-warning" (click)="printInvoice(invoice)">
+                  <nb-icon icon="printer-outline"></nb-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-  
-      <!-- Client Info Section -->
-      <!-- <div *ngIf="selectedClient" class="client-info-card mt-4 p-3 border rounded shadow-sm bg-light">
-        <h5 class="text-primary fw-bold text-center mb-2">{{ selectedClient.name }}</h5>
-        <div class="d-flex justify-content-around text-secondary">
-          <p><strong>Registration Date:</strong> {{ selectedClient.registrationDate }}</p>
-          <p><strong>Last Invoice Date:</strong> {{ selectedClient.lastInvoice }}</p>
-        </div>
-      </div> -->
-  
-      <!-- Accordion for Project Details -->
-      <div *ngIf="showDetails" class="mt-4">
-        <nb-accordion>
-          
-          <!-- Generate an Accordion for Each Project -->
-          <nb-accordion-item *ngFor="let project of invoiceData?.detailedProjectInvoiceList; let i = index">
-            <nb-accordion-item-header>
-              <i class="fas fa-project-diagram mr-2"></i> {{ project?.projectName }}
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              
-              <!-- Smart Table for Assets in the Project -->
-              <ng2-smart-table [settings]="assetSettings" [source]="project?.assetInvoicesList"
-                (editConfirm)="onAssetEdit($event,i,project?.projectId)"
-                (deleteConfirm)="onAssetDelete($event, i,project?.projectId)">
-              </ng2-smart-table>
-  
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-  
-        </nb-accordion>
-      </div>
-  
-      <div class="mt-4" *ngIf="this.invoiceData?.detailedProjectInvoiceList?.length === 0">
-        <p>No Record Fond</p>
-      </div>
-  
-          <!-- Summary Section -->
-          <div *ngIf="showDetails" class="summary-card mt-4 p-3 border rounded shadow-sm bg-light text-center">
-            <h5 class="fw-bold text-primary">Invoice Summary</h5>
-            <p class="fw-bold text-secondary mt-2">Total Amount: <span class="text-success fs-4">{{summeryTotalAmount}}</span></p>
-          </div>
-  
-      <!-- Submit Invoice Button -->
-      <div *ngIf="showDetails" class="text-center mt-4">
-        <button class="btn btn-primary px-4 py-2 fw-bold" (click)="submitInvoice()">
-          <i class="fas fa-paper-plane"></i> Submit Invoice
-        </button>
-      </div>
-  
-    </nb-card-body>
-  </nb-card>
-  
+
+      <!-- Pagination -->
+      <pagination-controls
+      (pageChange)="changePage($event)"
+      [totalItems]="invoiceData?.totalElements"
+      [itemsPerPage]="pageSize"
+      previousLabel="Prev"
+      nextLabel="Next"
+    ></pagination-controls>
+    
+    </div>
+
+    <div class="mt-4 text-center" *ngIf="invoiceData?.content?.length === 0">
+      <p>No Record Found</p>
+    </div>
+  </nb-card-body>
+</nb-card>

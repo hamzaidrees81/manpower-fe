@@ -61,7 +61,7 @@ const routes: Routes = [{
     {
       path: 'invoice-detail',
       component: InvoiceDetailComponent,
-    }
+    },
   ],
 }];
 

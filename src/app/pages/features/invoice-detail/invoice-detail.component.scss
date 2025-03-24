@@ -5,3 +5,22 @@
     transform: translate3d(0, 0, 0);
   }
 }
+
+
+.table-container {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.invoice-table {
+  width: 100%;
+  min-width: 800px; /* Ensure the table doesn't collapse */
+  border-collapse: collapse;
+}
+
+.invoice-table th,
+.invoice-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  white-space: nowrap; /* Prevent text wrapping */
+}

@@ -1,12 +1,13 @@
 <nb-card>
   <nb-card-header class="custom-header d-flex align-items-center">
     <nb-icon icon="file-text-outline"></nb-icon>
-    <span class="ms-2 fw-bold">Invoice Generator</span>
+    <span class="ms-2 fw-bold">{{title}}</span>
   </nb-card-header>
 
   <nb-card-body>
     <!-- Dropdowns: Client & Date Range (Side by Side on Large Screens) -->
-    <div class="d-flex justify-content-center g-3 align-items-center" *ngIf="!this.routedInvoiceData?.view">
+    <div class="d-flex justify-content-center g-3 align-items-center" *ngIf="!(this.routedInvoiceData?.view === 'VIEW' || this.routedInvoiceData?.edit === 'EDIT')"
+    >
       
       <!-- Client Selection -->
       <div class="col-md-4 col-sm-12">
@@ -27,7 +28,8 @@
     </div>
 
     <!-- Prepare Invoice Button -->
-    <div class="text-center mt-4" *ngIf="!this.routedInvoiceData?.view">
+    <div class="text-center mt-4" *ngIf="!(this.routedInvoiceData?.view === 'VIEW' || this.routedInvoiceData?.edit === 'EDIT')"
+    >
       <button  class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
         <i class="fas fa-file-invoice"></i> Prepare Invoice
       </button>
@@ -70,13 +72,38 @@
     </div>
 
         <!-- Summary Section -->
-        <div *ngIf="showDetails && !this.invoiceData?.detailedProjectInvoiceList" class="summary-card mt-4 p-3 border rounded shadow-sm bg-light text-center">
-          <h5 class="fw-bold text-primary">Invoice Summary</h5>
-          <p class="fw-bold text-secondary mt-2">Total Amount: <span class="text-success fs-4">{{summeryTotalAmount}}</span></p>
+        <div class="container mt-4 p-3 bg-light rounded shadow-sm" *ngIf="showDetails">
+          <h3 class="text-center fw-bold mb-3">Summary</h3>
+          <div class="row g-3">
+            <div  class="col-md-4">
+              <div class="card text-center shadow-sm">
+                <div class="card-body">
+                  <p class="fw-bold text-secondary">Total Amount</p>
+                  <span class="text-success fs-4">{{ summeryTotalAmount }}</span>
+                </div>
+              </div>
+            </div>
+            <div  class="col-md-4">
+              <div class="card text-center shadow-sm">
+                <div class="card-body">
+                  <p class="fw-bold text-secondary">Total VAT Amount</p>
+                  <span class="text-success fs-4">{{ totalWithVAT }}</span>
+                </div>
+              </div>
+            </div>
+            <div  class="col-md-4">
+              <div class="card text-center shadow-sm">
+                <div class="card-body">
+                  <p class="fw-bold text-secondary">VAT Amount</p>
+                  <span class="text-success fs-4">{{ vatAmount }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
+        
     <!-- Submit Invoice Button -->
-    <div *ngIf="showDetails && !this.routedInvoiceData?.view && !this.invoiceData?.detailedProjectInvoiceList" class="text-center mt-4">
+    <div *ngIf="showDetails && !(this.routedInvoiceData?.view === 'VIEW')" class="text-center mt-4">
       <button class="btn btn-primary px-4 py-2 fw-bold" (click)="submitInvoice()">
         <i class="fas fa-paper-plane"></i> Submit Invoice
       </button>

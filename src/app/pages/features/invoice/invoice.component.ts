@@ -21,52 +21,98 @@ export class InvoiceComponent implements OnInit {
   clients = [];
 
   // Smart Table Settings
-  assetSettings = {
-    actions: { add: false, edit: true, delete: true },
-    edit: {
-      editButtonContent: '<i class="nb-edit"></i>',
-      saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-      confirmSave: true
-    },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true
-    },
-    columns: {
-      assetName: { title: 'Asset Name', type: 'string',filter:false },
-      assetType: { title: 'Asset Type', type: 'string',filter:false },
-      regularHours: { title: 'Regular Hours', type: 'number' ,filter:false},
-      overtimeHours: { title: 'OT Hours', type: 'number' ,filter:false},
-      regularRate: { title: 'Regular Price ($)', type: 'number' ,filter:false},
-      overtimeRate: { title: 'OT Price ($)', type: 'number' ,filter:false},
-      totalAmount: { 
-        title: 'Total Cost ($)', 
-        type: 'number',filter:false,
-        editable: false, // 👈 Disable editing
-        addable: false, // 👈 Hide in add form
-        valuePrepareFunction: (cell, row) => (row.regularHours * row.regularRate) + (row.overtimeHours * row.overtimeRate)
-      }
-    }
-  };
   invoiceData: any;
   summeryTotalAmount: any;
   routedInvoiceData: any;
+  assetSettings: {
+    actions: {
+      add: boolean; edit: boolean; // Disable edit if view mode is true
+      delete: boolean; // Disable delete if view mode is true
+    }; edit: { editButtonContent: string; saveButtonContent: string; cancelButtonContent: string; confirmSave: boolean; }; delete: { deleteButtonContent: string; confirmDelete: boolean; }; columns: { assetName: { title: string; type: string; filter: boolean; }; assetType: { title: string; type: string; filter: boolean; }; regularHours: { title: string; type: string; filter: boolean; }; overtimeHours: { title: string; type: string; filter: boolean; }; regularRate: { title: string; type: string; filter: boolean; }; overtimeRate: { title: string; type: string; filter: boolean; }; totalAmount: { title: string; type: string; filter: boolean; editable: boolean; addable: boolean; valuePrepareFunction: (cell: any, row: any) => number; }; };
+  };
+  title: string;
+  vatAmount: number;
+  totalWithVAT: number;
 
   constructor(private router: Router,private clientService : ClientService,private invoiceService : InvoiceService,private toasterService: ToasterService,private dialogService: NbDialogService) {}
 
   ngOnInit(): void {
-debugger;
     this.routedInvoiceData = this.invoiceService.getInvoice();
+    console.log("this.routedInvoiceData",this.routedInvoiceData)
+    this.setTitle();
+    this.updateAssetSettings();
     // For View 
-    if(this.routedInvoiceData?.view){
-      this.invoiceData = this.routedInvoiceData;
+    if(this.routedInvoiceData){
+      this.loadInvoiceData(this.routedInvoiceData?.id)
+    }
+    this.loadClients();
+  }
+
+  setTitle() {
+    if (this.routedInvoiceData?.view) {
+      this.title = 'View Invoice';
+    } else if (this.routedInvoiceData?.edit) {
+      this.title = 'Edit Invoice';
+    } else {
+      this.title = 'Manage Invoice';
+    }
+  }
+
+  updateAssetSettings() {
+    const isViewMode = this.routedInvoiceData?.view; // Check the condition
+  
+    this.assetSettings = {
+      actions: {
+        add: false,
+        edit: !isViewMode, // Disable edit if view mode is true
+        delete: !isViewMode // Disable delete if view mode is true
+      },
+      edit: {
+        editButtonContent: '<i class="nb-edit"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+        confirmSave: true
+      },
+      delete: {
+        deleteButtonContent: '<i class="nb-trash"></i>',
+        confirmDelete: true
+      },
+      columns: {
+        assetName: { title: 'Asset Name', type: 'string', filter: false },
+        assetType: { title: 'Asset Type', type: 'string', filter: false },
+        regularHours: { title: 'Regular Hours', type: 'number', filter: false },
+        overtimeHours: { title: 'OT Hours', type: 'number', filter: false },
+        regularRate: { title: 'Regular Price ($)', type: 'number', filter: false },
+        overtimeRate: { title: 'OT Price ($)', type: 'number', filter: false },
+        totalAmount: {
+          title: 'Total Cost ($)',
+          type: 'number',
+          filter: false,
+          editable: false,
+          addable: false,
+          valuePrepareFunction: (cell, row) =>
+            (row.regularHours * row.regularRate) + (row.overtimeHours * row.overtimeRate)
+        }
+      }
+    };
+  }
+
+  loadInvoiceData(id): void {
+    if(!id){
+        this.router.navigate(['/pages/features/invoice']); 
+    }
+    this.invoiceService.getInvoiceById(id).subscribe(
+      (data) => {
+        this.invoiceData = data;
         if (this.invoiceData?.detailedProjectInvoiceList) {
           this.showDetails = true;
             this.calculateTotalAmount();
         }
-    }
-    this.loadClients();
+      },
+      (error) => {
+        console.error('Error loading clients:', error);
+      }
+    );
   }
 
   submitInvoice(){
@@ -147,18 +193,19 @@ debugger;
 
 calculateTotalAmount() {
   if (!this.invoiceData?.detailedProjectInvoiceList) {
-    this.summeryTotalAmount = 0; // Handle cases where no projects exist
+    this.summeryTotalAmount = 0;
+    this.vatAmount = 0;
+    this.totalWithVAT = 0;
     return;
   }
 
-  this.summeryTotalAmount = this.invoiceData.detailedProjectInvoiceList.reduce((projectTotal, project) => {
-    const projectAmount = (project.assetInvoicesList || []).reduce((sum, asset) => {
-      return sum + (asset?.totalAmount ?? 0); // Use `??` to handle undefined/null values
-    }, 0);
+  const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
 
-    return projectTotal + projectAmount;
-  }, 0);
+  this.summeryTotalAmount = allAssets.reduce((sum, asset) => sum + (asset?.totalAmount ?? 0), 0);
+  this.vatAmount = allAssets.reduce((sum, asset) => sum + (asset?.vatAmount ?? 0), 0);
+  this.totalWithVAT = allAssets.reduce((sum, asset) => sum + (asset?.totalWithVAT ?? 0), 0);
 }
+
 
 
 

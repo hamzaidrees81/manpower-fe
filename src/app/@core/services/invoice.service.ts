@@ -28,6 +28,16 @@ export class InvoiceService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getInvoicesByStatus(status,page,size): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/list`,{
+      params:{
+        status:status,
+        page:page,
+        size:size
+      }
+    });
+  }
+
   // get invoice by id 
   getInvoiceById(id): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${id}`);

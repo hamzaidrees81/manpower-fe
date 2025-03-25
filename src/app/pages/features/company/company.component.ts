@@ -6,7 +6,7 @@ import { Company, CompanyService } from '../../../@core/services/company.service
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
-import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { validateAndHandleNumericFields, validateRequiredFields } from '../../../utils/validation-utils';
 @Component({
   selector: 'ngx-company',
   templateUrl: './company.component.html',
@@ -15,6 +15,9 @@ import { validateAndHandleNumericFields } from '../../../utils/validation-utils'
 export class CompanyComponent {
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -81,8 +84,8 @@ export class CompanyComponent {
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData,private companyService: CompanyService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
-  
+  constructor(private service: SmartTableData, private companyService: CompanyService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
+
 
   ngOnInit(): void {
     this.loadCompanies();
@@ -101,14 +104,19 @@ export class CompanyComponent {
 
   // Handle adding a new company
   onCreateConfirm(event): void {
+    // ✅ Fields to validate
+    const numericFields = ["maxAssetCount"];
+    const requiredFields = ["name", "maxAssetCount"];
 
-// ✅ Fields to validate
-const numericFields = ["maxAssetCount"];
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
 
-if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-  return; // Stop execution if validation fails
-}
-  
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
+
     const newCompany: Company = event.newData;
     this.companyService.addCompany(newCompany).subscribe(
       (createdCompany) => {
@@ -127,11 +135,17 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
   // Handle editing an existing company
   onEditConfirm(event): void {
     // ✅ Fields to validate
-const numericFields = ["maxAssetCount"];
+    const numericFields = ["maxAssetCount"];
+    const requiredFields = ["name", "maxAssetCount"];
 
-if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-  return; // Stop execution if validation fails
-}
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     const updatedCompany: Company = event.newData;
     this.companyService.updateCompany(updatedCompany).subscribe(
       (response) => {
@@ -171,5 +185,5 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
       }
     });
   }
-  
+
 }

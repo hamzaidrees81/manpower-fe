@@ -6,16 +6,20 @@ import { DesignationService } from '../../../@core/services/designation.service'
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateRequiredFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-designation',
   templateUrl: './designation.component.html',
   styleUrls: ['./designation.component.scss']
 })
-export class DesignationComponent  implements OnInit {
+export class DesignationComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource(); // Table data source
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -32,7 +36,7 @@ export class DesignationComponent  implements OnInit {
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
     },
-    columns: {  
+    columns: {
       name: {
         title: 'Name',
         type: 'string',
@@ -40,7 +44,7 @@ export class DesignationComponent  implements OnInit {
     },
   };
 
-  constructor(private designationService: DesignationService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
+  constructor(private designationService: DesignationService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadDesignations();
@@ -61,6 +65,12 @@ export class DesignationComponent  implements OnInit {
   // Add Designation
   onCreateConfirm(event: any): void {
     const newDesignation = event.newData;
+    const requiredFields = ["name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
     this.designationService.addDesignation(newDesignation).subscribe(
       (data) => {
         event.confirm.resolve(data);
@@ -76,6 +86,12 @@ export class DesignationComponent  implements OnInit {
 
   // Update Designation
   onEditConfirm(event: any): void {
+    const requiredFields = ["name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
     const updatedDesignation = event.newData;
     this.designationService.updateDesignation(updatedDesignation.id, updatedDesignation).subscribe(
       (data) => {

@@ -1,26 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
 import { NbAuthService, NbAuthJWTToken } from '@nebular/auth';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, catchError } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: NbAuthService) {}
+  constructor(private authService: NbAuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return this.authService.getToken().pipe(
       switchMap((token: NbAuthJWTToken) => {
+        let clonedReq = req;
+
         if (token.isValid()) {
-          // Clone the request and add the Authorization header
-          const clonedReq = req.clone({
+          clonedReq = req.clone({
             setHeaders: {
               Authorization: `Bearer ${token.getValue()}`,
             },
           });
-          return next.handle(clonedReq);
         }
-        return next.handle(req); // If token is invalid, proceed without modifying
+
+        return next.handle(clonedReq).pipe(
+          catchError((error: HttpErrorResponse) => {
+            if (error.status === 401) { // Token expired or invalid
+              this.authService.logout('email'); // Logout user from Nebular Auth
+              this.router.navigate(['/auth/login']); // Redirect to login
+            }
+            return throwError(error);
+          })
+        );
       })
     );
   }

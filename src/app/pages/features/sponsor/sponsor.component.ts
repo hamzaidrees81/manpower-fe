@@ -5,7 +5,7 @@ import { SponsorService } from '../../../@core/services/sponsor.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
-import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { validateAndHandleNumericFields, validateRequiredFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-sponsor',
@@ -16,6 +16,9 @@ export class SponsorComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource(); // Table data source
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -64,7 +67,7 @@ export class SponsorComponent implements OnInit {
   };
   companies: any[] = []; // Store company list
 
-  constructor(private companyService: CompanyService,private sponsorService: SponsorService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
+  constructor(private companyService: CompanyService, private sponsorService: SponsorService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadSponsors();
@@ -110,8 +113,14 @@ export class SponsorComponent implements OnInit {
 
   // Add Sponsors
   onCreateConfirm(event: any): void {
-    const numericFields = ["sponsorId","phone"];
-    
+    const numericFields = ["sponsorId", "phone"];
+    const requiredFields = ["sponsorId", "name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
     if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       return; // Stop execution if validation fails
     }
@@ -135,8 +144,14 @@ export class SponsorComponent implements OnInit {
 
   // Update Sponsors
   onEditConfirm(event: any): void {
-    const numericFields = ["sponsorId","phone"];
-    
+    const numericFields = ["sponsorId", "phone"];
+    const requiredFields = ["sponsorId", "name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
     if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       return; // Stop execution if validation fails
     }

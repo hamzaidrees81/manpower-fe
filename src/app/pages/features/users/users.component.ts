@@ -6,7 +6,7 @@ import { UserService } from '../../../@core/services/user.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
-import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { validateAndHandleNumericFields, validateRequiredFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-users',
@@ -16,6 +16,9 @@ import { validateAndHandleNumericFields } from '../../../utils/validation-utils'
 export class UsersComponent {
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -34,7 +37,7 @@ export class UsersComponent {
     },
     columns: {
       username: {
-        title: 'Username',
+        title: 'Email',
         type: 'string',
       },
       password: {
@@ -60,14 +63,14 @@ export class UsersComponent {
       //   title: 'Company ID',
       //   type: 'number',
       //   filter: false,
-        
+
       // },
     },
   };
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private userService: UserService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
+  constructor(private userService: UserService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -91,22 +94,28 @@ export class UsersComponent {
   onCreateConfirm(event): void {
     const newData = event.newData;
 
-        const numericFields = ["company"];
-        
-        if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-          return; // Stop execution if validation fails
-        }
-  
+    const numericFields = ["company"];
+    const requiredFields = ["username", "password"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
+
     // Transform data
     const requestData = {
       ...newData,
       company: { id: newData.company }, // Convert company to an object
     };
-  
+
     // Remove unwanted fields
     if (!requestData.createDate) delete requestData.createDate;
     if (!requestData.updateDate) delete requestData.updateDate;
-  
+
     this.userService.addUser(requestData).subscribe(
       () => {
         event.confirm.resolve(event.newData);
@@ -123,22 +132,28 @@ export class UsersComponent {
   // Edit user
   onEditConfirm(event): void {
     const numericFields = ["company"];
-        
+    const requiredFields = ["username", "password"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
     if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       return; // Stop execution if validation fails
     }
     const newData = event.newData;
-  
+
     // Transform data
     const requestData = {
       ...newData,
       company: { id: newData.company }, // Convert company to an object
     };
-  
+
     // Remove unwanted fields
     if (!requestData.createDate) delete requestData.createDate;
     if (!requestData.updateDate) delete requestData.updateDate;
-  
+
     this.userService.updateUser(newData.id, requestData).subscribe(
       () => {
         event.confirm.resolve(event.newData);

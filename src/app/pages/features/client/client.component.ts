@@ -4,6 +4,7 @@ import { ClientService } from '../../../@core/services/client.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateRequiredFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'app-client',
@@ -14,6 +15,9 @@ export class ClientComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource(); // Table data source
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -47,7 +51,7 @@ export class ClientComponent implements OnInit {
     },
   };
 
-  constructor(private clientService: ClientService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
+  constructor(private clientService: ClientService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadClients();
@@ -68,6 +72,13 @@ export class ClientComponent implements OnInit {
   // Add client
   onCreateConfirm(event: any): void {
     const newClient = event.newData;
+    const requiredFields = ["clientId", "name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
     this.clientService.addClient(newClient).subscribe(
       (data) => {
         event.confirm.resolve(data);
@@ -85,6 +96,12 @@ export class ClientComponent implements OnInit {
   // Update client
   onEditConfirm(event: any): void {
     const updatedClient = event.newData;
+    const requiredFields = ["clientId", "name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
     this.clientService.updateClient(updatedClient.id, updatedClient).subscribe(
       (data) => {
         event.confirm.resolve(data);

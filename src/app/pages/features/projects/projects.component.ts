@@ -10,6 +10,7 @@ import { DatePickerService } from '../../../@core/services/date-picker.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { validateRequiredFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'app-project',
@@ -21,6 +22,9 @@ export class ProjectsComponent implements OnInit {
   companies: any[] = []; // Store company list
   clients: any[] = []; // Store client list
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -101,9 +105,9 @@ export class ProjectsComponent implements OnInit {
   };
   customStartDate: Date;
   customEndDate: Date;
-  
 
-  constructor(private projectService: ProjectService,private clientService: ClientService,private companyService: CompanyService,private datePickerService: DatePickerService,private dialogService: NbDialogService,private toasterService: ToasterService) {}
+
+  constructor(private projectService: ProjectService, private clientService: ClientService, private companyService: CompanyService, private datePickerService: DatePickerService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadProjects();
@@ -164,7 +168,7 @@ export class ProjectsComponent implements OnInit {
         },
       };
     });
-  
+
     this.clientService.getClients().subscribe((data) => {
       this.clients = data;
       this.settings = {
@@ -188,63 +192,76 @@ export class ProjectsComponent implements OnInit {
       };
     });
   }
-  
-  
+
+
 
   // Add project
-onCreateConfirm(event: any): void {
-  // Update start and end dates
-  this.handleStartDate();
-  this.handleEndDate();
+  onCreateConfirm(event: any): void {
+    // Update start and end dates
+    this.handleStartDate();
+    this.handleEndDate();
 
-  // Parse necessary fields and prepare request data
-  const newProject = {
-    ...event.newData,
-    company: JSON.parse(event.newData.company),
-    client: JSON.parse(event.newData.client),
-    startDate: this.customStartDate,
-    endDate: this.customEndDate,
-  };
+    const requiredFields = ["projectId", "name"];
 
-  // Call service to add the project
-  this.projectService.addProject(newProject).subscribe({
-    next: (data) => {
-      event.confirm.resolve(data)
-      this.toasterService.showSuccess('Project created successfully!');
-    },
-    error: (error) => {
-      console.error('Error adding project:', error);
-      this.toasterService.showError('Failed to create project.');
-      event.confirm.reject();
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
     }
-  });
-}
 
-  
-onEditConfirm(event: any): void {
-  const updatedProject = {
-    ...event.newData,
-    company: JSON.parse(event.newData.company),
-    client: JSON.parse(event.newData.client),
-    startDate: this.customStartDate,
-    endDate: this.customEndDate,
-  };
+    // Parse necessary fields and prepare request data
+    const newProject = {
+      ...event.newData,
+      company: JSON.parse(event.newData.company),
+      client: JSON.parse(event.newData.client),
+      startDate: this.customStartDate,
+      endDate: this.customEndDate,
+    };
 
-  this.projectService.updateProject(updatedProject.id, updatedProject).subscribe({
-    next: (data) => {
-      event.confirm.resolve(data)
-      this.toasterService.showSuccess('Project updated successfully!');
-    },
-    error: (error) => {
-      console.error('Error updating project:', error);
-      this.toasterService.showError('Failed to update project.');
-      event.confirm.reject();
+    // Call service to add the project
+    this.projectService.addProject(newProject).subscribe({
+      next: (data) => {
+        event.confirm.resolve(data)
+        this.toasterService.showSuccess('Project created successfully!');
+      },
+      error: (error) => {
+        console.error('Error adding project:', error);
+        this.toasterService.showError('Failed to create project.');
+        event.confirm.reject();
+      }
+    });
+  }
+
+
+  onEditConfirm(event: any): void {
+    const requiredFields = ["projectId", "name"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
     }
-  });
-}
+    const updatedProject = {
+      ...event.newData,
+      company: JSON.parse(event.newData.company),
+      client: JSON.parse(event.newData.client),
+      startDate: this.customStartDate,
+      endDate: this.customEndDate,
+    };
 
-  
-  
+    this.projectService.updateProject(updatedProject.id, updatedProject).subscribe({
+      next: (data) => {
+        event.confirm.resolve(data)
+        this.toasterService.showSuccess('Project updated successfully!');
+      },
+      error: (error) => {
+        console.error('Error updating project:', error);
+        this.toasterService.showError('Failed to update project.');
+        event.confirm.reject();
+      }
+    });
+  }
+
+
+
 
   // Delete project
   onDeleteConfirm(event: any): void {

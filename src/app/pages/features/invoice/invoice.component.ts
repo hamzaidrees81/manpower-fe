@@ -26,7 +26,7 @@ export class InvoiceComponent implements OnInit {
   routedInvoiceData: any;
   assetSettings: {
     actions: {
-      add: boolean; edit: boolean; // Disable edit if view mode is true
+      add: boolean; edit: boolean; position:string; // Disable edit if view mode is true
       delete: boolean; // Disable delete if view mode is true
     }; edit: { editButtonContent: string; saveButtonContent: string; cancelButtonContent: string; confirmSave: boolean; }; delete: { deleteButtonContent: string; confirmDelete: boolean; }; columns: { assetName: { title: string; type: string; filter: boolean; }; assetType: { title: string; type: string; filter: boolean; }; regularHours: { title: string; type: string; filter: boolean; }; overtimeHours: { title: string; type: string; filter: boolean; }; regularRate: { title: string; type: string; filter: boolean; }; overtimeRate: { title: string; type: string; filter: boolean; }; totalAmount: { title: string; type: string; filter: boolean; editable: boolean; addable: boolean; valuePrepareFunction: (cell: any, row: any) => number; }; };
   };
@@ -65,7 +65,8 @@ export class InvoiceComponent implements OnInit {
       actions: {
         add: false,
         edit: !isViewMode, // Disable edit if view mode is true
-        delete: !isViewMode // Disable delete if view mode is true
+        delete: !isViewMode, // Disable delete if view mode is true
+        position: 'right',
       },
       edit: {
         editButtonContent: '<i class="nb-edit"></i>',

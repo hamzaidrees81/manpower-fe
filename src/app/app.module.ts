@@ -26,9 +26,10 @@ import { SmartTableDatepickerRenderComponentComponent } from './shared/smart-tab
 import { FormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 import { ServicesModule } from './@core/services/services.module';
+import { ButtonViewComponent } from './shared/button-view/button-view.component';
 
 @NgModule({
-  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent],
+  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

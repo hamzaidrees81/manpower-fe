@@ -8,19 +8,23 @@ import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/cus
 import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
 import { SponsorService } from '../../../@core/services/sponsor.service';
-import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
+import { validateAndHandleNumericFields, validateRequiredFields } from '../../../utils/validation-utils';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { NbDialogService } from '@nebular/theme';
+import { ButtonViewComponent } from '../../../shared/button-view/button-view.component';
 
 @Component({
   selector: 'ngx-asset',
   templateUrl: './asset.component.html',
   styleUrls: ['./asset.component.scss'],
 })
-export class AssetComponent implements OnInit{
+export class AssetComponent implements OnInit {
 
   settings = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -37,7 +41,7 @@ export class AssetComponent implements OnInit{
       deleteButtonContent: '<i class="nb-trash"></i>',
       confirmDelete: true,
     },
-    columns : {
+    columns: {
       // company: {
       //   title: 'Company',
       //   type: 'html',
@@ -51,6 +55,22 @@ export class AssetComponent implements OnInit{
       //     },
       //   },
       // },
+      button: {
+        title: 'View',
+        type: 'custom',
+        filter: false,
+        editable: false,
+        addable: false,
+        renderComponent: ButtonViewComponent,
+        onComponentInitFunction(instance) {
+          const sub = instance.save.subscribe(row => {
+            console.log('Viewing:', row);
+          });
+
+          // ✅ Prevent memory leaks by unsubscribing
+          instance.ngOnDestroy = () => sub.unsubscribe();
+        }
+      },
       name: {
         title: "Name",
         type: "string",
@@ -119,12 +139,12 @@ export class AssetComponent implements OnInit{
           },
         },
       },
-      
+
       assetNumber: {
         title: "Asset Number",
         type: "number",
         filter: false,
-      }, 
+      },
       assetOwnership: {
         title: 'Ownership',
         type: 'html',
@@ -173,12 +193,12 @@ export class AssetComponent implements OnInit{
         title: "sponsorship Value",
         type: "number",
         filter: false,
-      }, 
-      
+      },
+
     },
     selectMode: 'single', // Enables row selection
   }
-  companies: any[] = []; 
+  companies: any[] = [];
   sponsors: any[] = [];
 
   source: LocalDataSource = new LocalDataSource();
@@ -187,32 +207,32 @@ export class AssetComponent implements OnInit{
   customSelectedPassportExpiryDate: Date;
   customSelectedJoiningDate: Date;
 
-  constructor(private dialogService:NbDialogService,private toasterService:ToasterService,private router: Router,private companyService: CompanyService,private assetService: AssetService,private datePickerService: DatePickerService,private sponsorService:SponsorService) {}
+  constructor(private dialogService: NbDialogService, private toasterService: ToasterService, private router: Router, private companyService: CompanyService, private assetService: AssetService, private datePickerService: DatePickerService, private sponsorService: SponsorService) { }
 
   ngOnInit(): void {
     this.loadDropdowns();
     this.loadAssets();
   }
 
-    // Load all clients
-    loadAssets(): void {
-      this.assetService.getAssetsByCompany().subscribe(
-        (data) => {
-          const newData = data.map(item => ({
-            ...item,
-            sponsoredBy : {
-              id : item?.sponsoredById,
-              name : item?.sponsoredName
-            }
-          }));
-          this.source.load(newData);
-          console.log("asset",newData);
-        },
-        (error) => {
-          console.error('Error loading clients:', error);
-        }
-      );
-    }
+  // Load all clients
+  loadAssets(): void {
+    this.assetService.getAssetsByCompany().subscribe(
+      (data) => {
+        const newData = data.map(item => ({
+          ...item,
+          sponsoredBy: {
+            id: item?.sponsoredById,
+            name: item?.sponsoredName
+          }
+        }));
+        this.source.load(newData);
+        console.log("asset", newData);
+      },
+      (error) => {
+        console.error('Error loading clients:', error);
+      }
+    );
+  }
 
   loadDropdowns(): void {
     // this.companyService.getCompanies().subscribe((data) => {
@@ -296,15 +316,21 @@ export class AssetComponent implements OnInit{
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-       const numericFields = ["idNumber","phone","assetNumber"];
-            
-            if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-              return; // Stop execution if validation fails
-            }
+    const numericFields = ["idNumber", "phone", "assetNumber"];
+    const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     // Parse selected company data
     const latestData = event.newData?.sponsoredBy;
     const parseLatestData = JSON.parse(latestData);
-  
+
     // Prepare new asset object with dynamic company data
     const newAsset = {
       ...event.newData,
@@ -314,7 +340,7 @@ export class AssetComponent implements OnInit{
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
       sponsoredBy: parseLatestData?.sponsorId
     };
-  
+
     // Call service to add the asset
     this.assetService.addAsset(newAsset).subscribe({
       next: (data) => {
@@ -328,23 +354,29 @@ export class AssetComponent implements OnInit{
       }
     });
   }
-  
-  
-    
+
+
+
   onEditConfirm(event: any): void {
     this.handleSelectedIqamaExpiryDate();
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    const numericFields = ["idNumber","phone","assetNumber"];
-            
+    const numericFields = ["idNumber", "phone", "assetNumber"];
+    const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
+
+    // ✅ Validate required fields
+    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      return; // Stop execution if validation fails
+    }
+
     if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       return; // Stop execution if validation fails
     }
     // Parse selected company data
     const latestData = event.newData?.sponsoredBy;
     const parseLatestData = JSON.parse(latestData);
-  
+
     // Prepare new asset object with dynamic company data
     const updatedAsset = {
       ...event.newData,
@@ -367,43 +399,28 @@ export class AssetComponent implements OnInit{
     });
   }
 
-     onDeleteConfirm(event): void {
-        this.dialogService.open(ConfirmDialogComponent, {
-          context: {
-            title: 'Delete Confirmation',
-            message: 'Are you sure you want to delete this asset?',
+  onDeleteConfirm(event): void {
+    this.dialogService.open(ConfirmDialogComponent, {
+      context: {
+        title: 'Delete Confirmation',
+        message: 'Are you sure you want to delete this asset?',
+      },
+    }).onClose.subscribe((confirmed) => {
+      if (confirmed) {
+        this.assetService.deleteAsset(event.data.id).subscribe(
+          () => {
+            event.confirm.resolve();
+            this.toasterService.showSuccess('Asset deleted successfully!');
           },
-        }).onClose.subscribe((confirmed) => {
-          if (confirmed) {
-            this.assetService.deleteAsset(event.data.id).subscribe(
-              () => {
-                event.confirm.resolve();
-                this.toasterService.showSuccess('Asset deleted successfully!');
-              },
-              (error) => {
-                console.error('Error deleting asset:', error);
-                event.confirm.reject();
-                this.toasterService.showError('Failed to delete asset.');
-              }
-            );
-          } else {
+          (error) => {
+            console.error('Error deleting asset:', error);
             event.confirm.reject();
+            this.toasterService.showError('Failed to delete asset.');
           }
-        });
+        );
+      } else {
+        event.confirm.reject();
       }
-
-// Handle row click
-onRowSelect(event: any, mouseEvent: MouseEvent) {
-  const target = mouseEvent.target as HTMLElement;
-  
-  // Ignore clicks inside input fields (edit mode)
-  if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.closest('.ng2-smart-table-editor')) {
-    return;
+    });
   }
-
-  const rowData = event.data;
-  localStorage.setItem('selectedPerson', JSON.stringify(rowData));
-  this.router.navigate(['/pages/features/timesheet']);
-}
-
 }

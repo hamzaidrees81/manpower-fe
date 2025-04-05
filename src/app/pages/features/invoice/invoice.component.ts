@@ -38,7 +38,6 @@ export class InvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     this.routedInvoiceData = this.invoiceService.getInvoice();
-    console.log("this.routedInvoiceData",this.routedInvoiceData)
     this.setTitle();
     this.updateAssetSettings();
     // For View 

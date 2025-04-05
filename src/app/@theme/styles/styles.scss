@@ -45,3 +45,51 @@
   border-radius: 8px 8px 0 0; /* Rounded corners */
 }
 
+
+.filter-section {
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.filter-section .card-header {
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.filter-section h4 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #007bff;
+}
+
+.filter-section .card-body {
+  padding: 1.5rem;
+}
+
+.filter-section .col-md-3 {
+  margin-bottom: 15px;
+}
+
+.filter-section label {
+  font-size: 0.875rem;
+  font-weight: bold;
+  color: #6c757d;
+}
+
+.filter-section .btn {
+  font-size: 16px;
+}
+
+@media (max-width: 768px) {
+  .filter-section .col-md-3 {
+    margin-bottom: 10px;
+  }
+
+  .filter-section .card-body {
+    padding: 1rem;
+  }
+
+  .filter-section h4 {
+    font-size: 1.1rem;
+  }
+}

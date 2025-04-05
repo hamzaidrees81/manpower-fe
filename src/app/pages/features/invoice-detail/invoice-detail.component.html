@@ -5,24 +5,46 @@
   </nb-card-header>
 
   <nb-card-body>
-    <div class="row d-flex justify-content-center">
-      <div class="col-md-4">
-        <label for="clientSelect" class="fw-bold">Select</label>
-        <select id="clientSelect" class="form-control" [(ngModel)]="selectedType" (ngModelChange)="onClientSelect()">
-          <option value="All">All</option>
-          <option value="PAID">Paid</option>
-          <option value="UNPAID">Unpaid</option>
-          <option value="DELETED">Deleted</option>
-          <option value="clientId">By Client ID</option>
-        </select>
+    <div class="row mb-4" >
+      <!-- Filter Section -->
+      <div class="col-12">
+        <div class="filter-section card shadow-sm border-0">
+          <div class="card-header p-3">
+            <h4 class="mb-0 d-flex align-items-center">
+              <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-end">
+              
+              <!-- Client Select -->
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="clientSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="person-outline" class="me-2 mr-2"></nb-icon> Select Status
+                </label>
+                <select id="clientSelect" class="form-control" [(ngModel)]="selectedType" (ngModelChange)="onClientSelect()">
+                  <option value="All">All</option>
+                  <option value="PAID">Paid</option>
+                  <option value="UNPAID">Unpaid</option>
+                  <option value="DELETED">Deleted</option>
+                  <option value="clientId">By Client ID</option>
+                </select>
+              </div>
+    
+              <!-- Get All Invoices Button -->
+              <div class="col-md-3 col-sm-12 mb-3 text-center">
+                <button class="btn btn-success px-4 py-2 fw-bold w-100" (click)="toggleDetails()" [disabled]="!selectedType">
+                  <nb-icon icon="file-outline" class="me-2"></nb-icon> Get All Invoices
+                </button>
+              </div>
+    
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <div class="text-center mt-4">
-      <button class="btn btn-success px-4 py-2 fw-bold" (click)="toggleDetails()" [disabled]="!selectedType">
-        <i class="fas fa-file-invoice"></i> Get All Invoices
-      </button>
-    </div>
+    
+    
 
     <div *ngIf="showDetails" class="mt-4">
       <div class="table-responsive table-container" style="max-height: 400px; overflow-y: auto;">
@@ -83,8 +105,18 @@
     
     </div>
 
-    <div class="mt-4 text-center" *ngIf="invoiceData?.content?.length === 0">
-      <p>No Record Found</p>
+    <div class="row justify-content-center" *ngIf="invoiceData?.content?.length === 0">
+      <div class="col-12 col-md-12 col-lg-12">
+        <div class="card shadow-sm p-4 rounded">
+          <div class="card-body text-center">
+            <h2 class="card-title text-danger">No Records Found</h2>
+            <p class="card-text text-muted mb-4">It seems like we couldn't find any records related to your query.</p>
+            <!-- <button nbButton fullWidth (click)="goToHome()" type="button" class="btn btn-primary w-50">
+              Take me to the Home Page
+            </button> -->
+          </div>
+        </div>
+      </div>
     </div>
   </nb-card-body>
 </nb-card>

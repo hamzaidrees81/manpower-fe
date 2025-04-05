@@ -20,25 +20,35 @@ export class DashboardComponent implements OnDestroy {
 
   solarValue: number;
   lightCard: CardSettings = {
-    title: 'Light',
-    iconClass: 'nb-lightbulb',
+    title: 'Total Earning',
+    iconClass: 'nb-checkmark', // Example icon for earnings
     type: 'primary',
   };
+  
   rollerShadesCard: CardSettings = {
-    title: 'Roller Shades',
-    iconClass: 'nb-roller-shades',
+    title: 'Total Payable to Sponsor',
+    iconClass: 'nb-bar-chart', // Example icon for payments
     type: 'success',
   };
+  
   wirelessAudioCard: CardSettings = {
-    title: 'Wireless Audio',
-    iconClass: 'nb-audio',
+    title: 'Total Payable to Assets',
+    iconClass: 'nb-bar-chart', // Example icon for assets
     type: 'info',
   };
+  
   coffeeMakerCard: CardSettings = {
-    title: 'Coffee Maker',
-    iconClass: 'nb-coffee-maker',
+    title: 'Total Expenses',
+    iconClass: 'nb-fold', // Example icon for expenses
     type: 'warning',
   };
+  
+  profitCard: CardSettings = {
+    title: 'Profit',
+    iconClass: 'nb-plus', // Example icon for profit
+    type: 'success',
+  };
+  
 
   statusCards: string;
 
@@ -47,6 +57,7 @@ export class DashboardComponent implements OnDestroy {
     this.rollerShadesCard,
     this.wirelessAudioCard,
     this.coffeeMakerCard,
+    this.profitCard
   ];
 
   statusCardsByThemes: {
@@ -74,26 +85,54 @@ export class DashboardComponent implements OnDestroy {
         ...this.coffeeMakerCard,
         type: 'info',
       },
+      {
+        ...this.profitCard,
+        type: 'success',
+      },
     ],
     dark: this.commonStatusCardsSet,
   };
 
-  constructor(private themeService: NbThemeService,
-              private solarService: SolarData) {
+  constructor(private themeService: NbThemeService) {
     this.themeService.getJsTheme()
       .pipe(takeWhile(() => this.alive))
       .subscribe(theme => {
         this.statusCards = this.statusCardsByThemes[theme.name];
+        console.log("this.statusCards",this.statusCards);
     });
-
-    this.solarService.getSolarData()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe((data) => {
-        this.solarValue = data;
-      });
   }
 
   ngOnDestroy() {
     this.alive = false;
+  }
+
+    // Toggle Invoice Details
+    toggleDetails() {
+      if (this.selectedDateRange) {
+        this.prepareInvoice(this.selectedDateRange);
+      }
+    }
+  selectedDateRange(selectedDateRange: any) {
+    throw new Error('Method not implemented.');
+  }
+  
+    prepareInvoice(selectedDate): void {
+
+
+  
+      // this.invoiceService.prepareInvoic(data).subscribe(
+      //   (data) => {
+      //     this.invoiceData = data;
+      //     if (this.invoiceData?.detailedProjectInvoiceList?.length != 0) {
+      //       this.showDetails = true;
+      //         this.calculateTotalAmount();
+      //     }else{
+      //       this.toasterService.showSuccess('No Record Found!');
+      //     }
+      //   },
+      //   (error) => {
+      //     console.error('Error loading projects:', error);
+      //   }
+      // );
   }
 }

@@ -46,6 +46,10 @@ getAssetProjectsByAssetAndActiveStatus(id,status): Observable<any[]> {
   return this.http.get<any>(`${this.customApiUrl}/${id}/${status}`);
 }
 
+getAssetByNameAndAssetNumber(name,assetNumber,startDate,endDate): Observable<any[]> {
+  return this.http.get<any>(`${this.customApiUrl}/${name}/${assetNumber}`);
+}
+
 // Add a new Asset Project
 addAssetProject(assetProject: any): Observable<any> {
   return this.http.post<any>(this.customApiUrl,assetProject);

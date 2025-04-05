@@ -251,6 +251,24 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  {
+    title: 'Payment',
+    icon: 'credit-card-outline', 
+    children: [
+      {
+        title: 'Asset Payment',
+        link: '/pages/features/payment-management/asset-payment',
+      },
+      {
+        title: 'Sponsor Payment',
+        link: '/pages/features/payment-management/sponsor-payment',
+      },
+      {
+        title: 'Invoice Receivable',
+        link: '/pages/features/payment-management/invoice-receivable',
+      },
+    ],
+  },
       // {
       //   title: 'Print Invoice',
       //   icon: 'file-text-outline', 

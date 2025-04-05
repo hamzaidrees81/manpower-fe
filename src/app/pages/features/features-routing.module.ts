@@ -13,6 +13,9 @@ import { DesignationComponent } from './designation/designation.component';
 import { InvoiceComponent } from './invoice/invoice.component';
 import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.component';
+import { AssetPaymentComponent } from './payment-management/asset-payment/asset-payment.component';
+import { InvoiceReceivableComponent } from './payment-management/invoice-receivable/invoice-receivable.component';
+import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
 
 const routes: Routes = [{
   path: '',
@@ -61,6 +64,18 @@ const routes: Routes = [{
     {
       path: 'invoice-detail',
       component: InvoiceDetailComponent,
+    },
+    {
+      path: 'payment-management/asset-payment',
+      component: AssetPaymentComponent,
+    },
+    {
+      path: 'payment-management/invoice-receivable',
+      component: InvoiceReceivableComponent,
+    },
+    {
+      path: 'payment-management/sponsor-payment',
+      component: SponsorPaymentComponent,
     },
   ],
 }];

@@ -1,0 +1,21 @@
+<nb-card class="sponsor-modal-card zoom-in p-3">
+    <nb-card-header class="custom-header">
+        <nb-icon icon="plus-outline"></nb-icon>
+        <span>Sponsor Management</span>
+      </nb-card-header>
+  
+    <nb-card-body>
+      <ng2-smart-table 
+        [settings]="sponsorSettings" 
+        [source]="sponsorSource"
+        (createConfirm)="onCreateConfirm($event)" 
+        (editConfirm)="onEditConfirm($event)"
+        (deleteConfirm)="onDeleteConfirm($event)">
+      </ng2-smart-table>
+    </nb-card-body>
+  
+    <nb-card-footer class="modal-footer">
+      <button nbButton status="primary" (click)="close()">Close</button>
+    </nb-card-footer>
+  </nb-card>
+  

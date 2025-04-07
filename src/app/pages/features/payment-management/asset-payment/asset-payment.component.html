@@ -51,17 +51,18 @@
           
                     <!-- Get Payment Button -->
                     <div class="col-md-2 col-sm-12 mb-3 text-center">
-                      <button class="btn btn-success w-100 fw-bold shadow-sm" (click)="toggleDetails()" [disabled]="!selectedAssetByName && !selectedAssetByNumber">
-                        <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Payment
-                      </button>
-                    </div>
-          
-                    <!-- Reset Button -->
-                    <div class="col-md-2 col-sm-12 mb-3 text-center">
-                      <button class="btn btn-secondary w-100 fw-bold shadow-sm" (click)="resetAssetSelection()">
-                        <nb-icon icon="undo-outline" class="me-2"></nb-icon> Reset
-                      </button>
-                    </div>
+                        <button nbButton status="success" class="w-100 fw-bold shadow-sm" (click)="toggleDetails()" [disabled]="!selectedAssetByName && !selectedAssetByNumber">
+                          <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Payment
+                        </button>
+                      </div>
+                      
+                      <!-- Reset Button -->
+                      <div class="col-md-2 col-sm-12 mb-3 text-center">
+                        <button nbButton status="basic" class="w-100 fw-bold shadow-sm" (click)="resetAssetSelection()">
+                          <nb-icon icon="undo-outline" class="me-2"></nb-icon> Reset
+                        </button>
+                      </div>
+                      
           
                   </div>
                 </div>
@@ -72,7 +73,7 @@
         <!-- Payment Details Section -->
         <div *ngIf="showPaymentTable" class="mt-4">
             <div class="section">
-                <h5 class="fw-bold text-dark mb-3">
+                <h5 class=" text-dark mb-3">
                     <i class="fas fa-file-invoice-dollar me-2 text-success mr-3"></i> Asset Payment Details
                 </h5>
 
@@ -124,10 +125,11 @@
                     </div>
                     <!-- Pay Button -->
                     <div class="col-md-2">
-                        <button class="btn btn-primary w-100 shadow-sm fw-bold" (click)="onPay()">
-                            <i class="fas fa-check-circle me-1"></i> Pay
+                        <button nbButton status="primary" class="w-100 shadow-sm fw-bold" (click)="onPay()">
+                          <nb-icon icon="checkmark-circle-2-outline" class="me-1"></nb-icon> Pay
                         </button>
-                    </div>
+                      </div>
+                      
                 </div>
             </div>
         </div>

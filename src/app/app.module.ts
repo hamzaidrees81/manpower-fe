@@ -12,6 +12,7 @@ import { ThemeModule } from './@theme/theme.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import {
+  NbButtonModule,
   NbCardModule,
   NbChatModule,
   NbDatepickerModule,
@@ -27,9 +28,10 @@ import { FormsModule } from '@angular/forms';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 import { ServicesModule } from './@core/services/services.module';
 import { ButtonViewComponent } from './shared/button-view/button-view.component';
+import { AddButtonComponent } from './shared/add-button/add-button.component';
 
 @NgModule({
-  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent],
+  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
@@ -37,6 +39,7 @@ import { ButtonViewComponent } from './shared/button-view/button-view.component'
     AppRoutingModule,
     FormsModule,
     NbIconModule,
+    NbButtonModule ,
     NbCardModule,
     ServicesModule.forRoot(),
     NbSidebarModule.forRoot(),

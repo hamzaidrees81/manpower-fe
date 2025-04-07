@@ -13,6 +13,8 @@ import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { NbDialogService } from '@nebular/theme';
 import { ButtonViewComponent } from '../../../shared/button-view/button-view.component';
+import { SponsorModalComponent } from '../sponsor-modal/sponsor-modal.component';
+import { AddButtonComponent } from '../../../shared/add-button/add-button.component';
 
 @Component({
   selector: 'ngx-asset',
@@ -161,38 +163,53 @@ export class AssetComponent implements OnInit {
           },
         },
       },
-      sponsoredBy: {
-        title: 'Sponsored By',
-        type: 'html',
+      // sponsoredBy: {
+      //   title: 'Sponsored By',
+      //   type: 'html',
+      //   filter: false,
+      //   valuePrepareFunction: (sponsor) => sponsor.name,
+      //   editor: {
+      //     type: 'list',
+      //     config: {
+      //       selectText: 'Select...',
+      //       list: [],
+      //     },
+      //   },
+      // },
+      // sponsorshipType: {
+      //   title: "Sponsorship Type",
+      //   type: "string", // Change type to "string" since it's a dropdown
+      //   filter: false,
+      //   editor: {
+      //     type: "list",
+      //     config: {
+      //       selectText: "Select Type", // Placeholder text
+      //       list: [
+      //         { value: "FIXED", title: "Fixed" },
+      //         { value: "PERCENTAGE", title: "Percentage" },
+      //       ],
+      //     },
+      //   },
+      // },
+      // sponsorshipValue: {
+      //   title: "Sponsorship Value",
+      //   type: "number",
+      //   filter: false,
+      // },
+      addSponsorButton: {
+        title: 'Add Sponsor',
+        type: 'custom',
         filter: false,
-        valuePrepareFunction: (sponsor) => sponsor.name,
-        editor: {
-          type: 'list',
-          config: {
-            selectText: 'Select...',
-            list: [],
-          },
-        },
-      },
-      sponsorshipType: {
-        title: "Sponsorship Type",
-        type: "string", // Change type to "string" since it's a dropdown
-        filter: false,
-        editor: {
-          type: "list",
-          config: {
-            selectText: "Select Type", // Placeholder text
-            list: [
-              { value: "FIXED", title: "Fixed" },
-              { value: "PERCENTAGE", title: "Percentage" },
-            ],
-          },
-        },
-      },
-      sponsorshipValue: {
-        title: "sponsorship Value",
-        type: "number",
-        filter: false,
+        editable: false,
+        addable: false,
+        renderComponent: AddButtonComponent,
+        onComponentInitFunction: (instance) => {
+          const sub = instance.save.subscribe(row => {
+            this.openSponsorModal(row); // ✅ this refers to your component class
+          });
+        
+          instance.ngOnDestroy = () => sub.unsubscribe();
+        }
       },
 
     },
@@ -212,6 +229,13 @@ export class AssetComponent implements OnInit {
   ngOnInit(): void {
     this.loadDropdowns();
     this.loadAssets();
+  }
+
+  openSponsorModal(row: any) {
+    this.dialogService.open(SponsorModalComponent, {
+      context: row,
+      closeOnBackdropClick: false,
+    });
   }
 
   // Load all clients
@@ -259,28 +283,28 @@ export class AssetComponent implements OnInit {
     // });
 
     // FETCH SPONSOR LIST
-    this.sponsorService.getSponsors().subscribe((data) => {
-      this.sponsors = data;
-      this.settings = {
-        ...this.settings,
-        columns: {
-          ...this.settings.columns,
-          sponsoredBy: {
-            ...this.settings.columns.sponsoredBy,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
-    });
+    // this.sponsorService.getSponsors().subscribe((data) => {
+    //   this.sponsors = data;
+    //   this.settings = {
+    //     ...this.settings,
+    //     columns: {
+    //       ...this.settings.columns,
+    //       sponsoredBy: {
+    //         ...this.settings.columns.sponsoredBy,
+    //         editor: {
+    //           type: 'list',
+    //           config: {
+    //             selectText: 'Select...',
+    //             list: data.map((c) => ({
+    //               value: JSON.stringify(c), // Store whole object as string
+    //               title: c.name, // Display name
+    //             })),
+    //           },
+    //         },
+    //       },
+    //     },
+    //   };
+    // });
   }
 
   handleSelectedIqamaExpiryDate() {

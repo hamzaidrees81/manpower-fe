@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ButtonViewComponent } from './button-view.component';
+import { SponsorModalComponent } from './sponsor-modal.component';
 
-describe('ButtonViewComponent', () => {
-  let component: ButtonViewComponent;
-  let fixture: ComponentFixture<ButtonViewComponent>;
+describe('SponsorModalComponent', () => {
+  let component: SponsorModalComponent;
+  let fixture: ComponentFixture<SponsorModalComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ButtonViewComponent ]
+      declarations: [ SponsorModalComponent ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ButtonViewComponent);
+    fixture = TestBed.createComponent(SponsorModalComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

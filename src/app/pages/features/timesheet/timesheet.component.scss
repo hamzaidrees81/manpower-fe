@@ -81,19 +81,51 @@ nb-tabset {
   }
   
 
-/* For available day headers (Sat, Sun) */
+/* For active day headers */
 .active-header {
-  background-color: #007bff !important; /* Blue background */
+  background-color: #66b3ff !important; /* Lighter Blue background */
   color: white !important;
   font-weight: bold;
 }
 
 /* For disabled day headers */
 .disabled-header {
-  background-color: #6c757d !important; /* Grey background */
-  color: #e0e0e0 !important;
+  background-color: #d6d6d6 !important; /* Grey background */
+  color: white !important;
   font-weight: bold;
 }
+
+
+/* Success Button */
+.success-button {
+  background-color: #66cc66 !important; /* Light Green background */
+  color: white !important;
+  border: none !important;
+}
+
+.success-button:hover {
+  background-color: #33b033 !important; /* Darker Green on hover */
+}
+
+/* Danger Button (Delete) */
+.danger-button {
+  background-color: transparent !important;
+  color: #ff4d4d !important; /* Soft Red text */
+  border: 2px solid #ff4d4d !important;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.danger-button:hover {
+  background-color: #ff4d4d !important; /* Soft Red background on hover */
+  color: white !important;
+}
+
+
+.table-bordered {
+  border: 1px solid lightgray !important;
+}
+
 
 /* Available fields */
 .active-field {
@@ -106,6 +138,11 @@ nb-tabset {
   color: #6c757d !important;
   text-align: center;
   font-weight: bold;
+}
+
+/* For active fields */
+.table-bordered .active-field {
+  background-color: #e3f2fd !important; /* Light blue background for active fields */
 }
 
 /* Default: Full width for larger screens */
@@ -125,6 +162,10 @@ nb-tabset {
 
 
 
+.disabled-input:disabled {
+  background-color: white !important;
+  color: #6c757d; /* Text color for disabled input */
+}
 
 
 

@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SponsorService {
   private apiUrl = `${environment.apiUrl}/sponsors`; // Get API URL from environment
+  private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/project-asset-sponsorships`;
 
   constructor(private http: HttpClient) {}
 
@@ -30,6 +31,26 @@ export class SponsorService {
   // Delete Sponsors
   deleteSponsors(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
+  }
+
+
+  // Project Asset Sponsorships
+
+  getProjectAssetSponsorshipsById(id): Observable<any[]> {
+    return this.http.get<any[]>(`${this.projectAssetSponsorshipsApiUrl}/${id}`);
+  }
+
+  addProjectAssetSponsorships(assetSponsors: any): Observable<any> {
+    return this.http.post<any>(this.projectAssetSponsorshipsApiUrl, assetSponsors);
+  }
+
+  updateProjectAssetSponsorships(id: number, assetSponsors: any): Observable<any> {
+    return this.http.put<any>(`${this.projectAssetSponsorshipsApiUrl}/${id}`, assetSponsors);
+  }
+
+  // Delete Sponsors
+  deleteProjectAssetSponsorships(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.projectAssetSponsorshipsApiUrl}/${id}`);
   }
 }
 

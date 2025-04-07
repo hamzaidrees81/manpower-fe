@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { NbAccordionModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbSelectModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
+import { NbAccordionModule, NbButtonModule, NbCardModule, NbDatepickerModule, NbIconModule, NbInputModule, NbSelectModule, NbTabsetModule, NbTreeGridModule } from '@nebular/theme';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -16,6 +16,7 @@ import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.componen
 import { AssetPaymentComponent } from './payment-management/asset-payment/asset-payment.component';
 import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
 import { InvoiceReceivableComponent } from './payment-management/invoice-receivable/invoice-receivable.component';
+import { SponsorModalComponent } from './sponsor-modal/sponsor-modal.component';
 
 @NgModule({
   imports: [
@@ -27,6 +28,7 @@ import { InvoiceReceivableComponent } from './payment-management/invoice-receiva
     FeaturesRoutingModule,
     Ng2SmartTableModule,
     NbTabsetModule,
+    NbButtonModule ,
     FormsModule,
     NbAccordionModule,
     NbSelectModule,
@@ -45,6 +47,7 @@ import { InvoiceReceivableComponent } from './payment-management/invoice-receiva
     AssetPaymentComponent,
     SponsorPaymentComponent,
     InvoiceReceivableComponent,
+    SponsorModalComponent,
     
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules

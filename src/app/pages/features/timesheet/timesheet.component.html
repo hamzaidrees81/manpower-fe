@@ -9,8 +9,166 @@
     <nb-card size="large">
       <nb-tabset>
         <nb-tab tabTitle="Asset Information">
-          <ng2-smart-table [settings]="settingsAsset" [source]="sourceAsset">
-          </ng2-smart-table>
+          <div class="row mb-4">
+            <div class="col-12">
+              <!-- Accordion for Sponsored By, Designation, Passport Information, and Asset Details -->
+              <nb-accordion>
+                <!-- Asset Details Accordion (Open by Default) -->
+                <nb-accordion-item [expanded]="true">
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="briefcase-outline" class="me-2"></nb-icon> Asset Details
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <div class="row g-3">
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="name" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="person-outline" class="me-2 mr-2"></nb-icon> Name
+                        </label>
+                        <input type="text" id="name" class="form-control" [value]="assetData?.name" disabled
+                          style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="idNumber" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="hash-outline" class="me-2 mr-2"></nb-icon> ID Number
+                        </label>
+                        <input type="text" id="idNumber" class="form-control" [value]="assetData?.idNumber" disabled
+                          style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="iqamaExpiry" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Iqama Expiry
+                        </label>
+                        <input type="text" id="iqamaExpiry" class="form-control" [value]="assetData?.iqamaExpiry"
+                          disabled style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="phone" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="phone-outline" class="me-2 mr-2"></nb-icon> Phone
+                        </label>
+                        <input type="text" id="phone" class="form-control" [value]="assetData?.phone" disabled
+                          style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="joiningDate" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Joining Date
+                        </label>
+                        <input type="text" id="joiningDate" class="form-control" [value]="assetData?.joiningDate"
+                          disabled style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="assetType" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="archive-outline" class="me-2 mr-2"></nb-icon> Asset Type
+                        </label>
+                        <input type="text" id="assetType" class="form-control" [value]="assetData?.assetType" disabled
+                          style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="assetNumber" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="keypad-outline" class="me-2 mr-2"></nb-icon> Asset Number
+                        </label>
+                        <input type="text" id="assetNumber" class="form-control" [value]="assetData?.assetNumber"
+                          disabled style="background-color: white;">
+                      </div>
+                      <!-- New Asset Ownership Field -->
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="assetOwnership" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="checkmark-circle-outline" class="me-2 mr-2"></nb-icon> Asset Ownership
+                        </label>
+                        <input type="text" id="assetOwnership" class="form-control" [value]="assetData?.assetOwnership"
+                          disabled style="background-color: white;">
+                      </div>
+                    </div>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+
+                <!-- Sponsored By Accordion -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="home-outline" class="me-2"></nb-icon> Sponsored By
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <div class="row g-3">
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="sponsoredBy" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="home-outline" class="me-2 mr-2"></nb-icon> Sponsored By
+                        </label>
+                        <input type="text" id="sponsoredBy" class="form-control" [value]="assetData?.sponsoredName"
+                          disabled style="background-color: white;">
+                      </div>
+                      <!-- New Sponsorship Type Field -->
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="sponsorshipType" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Sponsorship Type
+                        </label>
+                        <input type="text" id="sponsorshipType" class="form-control"
+                          [value]="assetData?.sponsorshipType" disabled style="background-color: white;">
+                      </div>
+                      <!-- New Sponsorship Value Field -->
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="sponsorshipValue" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="pricetag-outline" class="me-2 mr-2"></nb-icon> Sponsorship Value
+                        </label>
+                        <input type="text" id="sponsorshipValue" class="form-control"
+                          [value]="assetData?.sponsorshipValue" disabled style="background-color: white;">
+                      </div>
+                    </div>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+
+                <!-- Other Accordion Items (e.g., Designation, Passport Information) -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="briefcase-outline" class="me-2"></nb-icon> Designation
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <div class="row g-3">
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="designation" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Designation
+                        </label>
+                        <input type="text" id="designation" class="form-control" [value]="assetData?.designation"
+                          disabled style="background-color: white;">
+                      </div>
+                    </div>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+
+                <!-- Passport Information Accordion -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="clipboard-outline" class="me-2"></nb-icon> Passport Information
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <div class="row g-3">
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="passport" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="clipboard-outline" class="me-2 mr-2"></nb-icon> Passport
+                        </label>
+                        <input type="text" id="passport" class="form-control" [value]="assetData?.passport" disabled
+                          style="background-color: white;">
+                      </div>
+                      <div class="col-md-4 col-sm-12 mb-3">
+                        <label for="passportExpiry" class="fw-bold text-muted d-flex align-items-center">
+                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Passport Expiry
+                        </label>
+                        <input type="text" id="passportExpiry" class="form-control" [value]="assetData?.passportExpiry"
+                          disabled style="background-color: white;">
+                      </div>
+                    </div>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+              </nb-accordion>
+            </div>
+          </div>
+
         </nb-tab>
         <nb-tab tabTitle="Projects">
           <ng2-smart-table [settings]="settingsProjects" [source]="sourceProjects"
@@ -19,93 +177,121 @@
           </ng2-smart-table>
         </nb-tab>
         <nb-tab tabTitle="Timesheet">
-          <div class="container mt-4">
-            <div class="row justify-content-center g-3">
+          <!-- Styled Timesheet Filters -->
+          <div class="row mb-4">
+            <div class="col-12">
+              <div class="filter-section card shadow-sm border-0">
+                <div class="card-header p-3">
+                  <h4 class="mb-0 d-flex align-items-center">
+                    <nb-icon icon="calendar-outline" class="me-2 mr-3"></nb-icon> Timesheet Filters
+                  </h4>
+                </div>
+                <div class="card-body">
+                  <div class="row align-items-end g-3">
 
-              <!-- Month Selection -->
-              <div class="form-group col-md-4">
-                <label for="monthSelect" class="fw-bold">Month</label>
-                <select id="monthSelect" class="form-control" [(ngModel)]="selectedMonth">
-                  <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
-                </select>
+                    <!-- Month Selection -->
+                    <div class="col-md-4 col-sm-12 mb-3">
+                      <label for="monthSelect" class="fw-bold text-muted d-flex align-items-center">
+                        <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Select Month
+                      </label>
+                      <select id="monthSelect" class="form-control" [(ngModel)]="selectedMonth">
+                        <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
+                      </select>
+                    </div>
+
+                    <!-- Year Selection -->
+                    <div class="col-md-4 col-sm-12 mb-3">
+                      <label for="yearSelect" class="fw-bold text-muted d-flex align-items-center">
+                        <nb-icon icon="clock-outline" class="me-2 mr-2"></nb-icon> Select Year
+                      </label>
+                      <select id="yearSelect" class="form-control" [(ngModel)]="selectedYear">
+                        <option *ngFor="let year of years" [value]="year">{{ year }}</option>
+                      </select>
+                    </div>
+
+                    <!-- Load Timesheet Button -->
+                    <div class="col-md-4 col-sm-12 mb-3 text-center">
+                      <button nbButton status="primary" class="w-100 fw-bold shadow-sm" (click)="loadSheet()">
+                        Load Timesheet
+                      </button>
+                    </div>
+                    
+
+                  </div>
+                </div>
               </div>
-
-              <!-- Year Selection -->
-              <div class="form-group col-md-4">
-                <label for="yearSelect" class="fw-bold">Year</label>
-                <select id="yearSelect" class="form-control" [(ngModel)]="selectedYear">
-                  <option *ngFor="let year of years" [value]="year">{{ year }}</option>
-                </select>
-              </div>
-
-              <!-- Load Timesheet Button -->
-              <div class="form-group col-md-4 d-flex align-items-end">
-                <button class="btn btn-primary w-100" (click)="loadSheet()">
-                  <i class="bi bi-arrow-repeat me-2"></i> Load Timesheet
-                </button>
-              </div>
-
             </div>
           </div>
+
 
           <div *ngFor="let week of weeks">
-            <h3 class="text-primary mt-3">{{ week.title }}</h3>
-
-            <!-- Responsive Scrollable Table -->
-            <div class="table-responsive">
-              <table class="table table-bordered">
-                <thead class="table-dark">
-                  <tr>
-                    <th>Project Name</th>
-                    <th>Rate Type</th>
-                    <th *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-header' : 'active-header'">
-                      {{ day.date }}
-                    </th>
-
-
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  <ng-container *ngFor="let row of week.rows; let i = index">
+            <!-- Card Header with Week Title and Icon -->
+            <div class="filter-section card shadow-sm border-0 mb-4">
+              <div class="card-header p-3 d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 d-flex align-items-center">
+                  <nb-icon icon="calendar-outline" class="me-2 mr-3"></nb-icon>
+                  {{ week.title }}
+                </h5>
+                <button nbButton status="success" outline size="small" (click)="addMoreRows(week)">
+                  <nb-icon icon="plus-outline" class="me-1"></nb-icon> Add More
+                </button>
+              </div>
+          
+              <!-- Responsive Scrollable Table -->
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead class="">
                     <tr>
-                      <td>
-                        <select class="form-select form-control" [(ngModel)]="row.projectName" (change)="updateProjectSelection(row)">
-                          <option *ngFor="let project of getProjects" [value]="project.projectId" >{{ project?.projectName }}
-                          </option>
-                        </select>
-                      </td>
-                      <td>{{ row.rateType }}</td>
-                      <td *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-field' : 'active-field'">
-                        <input *ngIf="!day.isDisabled" type="number" min="0" [(ngModel)]="row.days[day.date]"
-                          class="form-control" (change)="updateTimesheet(row.projectName, row.rateType, day.date, row.days[day.date],row)">
-                        <span *ngIf="day.isDisabled">--</span>
-                      </td>
-
-
-                      <td>
-                        <button class="btn btn-danger btn-sm d-flex align-items-center gap-1"
-                          (click)="deleteRow(week, i)">
-                          Delete
-                        </button>
-                      </td>
+                      <th class="active-header">Name</th>
+                      <th class="active-header">Type</th>
+                      <th *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-header' : 'active-header'">
+                        {{ day.date }}
+                      </th>
+                      <th class="active-header">Actions</th>
                     </tr>
-                  </ng-container>
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    <ng-container *ngFor="let row of week.rows; let i = index">
+                      <tr>
+                        <td class="active-field">
+                          <select class="form-select form-control" [(ngModel)]="row.projectName" (change)="updateProjectSelection(row)">
+                            <option *ngFor="let project of getProjects" [value]="project.projectId">{{ project?.projectName }}</option>
+                          </select>
+                        </td>
+                        <td class="active-field">{{ row.rateType }}</td>
+                        <td *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-field' : 'active-field'">
+                          <input *ngIf="!day.isDisabled" type="number" min="0" [(ngModel)]="row.days[day.date]" class="form-control" (change)="updateTimesheet(row.projectName, row.rateType, day.date, row.days[day.date], row)">
+                          <span *ngIf="day.isDisabled">--</span>
+                        </td>
+                        <td class="active-field">
+                          <button nbButton status="danger" outline size="small" class="d-flex align-items-center gap-1" (click)="deleteRow(week, i)">
+                            <nb-icon icon="trash-2-outline" class="me-1"></nb-icon> Delete
+                          </button>
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
             </div>
-
-            <button class="btn btn-success btn-sm mt-2" (click)="addMoreRows(week)">+ Add More</button>
           </div>
+          
+          
+          
+          
+          
           <div class="d-flex justify-content-end" *ngIf="isTimeSheetSubmit">
-            <button class="btn btn-success btn-sm mt-2" (click)="submitTimeSheet()" [disabled]="timeSheetCollection.length === 0">+ Submit Timesheet</button>
+            <button nbButton status="success" size="small" class="mt-2" (click)="submitTimeSheet()"
+              [disabled]="timeSheetCollection.length === 0">
+              <nb-icon icon="checkmark-circle-outline" class="me-1"></nb-icon> Submit Timesheet
+            </button>
+
           </div>
         </nb-tab>
 
 
 
-        <nb-tab tabTitle="Summary">
+        <!-- <nb-tab tabTitle="Summary">
           <nb-card>
             <nb-card-header>Summery Information</nb-card-header>
             <nb-card-body>
@@ -116,7 +302,7 @@
         <nb-tab tabTitle="Expenses">
           <ng2-smart-table [settings]="settingsExpenses" [source]="sourceExpenses"
             (deleteConfirm)="onDeleteExpenseConfirm($event)"></ng2-smart-table>
-        </nb-tab>
+        </nb-tab> -->
       </nb-tabset>
     </nb-card>
   </div>

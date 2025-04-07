@@ -24,77 +24,14 @@ export class TimesheetComponent  implements OnInit {
   isTimeSheetSubmit = false;
   timeSheetCollection: any[] = []; // Array to store timesheet data
 
-
-  sourceAsset: LocalDataSource = new LocalDataSource();
   sourceProjects: LocalDataSource = new LocalDataSource();
   sourceExpenses: LocalDataSource = new LocalDataSource();
 
   list: { id: string; name: string }[] = [];
-
-  settingsAsset = {
-    actions:false,
-   hideSubHeader: true,
-    columns : { 
-      // company: {
-      //   title: "Company ID",
-      //   type: "number",
-      // },
-      sponsoredBy: {
-        title: "Sponsored By",
-        type: "number",
-      },
-      name: {
-        title: "Name",
-        type: "string",
-      },
-      idNumber: {
-        title: "ID Number",
-        type: "string",
-        filter: false,
-      },
-      iqamaExpiry: {
-        title: "Iqama Expiry",
-        type: "string",
-        filter: false,
-      },
-      phone: {
-        title: "Phone",
-        type: "string",
-        filter: false,
-      },
-      designation: {
-        title: "Designation",
-        type: "string",
-      },
-      passport: {
-        title: "Passport",
-        type: "number",
-        filter: false,
-      },
-      passportExpiry: {
-        title: "Passport Expiry",
-        type: "string",
-        filter: false,
-      },
-      joiningDate: {
-        title: "Joining Date",
-        type: "string",
-        filter: false,
-      },
-      assetType: {
-        title: "Asset Type",
-        type: "number",
-        filter: false,
-      },
-      assetNumber: {
-        title: "Asset Number",
-        type: "number",
-        filter: false,
-      }, 
-    },
-  }
-
   settingsProjects = {
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -648,15 +585,8 @@ export class TimesheetComponent  implements OnInit {
   getAsset(){
     const storedData = localStorage.getItem('selectedPerson');
     if (storedData) {
-      debugger;
       this.assetData = JSON.parse(storedData);
     }
-    const updatedAssetData = {
-      ...this.assetData,
-      // company:this.assetData.company.name,
-      sponsoredBy:this.assetData?.sponsoredBy?.name
-    }
-    this.sourceAsset.load([updatedAssetData]);
   }
 
   onDeleteConfirm(event): void {

@@ -40,10 +40,11 @@
     
               <!-- Prepare Invoice Button -->
               <div class="col-md-2 col-sm-12 mb-3 text-center">
-                <button class="btn btn-success px-4  fw-bold w-100" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
-                  <i class="fas fa-file-invoice"></i> Prepare Invoice
+                <button nbButton status="primary" class="w-100 fw-bold" (click)="toggleDetails()" [disabled]="!selectedClient || !selectedDateRange">
+                  <nb-icon icon="file-outline" class="me-2"></nb-icon> Prepare Invoice
                 </button>
               </div>
+              
     
             </div>
           </div>
@@ -105,43 +106,60 @@
     
     
 
-        <!-- Summary Section -->
-        <div class="container mt-4 p-3 bg-light rounded shadow-sm" *ngIf="showDetails">
-          <h3 class="text-center fw-bold mb-3">Summary</h3>
-          <div class="row g-3">
-            <div  class="col-md-4">
-              <div class="card text-center shadow-sm">
-                <div class="card-body">
-                  <p class="fw-bold text-secondary">Total Amount</p>
-                  <span class="text-success fs-4">{{ summeryTotalAmount }}</span>
-                </div>
+<!-- Summary Section -->
+<div class="row mb-4 mt-4" *ngIf="showDetails">
+  <div class="col-12">
+    <div class="filter-section card shadow-sm">
+      <div class="card-header">
+        <h4 class="mb-0 d-flex align-items-center">
+          <nb-icon icon="pie-chart-outline" class="me-2 mr-3"></nb-icon> Summery
+        </h4>
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <!-- Total Amount -->
+          <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <p class="fw-bold text-secondary">Total Amount</p>
+                <span class="text-success fs-4">{{ summeryTotalAmount }}</span>
               </div>
             </div>
-            <div  class="col-md-4">
-              <div class="card text-center shadow-sm">
-                <div class="card-body">
-                  <p class="fw-bold text-secondary">Total VAT Amount</p>
-                  <span class="text-success fs-4">{{ totalWithVAT }}</span>
-                </div>
+          </div>
+
+          <!-- Total VAT Amount -->
+          <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <p class="fw-bold text-secondary">Total VAT Amount</p>
+                <span class="text-success fs-4">{{ totalWithVAT }}</span>
               </div>
             </div>
-            <div  class="col-md-4">
-              <div class="card text-center shadow-sm">
-                <div class="card-body">
-                  <p class="fw-bold text-secondary">VAT Amount</p>
-                  <span class="text-success fs-4">{{ vatAmount }}</span>
-                </div>
+          </div>
+
+          <!-- VAT Amount -->
+          <div class="col-md-4">
+            <div class="card text-center shadow-sm">
+              <div class="card-body">
+                <p class="fw-bold text-secondary">VAT Amount</p>
+                <span class="text-success fs-4">{{ vatAmount }}</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
         
     <!-- Submit Invoice Button -->
     <div *ngIf="showDetails && !(this.routedInvoiceData?.view === 'VIEW')" class="text-center mt-4">
-      <button class="btn btn-primary px-4 py-2 fw-bold" (click)="submitInvoice()">
-        <i class="fas fa-paper-plane"></i> Submit Invoice
+      <button nbButton status="primary" class="px-4 py-2 fw-bold" (click)="submitInvoice()">
+        <nb-icon icon="paper-plane-outline" class="me-2"></nb-icon> Submit Invoice
       </button>
     </div>
+    
 
   </nb-card-body>
 </nb-card>

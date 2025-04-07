@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class SponsorService {
   private apiUrl = `${environment.apiUrl}/sponsors`; // Get API URL from environment
-  private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/project-asset-sponsorships`;
+  private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/asset-sponsorships`;
 
   constructor(private http: HttpClient) {}
 
@@ -36,8 +36,12 @@ export class SponsorService {
 
   // Project Asset Sponsorships
 
+  getAssetSponsorshipsById(id): Observable<any[]> {
+    return this.http.get<any[]>(`${this.projectAssetSponsorshipsApiUrl}/asset/${id}`);
+  }
+
   getProjectAssetSponsorshipsById(id): Observable<any[]> {
-    return this.http.get<any[]>(`${this.projectAssetSponsorshipsApiUrl}/${id}`);
+    return this.http.get<any[]>(`${this.projectAssetSponsorshipsApiUrl}/asset-project/${id}`);
   }
 
   addProjectAssetSponsorships(assetSponsors: any): Observable<any> {

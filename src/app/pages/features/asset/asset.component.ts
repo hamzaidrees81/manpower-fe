@@ -232,8 +232,12 @@ export class AssetComponent implements OnInit {
   }
 
   openSponsorModal(row: any) {
+    const  updateRow = {
+      ...row,
+      key : 'ASSET'
+    }
     this.dialogService.open(SponsorModalComponent, {
-      context: row,
+      context: updateRow,
       closeOnBackdropClick: false,
     });
   }
@@ -259,29 +263,6 @@ export class AssetComponent implements OnInit {
   }
 
   loadDropdowns(): void {
-    // this.companyService.getCompanies().subscribe((data) => {
-    //   this.companies = data;
-    //   this.settings = {
-    //     ...this.settings,
-    //     columns: {
-    //       ...this.settings.columns,
-    //       company: {
-    //         ...this.settings.columns.company,
-    //         editor: {
-    //           type: 'list',
-    //           config: {
-    //             selectText: 'Select...',
-    //             list: data.map((c) => ({
-    //               value: JSON.stringify(c), // Store whole object as string
-    //               title: c.name, // Display name
-    //             })),
-    //           },
-    //         },
-    //       },
-    //     },
-    //   };
-    // });
-
     // FETCH SPONSOR LIST
     // this.sponsorService.getSponsors().subscribe((data) => {
     //   this.sponsors = data;

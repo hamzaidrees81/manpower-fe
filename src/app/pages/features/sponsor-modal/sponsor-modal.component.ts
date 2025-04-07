@@ -39,8 +39,22 @@ export class SponsorModalComponent implements OnInit {
       //   title: 'Sponsor ID',
       //   type: 'number',
       // },
+      sponsorName: {
+        title: 'Name',
+        type: 'html',
+        filter: false,
+        valuePrepareFunction: (sponsor) => sponsor.name,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
+      },
       sponsorshipType: {
         title: 'Type',
+        filter: false,
         type: 'string',
         editor: {
           type: 'list',
@@ -55,10 +69,12 @@ export class SponsorModalComponent implements OnInit {
       },
       sponsorshipValue: {
         title: 'Value',
+        filter: false,
         type: 'number',
       },
       sponsorshipDeterminant: {
         title: 'Determinant',
+        filter: false,
         type: 'string',
         editor: {
           type: 'list',
@@ -70,21 +86,62 @@ export class SponsorModalComponent implements OnInit {
             ]
           }
         }
+      },
+      sponsorshipBasis: {
+        title: 'Sponsorship Basis',
+        filter: false,
+        type: 'string',
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [
+              { value: 'ASSETBASED', title: 'Asset Based' },
+              { value: 'PROJECTBASED', title: 'Project Based' }
+            ]
+          }
+        }
       }
     }
   };
+  sponsors: any[];
 
-  constructor(protected dialogRef: NbDialogRef<SponsorModalComponent>,private sponsorService : SponsorService,private toasterService : ToasterService,private dialogService : NbDialogService) {}
+  constructor(protected dialogRef: NbDialogRef<SponsorModalComponent>, private sponsorService: SponsorService, private toasterService: ToasterService, private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
-     // Access the row data passed in the context
-     this.rowData = this.dialogRef.componentRef.instance;
-      if(this.rowData){
-        this.getSponsors(this.rowData?.id);
-      }
+    this.rowData = this.dialogRef.componentRef.instance;
+    if (this.rowData) {
+      if(this.rowData?.key === 'ASSET'){
+        this.getSponsorsByAssetId(this.rowData?.id);
+      }else {
+        this.getSponsorsByProjectId(this.rowData?.id);
+      }     
+    }
+    this.loadDropdowns();
   }
 
-  getSponsors(id){
+  getSponsorsByAssetId(id) {
+    this.sponsorService.getAssetSponsorshipsById(id).subscribe(
+      (data) => {
+        const transformedData = data.map(item => ({
+          ...item,
+          sponsorName: {
+            name : item.sponsorName,
+            sponsorId : item.sponsorId
+          }
+        }));
+  
+        this.sponsorSource.load(transformedData);
+      },
+      (error) => {
+        console.error('Error loading clients:', error);
+      }
+    );
+  }
+  
+  
+
+  getSponsorsByProjectId(id) {
     this.sponsorService.getProjectAssetSponsorshipsById(id).subscribe(
       (data) => {
         this.sponsorSource.load(data);
@@ -95,9 +152,34 @@ export class SponsorModalComponent implements OnInit {
     );
   }
 
+  loadDropdowns(): void {
+    // FETCH SPONSOR LIST
+    this.sponsorService.getSponsors().subscribe((data) => {
+      this.sponsors = data;
+      this.sponsorSettings = {
+        ...this.sponsorSettings,
+        columns: {
+          ...this.sponsorSettings.columns,
+          sponsorName: {
+            ...this.sponsorSettings.columns.sponsorName,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
+  }
+
   // Add asset
   onCreateConfirm(event: any): void {
-
     const numericFields = ["sponsorshipValue"];
     // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
@@ -110,9 +192,15 @@ export class SponsorModalComponent implements OnInit {
       return; // Stop execution if validation fails
     }
 
+    const parseLatestData = JSON.parse(event?.newData?.sponsorName);
+    delete event?.newData?.sponsorName;
+
+
     const updateData = {
       ...event?.newData,
-      assetId:this.rowData?.id
+      assetId: this.rowData?.id,
+      sponsorId:parseLatestData?.sponsorId,
+      assetProjectId:1
     }
 
     // Call service to add the asset
@@ -145,9 +233,15 @@ export class SponsorModalComponent implements OnInit {
       return; // Stop execution if validation fails
     }
 
+    const parseLatestData = JSON.parse(event?.newData?.sponsorName);
+    delete event?.newData?.sponsorName;
+
+
     const updateData = {
       ...event?.newData,
-      assetId:this.rowData?.id
+      assetId: this.rowData?.id,
+      sponsorId:parseLatestData?.sponsorId,
+      assetProjectId:1
     }
 
     this.sponsorService.updateProjectAssetSponsorships(event?.newData?.id, updateData).subscribe({

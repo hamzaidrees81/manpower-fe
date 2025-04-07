@@ -11,6 +11,8 @@ import { TimesheetService } from '../../../@core/services/timesheet.service';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { NbDialogService } from '@nebular/theme';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { SponsorModalComponent } from '../sponsor-modal/sponsor-modal.component';
+import { AddButtonComponent } from '../../../shared/add-button/add-button.component';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -117,6 +119,21 @@ export class TimesheetComponent  implements OnInit {
           type: 'custom',
           component: CustomDatepickerComponent,
         },
+      },
+      addSponsorButton: {
+        title: 'Add Sponsor',
+        type: 'custom',
+        filter: false,
+        editable: false,
+        addable: false,
+        renderComponent: AddButtonComponent,
+        onComponentInitFunction: (instance) => {
+          const sub = instance.save.subscribe(row => {
+            this.openSponsorModal(row); // ✅ this refers to your component class
+          });
+        
+          instance.ngOnDestroy = () => sub.unsubscribe();
+        }
       },
       isActive: {
         title: "Is Active",
@@ -259,6 +276,13 @@ export class TimesheetComponent  implements OnInit {
   populateYears() {
     const currentYear = new Date().getFullYear();
     this.years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
+  }
+
+  openSponsorModal(row: any) {
+    this.dialogService.open(SponsorModalComponent, {
+      context: row,
+      closeOnBackdropClick: false,
+    });
   }
   
   async loadSheet() {

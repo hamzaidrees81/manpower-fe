@@ -10,13 +10,28 @@ export interface Company {
   maxAssetCount: number;
 }
 
+export interface Account {
+  id?: number;
+  name: string;
+  type: string; // You can extend this if there are other types
+  description: string;
+  balance: number;
+  accountNumber: number;
+  iban: string;
+  bankName: string;
+  isDefaultAccount: 'YES' | 'NO';
+  status: string; // Add more statuses if needed
+}
+
+
 @Injectable({
   providedIn: 'root',
 })
-export class CompanyService  {
+export class CompanyService {
   private apiUrl = `${environment.apiUrl}/companies`;
+  private apiUrlForAccounts = `${environment.apiUrl}/accounts`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   // Fetch all companies
   getCompanies(): Observable<Company[]> {
@@ -36,5 +51,27 @@ export class CompanyService  {
   // Delete company
   deleteCompany(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  // For Accounts
+
+  // Fetch all companies
+  getAccounts(): Observable<Account[]> {
+    return this.http.get<Account[]>(this.apiUrlForAccounts);
+  }
+
+  // Add new Account
+  addAccount(Account: Account): Observable<Account> {
+    return this.http.post<Account>(this.apiUrlForAccounts, Account);
+  }
+
+  // Update existing Account
+  updateAccount(Account: Account): Observable<Account> {
+    return this.http.put<Account>(`${this.apiUrlForAccounts}/${Account.id}`, Account);
+  }
+
+  // Delete Account
+  deleteAccount(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrlForAccounts}/${id}`);
   }
 }

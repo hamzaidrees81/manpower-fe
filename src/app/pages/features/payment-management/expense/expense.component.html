@@ -1,0 +1,27 @@
+<nb-card>
+    <nb-card-header class="custom-header">
+      <nb-icon icon="credit-card-outline"></nb-icon>
+      <span>Expense Management</span>
+    </nb-card-header>
+  
+    <nb-card-body>
+      <!-- Search Filters + Buttons -->
+
+  
+      <!-- Asset Payment  -->
+      <div class="mt-4">
+        <div class="section">
+          <h5 class="text-dark mb-3">
+            <i class="fas fa-file-invoice-dollar me-2 text-success mr-3"></i>
+            Payment Details
+          </h5>
+  
+          <!-- Payment Table -->
+          <ng2-smart-table [settings]="expenseSetting" [source]="expenseDataTable"
+            class="mb-4 rounded shadow-sm table-responsive">
+          </ng2-smart-table>
+        </div>
+      </div>
+
+    </nb-card-body>
+  </nb-card>

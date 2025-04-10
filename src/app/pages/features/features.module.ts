@@ -17,6 +17,8 @@ import { AssetPaymentComponent } from './payment-management/asset-payment/asset-
 import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
 import { InvoiceReceivableComponent } from './payment-management/invoice-receivable/invoice-receivable.component';
 import { SponsorModalComponent } from './sponsor-modal/sponsor-modal.component';
+import { ExpenseComponent } from './payment-management/expense/expense.component';
+import { AccountsComponent } from './accounts/accounts.component';
 
 @NgModule({
   imports: [
@@ -48,6 +50,8 @@ import { SponsorModalComponent } from './sponsor-modal/sponsor-modal.component';
     SponsorPaymentComponent,
     InvoiceReceivableComponent,
     SponsorModalComponent,
+    ExpenseComponent,
+    AccountsComponent,
     
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules

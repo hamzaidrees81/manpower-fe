@@ -116,8 +116,16 @@
                           [value]="assetData?.sponsorshipValue" disabled style="background-color: white;">
                       </div>
                     </div>
+                
+                    <!-- Add Nebular Button -->
+
+                    <button nbButton  status="info" (click)="goToAnotherPage()">
+                      <nb-icon icon="plus-outline"></nb-icon> Sponsor
+                    </button>
+                
                   </nb-accordion-item-body>
                 </nb-accordion-item>
+                
 
                 <!-- Other Accordion Items (e.g., Designation, Passport Information) -->
                 <nb-accordion-item>

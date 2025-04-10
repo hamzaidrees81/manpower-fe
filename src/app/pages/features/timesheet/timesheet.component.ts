@@ -13,6 +13,7 @@ import { NbDialogService } from '@nebular/theme';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { SponsorModalComponent } from '../sponsor-modal/sponsor-modal.component';
 import { AddButtonComponent } from '../../../shared/add-button/add-button.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -101,7 +102,7 @@ export class TimesheetComponent  implements OnInit {
         filter: false,
       },
       startDate: {
-        title: 'Start Time',
+        title: 'Start Date',
         type: 'custom',
         renderComponent: SmartTableDatepickerRenderComponentComponent,
         filter: false,
@@ -111,7 +112,7 @@ export class TimesheetComponent  implements OnInit {
         }
       },
       endDate: {
-        title: 'End Time',
+        title: 'End Date',
         type: 'custom',
         renderComponent: SmartTableDatepickerRenderComponentComponent,
         filter: false,
@@ -261,7 +262,7 @@ export class TimesheetComponent  implements OnInit {
   // TIME SHEET CONFIG END
 
 
-  constructor(private dialogService: NbDialogService,private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
+  constructor(private router: Router,private dialogService: NbDialogService,private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
 
   ngOnInit(): void {
     
@@ -399,6 +400,10 @@ export class TimesheetComponent  implements OnInit {
           }
         );
     });
+  }
+  goToAnotherPage() {
+    // Navigate to the desired route
+    this.router.navigate(['pages/features/sponsor']);
   }
   addMoreRows(week: any,) {
     const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].projectId : '';
@@ -723,6 +728,8 @@ export class TimesheetComponent  implements OnInit {
   }
       // Add project
 onProjectCreateConfirm(event: any): void {
+  const designationId = JSON.parse(event.newData.designation);
+  const projectId =  JSON.parse(event.newData.project);
   // Update start and end dates
   this.handleStartDate();
   this.handleEndDate();
@@ -730,15 +737,18 @@ onProjectCreateConfirm(event: any): void {
   // Parse necessary fields and prepare request data
   const newProject = {
     ...event.newData,
-    designation: JSON.parse(event.newData.designation),
-    project: JSON.parse(event.newData.project),
+    designationId: designationId?.id,
+    projectId:projectId?.id,
     startDate: this.customStartDate,
     endDate: this.customEndDate,
-    asset: {id:this.assetData.id},
-    company: {id:this.assetData.company.id},
+    assetId: this.assetData.id,
+    // company: {id:this.assetData.company.id},
     // status: event.newData.status === true ? 'ACTIVE' : 'INACTIVE', 
     isActive: event.newData.isActive === true ? "ACTIVE" : "INACTIVE", 
   };
+
+  delete newProject?.project;
+  delete newProject?.designation;
 
   // Call service to add the project
   this.assetService.addAssetProject(newProject).subscribe({
@@ -749,20 +759,26 @@ onProjectCreateConfirm(event: any): void {
     }
   });
 }
-  
+
+ 
 onProjectEditConfirm(event: any): void {
+  const designationId = JSON.parse(event.newData.designation);
+  const projectId =  JSON.parse(event.newData.project);
   debugger;
   const updatedProject = {
     ...event.newData,
-    designation: JSON.parse(event.newData.designation),
-    project: JSON.parse(event.newData.project),
+    designationId: designationId?.id,
+    projectId:projectId?.id,
     startDate: this.customStartDate,
     endDate: this.customEndDate,
-    asset: {id:this.assetData.id},
-    company: {id:this.assetData.company.id},
+    assetId: this.assetData.id,
+    // company: {id:this.assetData.company.id},
     // status: event.newData.status === true ? 1 : 0, 
     isActive: event.newData.isActive === true ? "ACTIVE" : "INACTIVE", 
   };
+
+  delete updatedProject?.project;
+  delete updatedProject?.designation;
 
   this.assetService.updateAssetProject(updatedProject.id, updatedProject).subscribe({
     next: (data) => event.confirm.resolve(data),

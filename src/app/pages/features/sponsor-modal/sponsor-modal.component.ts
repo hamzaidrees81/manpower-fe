@@ -5,6 +5,7 @@ import { SponsorService } from "../../../@core/services/sponsor.service";
 import { ConfirmDialogComponent } from "../../../shared/confirm-dialog/confirm-dialog.component";
 import { ToasterService } from "../../../@core/services/toaster.service";
 import { validateAndHandleNumericFields } from "../../../utils/validation-utils";
+import { FormatTextPipe } from "../../../utils/format-text.pipe";
 
 @Component({
   selector: 'ngx-sponsor-modal',
@@ -56,6 +57,7 @@ export class SponsorModalComponent implements OnInit {
         title: 'Type',
         filter: false,
         type: 'string',
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
         editor: {
           type: 'list',
           config: {
@@ -76,6 +78,7 @@ export class SponsorModalComponent implements OnInit {
         title: 'Determinant',
         filter: false,
         type: 'string',
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
         editor: {
           type: 'list',
           config: {
@@ -91,14 +94,12 @@ export class SponsorModalComponent implements OnInit {
         title: 'Sponsorship Basis',
         filter: false,
         type: 'string',
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
         editor: {
           type: 'list',
           config: {
             selectText: 'Select...',
-            list: [
-              { value: 'ASSETBASED', title: 'Asset Based' },
-              { value: 'PROJECTBASED', title: 'Project Based' }
-            ]
+            list: []
           }
         }
       }
@@ -111,13 +112,35 @@ export class SponsorModalComponent implements OnInit {
   ngOnInit(): void {
     this.rowData = this.dialogRef.componentRef.instance;
     if (this.rowData) {
+      debugger;
       if(this.rowData?.key === 'ASSET'){
+        this.getsponsorshipBasis( { value: 'ASSET_BASED', title: 'Asset Based' },);
         this.getSponsorsByAssetId(this.rowData?.id);
       }else {
-        this.getSponsorsByProjectId(this.rowData?.id);
+        this.getsponsorshipBasis( { value: 'PROJECT_BASED', title: 'Project Based' },);
+        this.getSponsorsByAssetId(this.rowData?.id);
       }     
     }
     this.loadDropdowns();
+  }
+
+  getsponsorshipBasis(data): void {
+      this.sponsorSettings = {
+        ...this.sponsorSettings,
+        columns: {
+          ...this.sponsorSettings.columns,
+          sponsorshipBasis: {
+            ...this.sponsorSettings.columns.sponsorshipBasis,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list:[data]
+              },
+            },
+          },
+        },
+      };
   }
 
   getSponsorsByAssetId(id) {
@@ -127,7 +150,7 @@ export class SponsorModalComponent implements OnInit {
           ...item,
           sponsorName: {
             name : item.sponsorName,
-            sponsorId : item.sponsorId
+            sponsorId : item.id
           }
         }));
   
@@ -180,7 +203,7 @@ export class SponsorModalComponent implements OnInit {
 
   // Add asset
   onCreateConfirm(event: any): void {
-    const numericFields = ["sponsorshipValue"];
+    // const numericFields = ["sponsorshipValue"];
     // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
     // ✅ Validate required fields
@@ -188,19 +211,18 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
 
-    const parseLatestData = JSON.parse(event?.newData?.sponsorName);
+    // const parseLatestData = JSON.parse(event?.newData?.sponsorName);
     delete event?.newData?.sponsorName;
 
 
     const updateData = {
       ...event?.newData,
       assetId: this.rowData?.id,
-      sponsorId:parseLatestData?.sponsorId,
-      assetProjectId:1
+      sponsorId:event?.newData?.id,
     }
 
     // Call service to add the asset
@@ -221,7 +243,7 @@ export class SponsorModalComponent implements OnInit {
 
   onEditConfirm(event: any): void {
 
-    const numericFields = ["sponsorshipValue"];
+    // const numericFields = ["sponsorshipValue"];
     // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
     // ✅ Validate required fields
@@ -229,19 +251,18 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
 
-    const parseLatestData = JSON.parse(event?.newData?.sponsorName);
+    // const parseLatestData = JSON.parse(event?.newData?.sponsorName);
     delete event?.newData?.sponsorName;
 
 
     const updateData = {
       ...event?.newData,
       assetId: this.rowData?.id,
-      sponsorId:parseLatestData?.sponsorId,
-      assetProjectId:1
+      sponsorId:event?.newData?.id,
     }
 
     this.sponsorService.updateProjectAssetSponsorships(event?.newData?.id, updateData).subscribe({

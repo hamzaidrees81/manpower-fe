@@ -15,6 +15,8 @@ import { NbDialogService } from '@nebular/theme';
 import { ButtonViewComponent } from '../../../shared/button-view/button-view.component';
 import { SponsorModalComponent } from '../sponsor-modal/sponsor-modal.component';
 import { AddButtonComponent } from '../../../shared/add-button/add-button.component';
+import { FormatTextPipe } from '../../../utils/format-text.pipe';
+import { DesignationService } from '../../../@core/services/designation.service';
 
 @Component({
   selector: 'ngx-asset',
@@ -95,10 +97,20 @@ export class AssetComponent implements OnInit {
       phone: {
         title: "Phone",
         type: "string",
+        filter: false,
       },
       designation: {
-        title: "Designation",
-        type: "string",
+        title: 'Designation',
+        type: 'html',
+        filter: false,
+        valuePrepareFunction: (designation) => designation?.name,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
       },
       passport: {
         title: "Passport",
@@ -129,7 +141,7 @@ export class AssetComponent implements OnInit {
         title: 'Asset Type',
         type: 'html',
         filter: false, // No filter needed
-        valuePrepareFunction: (value) => value, // Directly show stored value
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
         editor: {
           type: 'list', // 'list' works if 'select' doesn't
           config: {
@@ -151,7 +163,7 @@ export class AssetComponent implements OnInit {
         title: 'Ownership',
         type: 'html',
         filter: false,
-        valuePrepareFunction: (value) => value,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
         editor: {
           type: 'list',
           config: {
@@ -200,8 +212,8 @@ export class AssetComponent implements OnInit {
         title: 'Add Sponsor',
         type: 'custom',
         filter: false,
-        editable: false,
-        addable: false,
+        // editable: false,
+        // addable: false,
         renderComponent: AddButtonComponent,
         onComponentInitFunction: (instance) => {
           const sub = instance.save.subscribe(row => {
@@ -223,8 +235,9 @@ export class AssetComponent implements OnInit {
   customSelectedIqamaExpiryDate: Date;
   customSelectedPassportExpiryDate: Date;
   customSelectedJoiningDate: Date;
+  designation: any;
 
-  constructor(private dialogService: NbDialogService, private toasterService: ToasterService, private router: Router, private companyService: CompanyService, private assetService: AssetService, private datePickerService: DatePickerService, private sponsorService: SponsorService) { }
+  constructor(private designationService : DesignationService ,private dialogService: NbDialogService, private toasterService: ToasterService, private router: Router, private companyService: CompanyService, private assetService: AssetService, private datePickerService: DatePickerService, private sponsorService: SponsorService) { }
 
   ngOnInit(): void {
     this.loadDropdowns();
@@ -286,6 +299,28 @@ export class AssetComponent implements OnInit {
     //     },
     //   };
     // });
+    this.designationService.getDesignations().subscribe((data) => {
+      this.designation = data;
+      this.settings = {
+        ...this.settings,
+        columns: {
+          ...this.settings.columns,
+          designation: {
+            ...this.settings.columns.designation,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
   }
 
   handleSelectedIqamaExpiryDate() {
@@ -321,20 +356,20 @@ export class AssetComponent implements OnInit {
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    const numericFields = ["idNumber", "phone", "assetNumber"];
-    const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
+    // const numericFields = ["idNumber", "phone", "assetNumber"];
+    // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
     // ✅ Validate required fields
-    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+    //   return; // Stop execution if validation fails
+    // }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
     // Parse selected company data
-    const latestData = event.newData?.sponsoredBy;
-    const parseLatestData = JSON.parse(latestData);
+    const latestData = event.newData;
+    const parseLatestData = latestData;
 
     // Prepare new asset object with dynamic company data
     const newAsset = {
@@ -343,7 +378,7 @@ export class AssetComponent implements OnInit {
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
-      sponsoredBy: parseLatestData?.sponsorId
+      // sponsoredBy: parseLatestData?.sponsorId
     };
 
     // Call service to add the asset
@@ -367,20 +402,20 @@ export class AssetComponent implements OnInit {
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    const numericFields = ["idNumber", "phone", "assetNumber"];
-    const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
+    // const numericFields = ["idNumber", "phone", "assetNumber"];
+    // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
-    // ✅ Validate required fields
-    if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
-      return; // Stop execution if validation fails
-    }
+    // // ✅ Validate required fields
+    // if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+    //   return; // Stop execution if validation fails
+    // }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
     // Parse selected company data
-    const latestData = event.newData?.sponsoredBy;
-    const parseLatestData = JSON.parse(latestData);
+    const latestData = event.newData;
+    const parseLatestData = latestData
 
     // Prepare new asset object with dynamic company data
     const updatedAsset = {
@@ -389,7 +424,7 @@ export class AssetComponent implements OnInit {
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
-      sponsoredBy: parseLatestData?.sponsorId
+      // sponsoredBy: parseLatestData?.sponsorId
     };
     this.assetService.updateAsset(updatedAsset.id, updatedAsset).subscribe({
       next: (data) => {

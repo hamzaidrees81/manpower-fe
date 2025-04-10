@@ -36,24 +36,24 @@ export class SponsorComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      company: {
-        title: 'Company',
-        type: 'html',
-        filter: false,
-        valuePrepareFunction: (company) => company.name,
-        editor: {
-          type: 'list',
-          config: {
-            selectText: 'Select...',
-            list: [],
-          },
-        },
-      },
-      sponsorId: {
-        title: 'Sponsor ID',
-        type: 'number',
-        filter: false,
-      },
+      // company: {
+      //   title: 'Company',
+      //   type: 'html',
+      //   filter: false,
+      //   valuePrepareFunction: (company) => company.name,
+      //   editor: {
+      //     type: 'list',
+      //     config: {
+      //       selectText: 'Select...',
+      //       list: [],
+      //     },
+      //   },
+      // },
+      // sponsorId: {
+      //   title: 'No.',
+      //   type: 'number',
+      //   filter: false,
+      // },
       name: {
         title: 'Name',
         type: 'string',
@@ -71,33 +71,33 @@ export class SponsorComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadSponsors();
-    this.loadDropdowns();
+    // this.loadDropdowns();
   }
 
-  loadDropdowns(): void {
-    this.companyService.getCompanies().subscribe((data) => {
-      this.companies = data;
-      this.settings = {
-        ...this.settings,
-        columns: {
-          ...this.settings.columns,
-          company: {
-            ...this.settings.columns.company,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
-    });
-  }
+  // loadDropdowns(): void {
+  //   this.companyService.getCompanies().subscribe((data) => {
+  //     this.companies = data;
+  //     this.settings = {
+  //       ...this.settings,
+  //       columns: {
+  //         ...this.settings.columns,
+  //         company: {
+  //           ...this.settings.columns.company,
+  //           editor: {
+  //             type: 'list',
+  //             config: {
+  //               selectText: 'Select...',
+  //               list: data.map((c) => ({
+  //                 value: JSON.stringify(c), // Store whole object as string
+  //                 title: c.name, // Display name
+  //               })),
+  //             },
+  //           },
+  //         },
+  //       },
+  //     };
+  //   });
+  // }
 
   // Load all Sponsors
   loadSponsors(): void {
@@ -113,23 +113,20 @@ export class SponsorComponent implements OnInit {
 
   // Add Sponsors
   onCreateConfirm(event: any): void {
-    const numericFields = ["sponsorId", "phone"];
-    const requiredFields = ["sponsorId", "name"];
+    // const numericFields = [ "phone"];
+    const requiredFields = [ "name"];
 
     // ✅ Validate required fields
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
       return; // Stop execution if validation fails
     }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
     const newSponsors = event.newData;
-    const updateSponsor = {
-      ...newSponsors,
-      company: JSON.parse(event.newData.company),
-    };
-    this.sponsorService.addSponsors(updateSponsor).subscribe(
+
+    this.sponsorService.addSponsors(newSponsors).subscribe(
       (data) => {
         event.confirm.resolve(data);
         this.toasterService.showSuccess('Sponsor created successfully!');
@@ -144,23 +141,20 @@ export class SponsorComponent implements OnInit {
 
   // Update Sponsors
   onEditConfirm(event: any): void {
-    const numericFields = ["sponsorId", "phone"];
-    const requiredFields = ["sponsorId", "name"];
+    // const numericFields = ["phone"];
+    const requiredFields = ["name"];
 
     // ✅ Validate required fields
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
       return; // Stop execution if validation fails
     }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
     const updatedSponsors = event.newData;
-    const updateSponsor = {
-      ...updatedSponsors,
-      company: JSON.parse(event.newData.company),
-    };
-    this.sponsorService.updateSponsors(updateSponsor.id, updateSponsor).subscribe(
+
+    this.sponsorService.updateSponsors(updatedSponsors.id, updatedSponsors).subscribe(
       (data) => {
         event.confirm.resolve(data);
         this.toasterService.showSuccess('Sponsor updated successfully!');

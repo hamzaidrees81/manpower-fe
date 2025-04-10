@@ -45,20 +45,20 @@ export class UsersComponent {
         type: 'string',
         filter: false,
       },
-      createDate: {
-        title: 'Created Date',
-        type: 'string',
-        filter: false,
-        editable: false, // 👈 Disable editing
-        addable: false, // 👈 Hide in add form
-      },
-      updateDate: {
-        title: 'Updated Date',
-        type: 'string',
-        filter: false,
-        editable: false, // 👈 Disable editing
-        addable: false, // 👈 Hide in add form
-      },
+      // createDate: {
+      //   title: 'Created Date',
+      //   type: 'string',
+      //   filter: false,
+      //   editable: false, // 👈 Disable editing
+      //   addable: false, // 👈 Hide in add form
+      // },
+      // updateDate: {
+      //   title: 'Updated Date',
+      //   type: 'string',
+      //   filter: false,
+      //   editable: false, // 👈 Disable editing
+      //   addable: false, // 👈 Hide in add form
+      // },
       // company: {
       //   title: 'Company ID',
       //   type: 'number',
@@ -83,7 +83,7 @@ export class UsersComponent {
         id: user.id,
         username: user.username,
         password: user.password,
-        company: user.company.id, // Extract company ID
+        // company: user.company.id, 
         createDate: user.createDate ? new Date(user.createDate).toLocaleString() : '',
         updateDate: user.updateDate ? new Date(user.updateDate).toLocaleString() : ''
       })));
@@ -94,7 +94,7 @@ export class UsersComponent {
   onCreateConfirm(event): void {
     const newData = event.newData;
 
-    const numericFields = ["company"];
+    // const numericFields = ["company"];
     const requiredFields = ["username", "password"];
 
     // ✅ Validate required fields
@@ -102,14 +102,14 @@ export class UsersComponent {
       return; // Stop execution if validation fails
     }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
 
     // Transform data
     const requestData = {
       ...newData,
-      company: { id: newData.company }, // Convert company to an object
+      // company: { id: newData.company }, // Convert company to an object
     };
 
     // Remove unwanted fields
@@ -131,7 +131,7 @@ export class UsersComponent {
 
   // Edit user
   onEditConfirm(event): void {
-    const numericFields = ["company"];
+    // const numericFields = ["company"];
     const requiredFields = ["username", "password"];
 
     // ✅ Validate required fields
@@ -139,15 +139,15 @@ export class UsersComponent {
       return; // Stop execution if validation fails
     }
 
-    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-      return; // Stop execution if validation fails
-    }
+    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+    //   return; // Stop execution if validation fails
+    // }
     const newData = event.newData;
 
     // Transform data
     const requestData = {
       ...newData,
-      company: { id: newData.company }, // Convert company to an object
+      // company: { id: newData.company }, // Convert company to an object
     };
 
     // Remove unwanted fields

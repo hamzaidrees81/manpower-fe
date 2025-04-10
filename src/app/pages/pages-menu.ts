@@ -202,58 +202,72 @@ export const MENU_ITEMS: NbMenuItem[] = [
   //   title: 'FEATURES',
   //   icon: 'grid-outline',
   // }
+  // {
+  //   title: 'Company',
+  //   icon: 'briefcase-outline', 
+  //   link: '/pages/features/company',
+  // },
+  {
+    title: 'Settings',
+    icon: 'settings-outline',
+    children: [
       {
         title: 'Company',
-        icon: 'briefcase-outline', 
         link: '/pages/features/company',
       },
       {
-        title: 'Client',
-        icon: 'people-outline', 
-        link: '/pages/features/client',
+        title: 'Accounts',
+        link: '/pages/features/accounts',
       },
-      {
-        title: 'Sponsor',
-        icon: 'star-outline', 
-        link: '/pages/features/sponsor',
-      },
-      {
-        title: 'Users',
-        icon: 'person-outline', 
-        link: '/pages/features/users',
-      },
-      {
-        title: 'Designations',
-        icon: 'layers-outline', 
-        link: '/pages/features/designations',
-      },
-      {
-        title: 'Projects',
-        icon: 'clipboard-outline', 
-        link: '/pages/features/projects',
-      },
-      {
-        title: 'Asset',
-        icon: 'cube-outline', 
-        link: '/pages/features/asset',
-      },
-        {
+    ],
+  },
+  {
+    title: 'Client',
+    icon: 'people-outline',
+    link: '/pages/features/client',
+  },
+  {
+    title: 'Sponsor',
+    icon: 'star-outline',
+    link: '/pages/features/sponsor',
+  },
+  {
+    title: 'Users',
+    icon: 'person-outline',
+    link: '/pages/features/users',
+  },
+  {
+    title: 'Designations',
+    icon: 'layers-outline',
+    link: '/pages/features/designations',
+  },
+  {
+    title: 'Projects',
+    icon: 'clipboard-outline',
+    link: '/pages/features/projects',
+  },
+  {
+    title: 'Asset',
+    icon: 'cube-outline',
+    link: '/pages/features/asset',
+  },
+  {
     title: 'Invoice',
-    icon: 'file-text-outline', 
+    icon: 'file-text-outline',
     children: [
       {
         title: 'View Invoices',
         link: '/pages/features/invoice-detail',
       },
       {
-        title: 'Manage Invoices',
+        title: 'Prepare Invoices',
         link: '/pages/features/invoice',
       },
     ],
   },
   {
     title: 'Payment',
-    icon: 'credit-card-outline', 
+    icon: 'credit-card-outline',
     children: [
       {
         title: 'Asset Payment',
@@ -267,20 +281,24 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Invoice Receivable',
         link: '/pages/features/payment-management/invoice-receivable',
       },
+      {
+        title: 'Expense',
+        link: '/pages/features/payment-management/expense',
+      },
     ],
   },
-      // {
-      //   title: 'Print Invoice',
-      //   icon: 'file-text-outline', 
-      //   link: '/pages/features/print-invoice',
-      // },
-      // {
-      //   title: 'Timesheet',
-      //   icon: 'calendar-outline', 
-      //   link: '/pages/features/timesheet',
-      // },
-    
-  
+  // {
+  //   title: 'Print Invoice',
+  //   icon: 'file-text-outline', 
+  //   link: '/pages/features/print-invoice',
+  // },
+  // {
+  //   title: 'Timesheet',
+  //   icon: 'calendar-outline', 
+  //   link: '/pages/features/timesheet',
+  // },
+
+
   // {
   //   title: 'Miscellaneous',
   //   icon: 'shuffle-2-outline',

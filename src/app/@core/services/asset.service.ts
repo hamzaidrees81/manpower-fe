@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -9,6 +9,9 @@ import { HttpClient } from '@angular/common/http';
 export class AssetService {
   private apiUrl = `${environment.apiUrl}/assets`; // Get API URL from environment
   private customApiUrl = `${environment.apiUrl}/asset-projects`; // Get API URL from environment
+
+  // For Payment 
+  private apiUrlForPayment = `${environment.apiUrl}/invoice-sponsor-payables`; // Get API URL from environment
 
   constructor(private http: HttpClient) {}
 
@@ -64,4 +67,17 @@ updateAssetProject(id: number, assetProject: any): Observable<any> {
 deleteAssetProject(id: number): Observable<any> {
   return this.http.delete<any>(`${this.customApiUrl}/${id}`);
 }
+
+// For Payment Endpoints
+// get asset by status
+getAssetPaymentByStatusAndAssetName(status: string, sponsorId: number): Observable<any[]> {
+  let params = new HttpParams();
+
+  if (sponsorId !== undefined && sponsorId !== null) {
+    params = params.set('sponsorId', sponsorId);
+  }
+
+  return this.http.get<any[]>(`${this.apiUrlForPayment}/status/${status}/sponsor`, { params });
+}
+
 }

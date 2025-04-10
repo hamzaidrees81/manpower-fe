@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AssetService } from '../../../../@core/services/asset.service';
 import { ToasterService } from '../../../../@core/services/toaster.service';
 import { LocalDataSource } from 'ng2-smart-table';
+import { FormatTextPipe } from '../../../../utils/format-text.pipe';
 
 @Component({
   selector: 'ngx-asset-payment',
@@ -13,6 +14,7 @@ export class AssetPaymentComponent implements OnInit {
   selectedAssetByName: any = null;
   selectedDateRange
   selectedAssetByNumber: any = null;
+  selectedType;
   showDetails = false;
   selectAssetList: any[] = [];
   getSearchedData: any[];
@@ -21,12 +23,14 @@ export class AssetPaymentComponent implements OnInit {
   showPaymentTable = false;
   showHistoryTable = false;
 
-  totalAmount = 20000;
-  pendingAmount = 8000;
+  totalAmount = 0;
+  pendingAmount = 0;
+  paidAmount = 0;
 
   payAmount: number;
   payComment: string;
 
+  assetPaymentTableData: LocalDataSource = new LocalDataSource();
   paymentTableData = new LocalDataSource([
     { id: 1, date: '2024-04-01', invNo: 'INV-001', amount: 12000, status: 'Paid' },
     { id: 2, date: '2024-04-10', invNo: 'INV-002', amount: 8000, status: 'Pending' },
@@ -43,6 +47,21 @@ export class AssetPaymentComponent implements OnInit {
       status: { title: 'Status' },
     },
   };
+
+  assetPaymentTableSettings = {
+    actions: false,
+    hideSubHeader: true,
+    columns: {
+      sponsorName: { title: 'Sponsor Name', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
+      sponsorshipAssetName: { title: 'Asset Name' },
+      paidAmount: { title: 'Paid Amount' },
+      sponsorshipDeterminant: { title: 'Determinant', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
+      sponsorshipPayable: { title: 'Payable Amount' },
+      paymentStatus: { title: 'Payment Status', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
+      status: { title: 'Status' },
+    },
+  };
+
 
   historyTableData = new LocalDataSource([
     { id: 1, date: '2024-04-15', amount: 4000, comments: 'First installment' },
@@ -65,17 +84,33 @@ export class AssetPaymentComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      id: { filter:false,title: 'ID' },
-      date: { filter:false,title: 'Date' },
-      amount: { filter:false,title: 'Amount' },
-      comments: { filter:false,title: 'Comments' },
+      id: { filter: false, title: 'ID' },
+      date: { filter: false, title: 'Date' },
+      amount: { filter: false, title: 'Amount' },
+      comments: { filter: false, title: 'Comments' },
     },
   };
+  filteredData;
+  status: any;
 
-  constructor(private assetService: AssetService,private toasterService : ToasterService) {}
+  constructor(private assetService: AssetService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
+    this.selectedType = 'ALL';
     this.loadAsset();
+    this.onLoadList();
+  }
+
+  onLoadList() {
+    this.assetService.getAssetPaymentByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
+      (data) => {
+        this.filteredData = data;
+        this.assetPaymentTableData.load(this.filteredData?.payables);
+      },
+      (error) => {
+        console.error('Error loading assets:', error);
+      }
+    );
   }
 
   loadAsset() {
@@ -89,65 +124,49 @@ export class AssetPaymentComponent implements OnInit {
     );
   }
 
-  onAssetSelect(type: 'name' | 'number') {
-    // Clear the other dropdown when one is selected
-    if (type === 'name') {
-      this.selectedAssetByNumber = null;
-    } else {
-      this.selectedAssetByName = null;
-    }
-    this.showPaymentTable  = false;
-    this.selectAssetList = [];
-  }
+  preparePayment(): void {
 
-  toggleDetails() {
-    this.showPaymentTable  = true;
-    // if (this.selectedAssetByName || this.selectedAssetByNumber) {
-    //   this.preparePayment(this.selectedAssetByName,this.selectedAssetByNumber);
-    // }
-  }
-
-  preparePayment(selectedAssetByName, selectedAssetByNumber,selectedDateRange): void {
-   const startDate = selectedDateRange?.start;
-   const endDate = selectedDateRange?.end;
-    this.assetService.getAssetByNameAndAssetNumber(selectedAssetByName,selectedAssetByNumber,startDate,endDate).subscribe(
+    //  const startDate = selectedDateRange?.start;
+    //  const endDate = selectedDateRange?.end;
+    this.assetService.getAssetPaymentByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
       (data) => {
-        this.getSearchedData = data;
-          this.showPaymentTable  = true;
-          this.toasterService.showSuccess('No Record Found!');
-      
+        this.filteredData = data;
+        this.assetPaymentTableData.load(this.filteredData?.payables);
+        this.totalAmount = this.filteredData?.totalAmount;
+        this.pendingAmount = this.filteredData?.pendingAmount;
+        this.paidAmount = this.filteredData?.paidAmount;
       },
       (error) => {
         console.error('Error loading projects:', error);
       }
     );
-}
-resetAssetSelection(): void {
-  this.selectedAssetByName = null;
-  this.selectedAssetByNumber = null;
-  // this.paymentTableData = [];
-  // this.historyTableData = [];
-  this.totalAmount = 0;
-  this.pendingAmount = 0;
-  this.payAmount = null;
-  this.payComment = '';
-  this.showPaymentTable = false;
-  this.showHistoryTable = false;
-}
+  }
+  resetAssetSelection(): void {
+    this.selectedAssetByName = null;
+    this.selectedAssetByNumber = null;
+    // this.paymentTableData = [];
+    // this.historyTableData = [];
+    this.totalAmount = 0;
+    this.pendingAmount = 0;
+    this.payAmount = null;
+    this.payComment = '';
+    this.showPaymentTable = false;
+    this.showHistoryTable = false;
+  }
 
 
-onPay() {
-  this.showHistoryTable = true;
+  onPay() {
+    this.showHistoryTable = true;
 
-  // Push dummy data to history
-  const newEntry = {
-    id: this.historyTableData['data'].length + 1,
-    date: new Date().toISOString().split('T')[0],
-    amount: this.payAmount,
-    comments: this.payComment,
-  };
+    // Push dummy data to history
+    const newEntry = {
+      id: this.historyTableData['data'].length + 1,
+      date: new Date().toISOString().split('T')[0],
+      amount: this.payAmount,
+      comments: this.payComment,
+    };
 
-  this.historyTableData.add(newEntry);
-  this.historyTableData.refresh();
-}
+    this.historyTableData.add(newEntry);
+    this.historyTableData.refresh();
+  }
 }

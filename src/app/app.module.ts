@@ -29,9 +29,10 @@ import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.c
 import { ServicesModule } from './@core/services/services.module';
 import { ButtonViewComponent } from './shared/button-view/button-view.component';
 import { AddButtonComponent } from './shared/add-button/add-button.component';
+import { FormatTextPipe } from './utils/format-text.pipe';
 
 @NgModule({
-  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent],
+  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent, FormatTextPipe],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

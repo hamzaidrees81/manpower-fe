@@ -42,21 +42,21 @@ export class ProjectsComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      company: {
-        title: 'Company',
-        type: 'html',
-        filter: false,
-        valuePrepareFunction: (company) => company.name,
-        editor: {
-          type: 'list',
-          config: {
-            selectText: 'Select...',
-            list: [],
-          },
-        },
-      },
+      // company: {
+      //   title: 'Company',
+      //   type: 'html',
+      //   filter: false,
+      //   valuePrepareFunction: (company) => company.name,
+      //   editor: {
+      //     type: 'list',
+      //     config: {
+      //       selectText: 'Select...',
+      //       list: [],
+      //     },
+      //   },
+      // },
       client: {
-        title: 'Client',
+        title: 'Client Name',
         type: 'html',
         filter: false,
         valuePrepareFunction: (client) => client.name,
@@ -69,20 +69,21 @@ export class ProjectsComponent implements OnInit {
         },
       },
       projectId: {
-        title: 'Project ID',
+        title: 'ID',
         type: 'string',
         filter: false,
       },
       name: {
-        title: 'Project Name',
+        title: 'Name',
         type: 'string',
       },
       location: {
         title: 'Location',
         type: 'string',
+        filter: false,
       },
       startDate: {
-        title: 'Start Time',
+        title: 'Start Date',
         type: 'custom',
         renderComponent: SmartTableDatepickerRenderComponentComponent,
         filter: false,
@@ -92,7 +93,7 @@ export class ProjectsComponent implements OnInit {
         }
       },
       endDate: {
-        title: 'End Time',
+        title: 'End Date',
         type: 'custom',
         renderComponent: SmartTableDatepickerRenderComponentComponent,
         filter: false,
@@ -136,38 +137,48 @@ export class ProjectsComponent implements OnInit {
   loadProjects(): void {
     this.projectService.getProjects().subscribe(
       (data) => {
-        this.source.load(data);
+
+        const transformedData = data.map(item => ({
+          ...item,
+          client: {
+            name: item.clientName,
+            id: item.clientId
+          }
+        }));
+  
+        this.source.load(transformedData);
       },
       (error) => {
         console.error('Error loading projects:', error);
       }
     );
   }
+  
 
   // Fetch Companies and Clients
   loadDropdowns(): void {
-    this.companyService.getCompanies().subscribe((data) => {
-      this.companies = data;
-      this.settings = {
-        ...this.settings,
-        columns: {
-          ...this.settings.columns,
-          company: {
-            ...this.settings.columns.company,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
-    });
+    // this.companyService.getCompanies().subscribe((data) => {
+    //   this.companies = data;
+    //   this.settings = {
+    //     ...this.settings,
+    //     columns: {
+    //       ...this.settings.columns,
+    //       company: {
+    //         ...this.settings.columns.company,
+    //         editor: {
+    //           type: 'list',
+    //           config: {
+    //             selectText: 'Select...',
+    //             list: data.map((c) => ({
+    //               value: JSON.stringify(c), // Store whole object as string
+    //               title: c.name, // Display name
+    //             })),
+    //           },
+    //         },
+    //       },
+    //     },
+    //   };
+    // });
 
     this.clientService.getClients().subscribe((data) => {
       this.clients = data;
@@ -201,7 +212,7 @@ export class ProjectsComponent implements OnInit {
     this.handleStartDate();
     this.handleEndDate();
 
-    const requiredFields = ["projectId", "name"];
+    const requiredFields = ["name"];
 
     // ✅ Validate required fields
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
@@ -211,8 +222,8 @@ export class ProjectsComponent implements OnInit {
     // Parse necessary fields and prepare request data
     const newProject = {
       ...event.newData,
-      company: JSON.parse(event.newData.company),
-      client: JSON.parse(event.newData.client),
+      // company: JSON.parse(event.newData.company),
+      client: event.newData?.clientName,
       startDate: this.customStartDate,
       endDate: this.customEndDate,
     };
@@ -233,7 +244,7 @@ export class ProjectsComponent implements OnInit {
 
 
   onEditConfirm(event: any): void {
-    const requiredFields = ["projectId", "name"];
+    const requiredFields = ["name"];
 
     // ✅ Validate required fields
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
@@ -241,8 +252,8 @@ export class ProjectsComponent implements OnInit {
     }
     const updatedProject = {
       ...event.newData,
-      company: JSON.parse(event.newData.company),
-      client: JSON.parse(event.newData.client),
+      // company: JSON.parse(event.newData.company),
+      client: event.newData?.clientName,
       startDate: this.customStartDate,
       endDate: this.customEndDate,
     };

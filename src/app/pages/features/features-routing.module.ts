@@ -16,6 +16,8 @@ import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.componen
 import { AssetPaymentComponent } from './payment-management/asset-payment/asset-payment.component';
 import { InvoiceReceivableComponent } from './payment-management/invoice-receivable/invoice-receivable.component';
 import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
+import { ExpenseComponent } from './payment-management/expense/expense.component';
+import { AccountsComponent } from './accounts/accounts.component';
 
 const routes: Routes = [{
   path: '',
@@ -24,6 +26,10 @@ const routes: Routes = [{
     {
       path: 'company',
       component: CompanyComponent,
+    },
+    {
+      path: 'accounts',
+      component: AccountsComponent,
     },
     {
       path: 'client',
@@ -76,6 +82,10 @@ const routes: Routes = [{
     {
       path: 'payment-management/sponsor-payment',
       component: SponsorPaymentComponent,
+    },
+    {
+      path: 'payment-management/expense',
+      component: ExpenseComponent,
     },
   ],
 }];

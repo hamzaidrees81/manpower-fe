@@ -171,7 +171,7 @@ export class SponsorComponent implements OnInit {
   onDeleteConfirm(event: any): void {
     this.dialogService.open(ConfirmDialogComponent, {
       context: {
-        title: 'Delete Sponsor',
+        title: 'Delete Confirmation',
         message: 'Are you sure you want to delete this sponsor?',
       },
     }).onClose.subscribe((confirmed) => {

@@ -3,6 +3,8 @@ import { AssetService } from '../../../../@core/services/asset.service';
 import { ToasterService } from '../../../../@core/services/toaster.service';
 import { LocalDataSource } from 'ng2-smart-table';
 import { FormatTextPipe } from '../../../../utils/format-text.pipe';
+import { ExpenseService } from '../../../../@core/services/expense.service';
+import { AccountsService } from '../../../../@core/services/accounts.service';
 
 @Component({
   selector: 'ngx-asset-payment',
@@ -19,31 +21,38 @@ export class AssetPaymentComponent implements OnInit {
   selectAssetList: any[] = [];
   getSearchedData: any[];
 
+  amount: number | null = null;
+  remarks: string = '';
+  mainAccountId;
+  paymentDate: Date | null = null;
+  paymentMethod: { label: string; value: string } | null = null;
+  reference: string = '';
+  paymentType: { label: string; value: string } | null = null;
+
+
 
   showPaymentTable = false;
   showHistoryTable = false;
+  isAssetNameSelected = false;
 
   totalAmount = 0;
   pendingAmount = 0;
   paidAmount = 0;
 
-  payAmount: number;
-  payComment: string;
-
   assetPaymentTableData: LocalDataSource = new LocalDataSource();
-  paymentTableData = new LocalDataSource([
-    { id: 1, date: '2024-04-01', invNo: 'INV-001', amount: 12000, status: 'Paid' },
-    { id: 2, date: '2024-04-10', invNo: 'INV-002', amount: 8000, status: 'Pending' },
-  ]);
+  paymentTableData: LocalDataSource = new LocalDataSource();
+  historyTableData: LocalDataSource = new LocalDataSource();
 
   paymentTableSettings = {
     actions: false,
     hideSubHeader: true,
     columns: {
-      id: { title: 'ID' },
-      date: { title: 'Date' },
-      invNo: { title: 'Inv No' },
+      expenseProjectName: { title: 'Project Name' },
+      expenseCategoryName: { title: 'Category Name' },
+      expenseType: { title: 'Type' },
+      expenseMetric: { title: 'Metric' },
       amount: { title: 'Amount' },
+      comment: { title: 'Comment' },
       status: { title: 'Status' },
     },
   };
@@ -52,21 +61,14 @@ export class AssetPaymentComponent implements OnInit {
     actions: false,
     hideSubHeader: true,
     columns: {
-      sponsorName: { title: 'Sponsor Name', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
-      sponsorshipAssetName: { title: 'Asset Name' },
-      paidAmount: { title: 'Paid Amount' },
-      sponsorshipDeterminant: { title: 'Determinant', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
-      sponsorshipPayable: { title: 'Payable Amount' },
+      assetName: { title: 'Asset Name' },
+      assetProjectName: { title: 'Project Name' },
+      assetPayable: { title: 'Payable' },
+      paidAmount: { title: 'Paid Amount'},
       paymentStatus: { title: 'Payment Status', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
-      status: { title: 'Status' },
+      // status: { title: 'Status' },
     },
   };
-
-
-  historyTableData = new LocalDataSource([
-    { id: 1, date: '2024-04-15', amount: 4000, comments: 'First installment' },
-    { id: 2, date: '2024-04-25', amount: 4000, comments: 'Second installment' },
-  ]);
 
   historyTableSettings = {
     actions: {
@@ -84,28 +86,102 @@ export class AssetPaymentComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      id: { filter: false, title: 'ID' },
-      date: { filter: false, title: 'Date' },
-      amount: { filter: false, title: 'Amount' },
-      comments: { filter: false, title: 'Comments' },
-    },
+      assetName: {
+        title: 'Asset Name',
+        type: 'string',
+        filter: false
+      },
+      amount: {
+        title: 'Amount',
+        type: 'number',
+        filter: false
+      },
+      comment: {
+        title: 'Comment',
+        type: 'string',
+        filter: false
+      },
+      expenseCategoryName: {
+        title: 'Expense Category Name',
+        type: 'string',
+        filter: false
+      },
+      paymentDate: {
+        title: 'Payment Date',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (date) => new Date(date).toLocaleDateString()
+      },
+      paymentMethod: {
+        title: 'Payment Method',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      expenseProjectName: {
+        title: 'Project Name',
+        type: 'string',
+        filter: false
+      },
+      expenseType: {
+        title: 'Payment Type',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      }
+    }
   };
+  
   filteredData;
   status: any;
 
-  constructor(private assetService: AssetService, private toasterService: ToasterService) { }
+  paymentMethods = [
+    { key: 'BANK_TRANSFER', label: 'Bank Transfer' },
+    { key: 'CASH', label: 'Cash' },
+    { key: 'CHEQUE', label: 'Cheque' },
+    { key: 'ONLINE_TRANSFER', label: 'Online Transfer' },
+    { key: 'CREDIT_CARD', label: 'Credit Card' },
+    { key: 'DEBIT_CARD', label: 'Debit Card' },
+    { key: 'MOBILE_WALLET', label: 'Mobile Wallet' },
+    { key: 'OTHER', label: 'Other' }
+  ];
+  
+  paymentTypes = [
+    { key: 'INITIAL', label: 'Initial' },
+    { key: 'ADJUSTMENT', label: 'Adjustment' },
+    { key: 'FULL', label: 'Full' },
+    { key: 'REFUND', label: 'Refund' },
+    { key: 'ADVANCE', label: 'Advance' }
+  ];
+  getAccounts: any[];
+  
+  
+  constructor(private assetService: AssetService, private toasterService: ToasterService,private expenseService : ExpenseService,private accountsService : AccountsService) { }
 
   ngOnInit(): void {
     this.selectedType = 'ALL';
     this.loadAsset();
     this.onLoadList();
+    this.loadExpense();
+    this.loadAccount();
   }
 
   onLoadList() {
-    this.assetService.getAssetPaymentByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
+    this.assetService.getAssetPayblesByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.id).subscribe(
       (data) => {
         this.filteredData = data;
         this.assetPaymentTableData.load(this.filteredData?.payables);
+      },
+      (error) => {
+        console.error('Error loading assets:', error);
+      }
+    );
+  }
+
+  loadExpense() {
+    this.expenseService.getExpenses().subscribe(
+      (data) => {
+        this.paymentTableData.load(data);
       },
       (error) => {
         console.error('Error loading assets:', error);
@@ -124,17 +200,46 @@ export class AssetPaymentComponent implements OnInit {
     );
   }
 
+  loadAccount() {
+    this.accountsService.getAccounts().subscribe(
+      (data) => {
+        this.getAccounts = data;
+      },
+      (error) => {
+        console.error('Error loading assets:', error);
+      }
+    );
+  }
+
   preparePayment(): void {
 
     //  const startDate = selectedDateRange?.start;
     //  const endDate = selectedDateRange?.end;
-    this.assetService.getAssetPaymentByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
+
+    this.isAssetNameSelected = true;
+    this.getExpenseByAssetName();
+    this.getPayableByAssetName();
+  }
+
+  getPayableByAssetName(){
+    this.assetService.getAssetPayblesByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.id).subscribe(
       (data) => {
         this.filteredData = data;
         this.assetPaymentTableData.load(this.filteredData?.payables);
         this.totalAmount = this.filteredData?.totalAmount;
         this.pendingAmount = this.filteredData?.pendingAmount;
         this.paidAmount = this.filteredData?.paidAmount;
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+
+  getExpenseByAssetName(){
+    this.expenseService.getExpenseByAssetName(this.selectedAssetByName?.id).subscribe(
+      (data) => {
+        this.assetPaymentTableData.load(data);
       },
       (error) => {
         console.error('Error loading projects:', error);
@@ -148,25 +253,79 @@ export class AssetPaymentComponent implements OnInit {
     // this.historyTableData = [];
     this.totalAmount = 0;
     this.pendingAmount = 0;
-    this.payAmount = null;
-    this.payComment = '';
+    this.amount = null;
+    this.remarks = '';
     this.showPaymentTable = false;
     this.showHistoryTable = false;
   }
 
+  onPay(): void {
 
-  onPay() {
-    this.showHistoryTable = true;
-
-    // Push dummy data to history
-    const newEntry = {
-      id: this.historyTableData['data'].length + 1,
-      date: new Date().toISOString().split('T')[0],
-      amount: this.payAmount,
-      comments: this.payComment,
+    const paymentPayload = {
+      paidToType:"ASSET",
+      paidToId:this.selectedAssetByName?.id,
+      amount: this.amount,
+      mainAccountId:this.mainAccountId,
+      remarks: this.remarks,
+      paymentDate: this.paymentDate ? this.paymentDate.toISOString() : null,
+      paymentMethod: this.paymentMethod,
+      reference: this.reference,
+      status:"COMPLETED",
+      paymentType: this.paymentType
     };
 
-    this.historyTableData.add(newEntry);
-    this.historyTableData.refresh();
+    this.expenseService.addPayment(paymentPayload).subscribe(
+      (data) => {
+        this.toasterService.showSuccess('Payment paid successfully!');
+        this.showHistoryTable = true;
+        this.getHistory();
+  
+        // Optionally reset form fields
+        this.resetForm();
+      },
+      (error) => {
+        console.error('Error adding payment:', error);
+        this.toasterService.showError('Failed to create payment.');
+      }
+    );
   }
+
+  getHistory(){
+   const paidToType = "ASSET";
+    this.expenseService.getPaymentsByFilter(this.selectedAssetByName?.id,paidToType).subscribe(
+      (data) => {
+        this.historyTableData.load(data);
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+  
+  resetForm(): void {
+    this.amount = null;
+    this.remarks = '';
+    this.paymentDate = null;
+    this.paymentMethod = null;
+    this.reference = '';
+    this.paymentType = null;
+  }
+
 }
+  
+
+//   onPay() {
+//     this.showHistoryTable = true;
+
+//     // Push dummy data to history
+//     const newEntry = {
+//       id: this.historyTableData['data'].length + 1,
+//       date: new Date().toISOString().split('T')[0],
+//       amount: this.payAmount,
+//       comments: this.payComment,
+//     };
+
+//     this.historyTableData.add(newEntry);
+//     this.historyTableData.refresh();
+//   }
+// }

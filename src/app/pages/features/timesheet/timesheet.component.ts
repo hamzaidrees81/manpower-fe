@@ -793,7 +793,7 @@ onProjectEditConfirm(event: any): void {
   onProjectDeleteConfirm(event: any): void {
     this.dialogService.open(ConfirmDialogComponent, {
       context: {
-        title: 'Delete Project',
+        title: 'Delete Confirmation',
         message: 'Are you sure you want to delete this project?',
       },
     }).onClose.subscribe((confirmed) => {

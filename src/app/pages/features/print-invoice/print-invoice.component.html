@@ -129,16 +129,17 @@
           <table class="table table-bordered transparent-table text-start small-table">
             <tbody>
               <tr>
-                <td class="fw-bold">Total Amount <span dir="rtl">(المبلغ الإجمالي)</span></td>
+                <td class="fw-bold">Total Before Vat <span dir="rtl">(المبلغ الإجمالي)</span></td>
                 <td class="text-end">{{invoiceList?.totalAmount}}</td>
               </tr>
               <tr>
-                <td class="fw-bold">Total With VAT <span dir="rtl">(الإجمالي مع الضريبة)</span></td>
-                <td class="text-end">{{invoiceList?.totalWithVAT}}</td>
-              </tr>
-              <tr>
-                <td class="fw-bold">Total VAT Amount <span dir="rtl">(مبلغ الضريبة)</span></td>
+                <td class="fw-bold">Total With VAT <span dir="rtl">(مبلغ الضريبة)</span></td>
                 <td class="text-end">{{invoiceList?.vatAmount}}</td>
+              </tr>
+
+              <tr>
+                <td class="fw-bold">VAT Amount <span dir="rtl">(الإجمالي مع الضريبة)</span></td>
+                <td class="text-end">{{invoiceList?.totalWithVAT}}</td>
               </tr>
               
               <!-- <tr>

@@ -171,7 +171,7 @@ export class UsersComponent {
   onDeleteConfirm(event: any): void {
     this.dialogService.open(ConfirmDialogComponent, {
       context: {
-        title: 'Delete User',
+        title: 'Delete Confirmation',
         message: 'Are you sure you want to delete this user?',
       },
     }).onClose.subscribe((confirmed) => {

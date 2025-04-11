@@ -12,6 +12,7 @@ export class AssetService {
 
   // For Payment 
   private apiUrlForPayment = `${environment.apiUrl}/invoice-sponsor-payables`; // Get API URL from environment
+  private apiUrlForAssetPayables = `${environment.apiUrl}/asset-payables`; 
 
   constructor(private http: HttpClient) {}
 
@@ -70,7 +71,7 @@ deleteAssetProject(id: number): Observable<any> {
 
 // For Payment Endpoints
 // get asset by status
-getAssetPaymentByStatusAndAssetName(status: string, sponsorId: number): Observable<any[]> {
+getSponosrPayableByStatusAndAssetName(status: string, sponsorId: number): Observable<any[]> {
   let params = new HttpParams();
 
   if (sponsorId !== undefined && sponsorId !== null) {
@@ -78,6 +79,18 @@ getAssetPaymentByStatusAndAssetName(status: string, sponsorId: number): Observab
   }
 
   return this.http.get<any[]>(`${this.apiUrlForPayment}/status/${status}/sponsor`, { params });
+}
+
+// Asset Payables
+
+getAssetPayblesByStatusAndAssetName(status: string, assetId: number): Observable<any[]> {
+  let params = new HttpParams();
+
+  if (assetId !== undefined && assetId !== null) {
+    params = params.set('assetId', assetId);
+  }
+
+  return this.http.get<any[]>(`${this.apiUrlForAssetPayables}/status/${status}/asset`, { params });
 }
 
 }

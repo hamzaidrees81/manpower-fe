@@ -53,7 +53,7 @@ export class InvoiceComponent implements OnInit {
     } else if (this.routedInvoiceData?.edit) {
       this.title = 'Edit Invoice';
     } else {
-      this.title = 'Manage Invoice';
+      this.title = 'Prepare Invoice';
     }
   }
 
@@ -120,9 +120,11 @@ export class InvoiceComponent implements OnInit {
     const updatedInvoice = {
       ...this.invoiceData, // Copy existing data
       totalAmount: this.summeryTotalAmount, // Update totalAmount
+      vatAmount : this.vatAmount,
+      totalWithVAT : this.totalWithVAT,
       invoiceDate: new Date().toISOString().split('T')[0] // Set to current date (YYYY-MM-DD)
     };
-
+debugger;
     this.invoiceService.addInvoice(updatedInvoice).subscribe({
       next: (response) => {
         this.toasterService.showSuccess('Invoice submitted successfully!');
@@ -198,13 +200,24 @@ calculateTotalAmount() {
     this.totalWithVAT = 0;
     return;
   }
-
+debugger;
   const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
 
-  this.summeryTotalAmount = allAssets.reduce((sum, asset) => sum + (asset?.totalAmount ?? 0), 0);
-  this.vatAmount = allAssets.reduce((sum, asset) => sum + (asset?.vatAmount ?? 0), 0);
-  this.totalWithVAT = allAssets.reduce((sum, asset) => sum + (asset?.totalWithVAT ?? 0), 0);
+  // Calculate totalAmount for each asset using the formula
+  allAssets.forEach(asset => {
+    asset.totalAmount = 
+      (asset.regularHours || 0) * (asset.regularRate || 0) +
+      (asset.overtimeHours || 0) * (asset.overtimeRate || 0);
+  });
+
+  // Sum up totalAmount from all assets
+  this.summeryTotalAmount = allAssets.reduce((sum, asset) => sum + (asset.totalAmount ?? 0), 0);
+
+  // Set VAT and totalWithVAT if needed (set to 0 for now)
+  this.vatAmount = this.summeryTotalAmount * 0.01 * this.invoiceData?.vatRate;
+  this.totalWithVAT = this.summeryTotalAmount +  this.vatAmount;
 }
+
 
 
 
@@ -257,7 +270,7 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
   onAssetDelete(event: any, index: number, pId: number) {
     this.dialogService.open(ConfirmDialogComponent, {
       context: {
-        title: 'Confirm Delete',
+        title: 'Confirm Confirmation',
         message: 'Are you sure you want to delete this asset?',
       },
     }).onClose.subscribe((confirmed: boolean) => {

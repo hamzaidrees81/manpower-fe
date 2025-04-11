@@ -18,7 +18,9 @@
   
           <!-- Payment Table -->
           <ng2-smart-table [settings]="expenseSetting" [source]="expenseDataTable"
-            class="mb-4 rounded shadow-sm table-responsive">
+            class="mb-4 rounded shadow-sm table-responsive"  (createConfirm)="onCreateConfirm($event)"
+            (editConfirm)="onEditConfirm($event)"
+            (deleteConfirm)="onDeleteConfirm($event)">
           </ng2-smart-table>
         </div>
       </div>

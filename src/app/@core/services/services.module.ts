@@ -11,6 +11,8 @@ import { TimesheetService } from './timesheet.service';
 import { InvoiceService } from './invoice.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth-interceptor.service';
+import { ExpenseService } from './expense.service';
+import { AccountsService } from './accounts.service';
 
 
 
@@ -23,7 +25,9 @@ const SERVICES = [
   AssetService,
   DesignationService,
   TimesheetService,
-  InvoiceService
+  InvoiceService,
+  ExpenseService,
+  AccountsService
 ];
 
 @NgModule({

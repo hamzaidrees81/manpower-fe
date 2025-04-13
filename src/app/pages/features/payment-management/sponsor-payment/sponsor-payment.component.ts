@@ -1,8 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { AssetService } from '../../../../@core/services/asset.service';
+import { SponsorService } from '../../../../@core/services/sponsor.service';
 import { ToasterService } from '../../../../@core/services/toaster.service';
 import { LocalDataSource } from 'ng2-smart-table';
 import { FormatTextPipe } from '../../../../utils/format-text.pipe';
+import { ExpenseService } from '../../../../@core/services/expense.service';
+import { AccountsService } from '../../../../@core/services/accounts.service';
+import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 
 @Component({
   selector: 'ngx-sponsor-payment',
@@ -11,62 +15,47 @@ import { FormatTextPipe } from '../../../../utils/format-text.pipe';
 })
 export class SponsorPaymentComponent implements OnInit {
   sponsors: any[] = [];
-  selectedAssetByName: any = null;
+  selectedSponsorByName: any = null;
   selectedDateRange
-  selectedAssetByNumber: any = null;
+  selectedSponsorByNumber: any = null;
   selectedType;
   showDetails = false;
-  selectAssetList: any[] = [];
+  selectSponsorList: any[] = [];
   getSearchedData: any[];
+
+  amount: number | null = null;
+  remarks: string = '';
+  mainAccountId;
+  paymentDate: Date | null = null;
+  paymentMethod: { label: string; value: string } | null = null;
+  reference: string = '';
+  paymentType: { label: string; value: string } | null = null;
+
 
 
   showPaymentTable = false;
   showHistoryTable = false;
+  isSponsorNameSelected = false;
 
   totalAmount = 0;
   pendingAmount = 0;
   paidAmount = 0;
 
-  payAmount: number;
-  payComment: string;
-
   sponsorPaymentTableData: LocalDataSource = new LocalDataSource();
-  paymentTableData = new LocalDataSource([
-    { id: 1, date: '2024-04-01', invNo: 'INV-001', amount: 12000, status: 'Paid' },
-    { id: 2, date: '2024-04-10', invNo: 'INV-002', amount: 8000, status: 'Pending' },
-  ]);
+  paymentTableData: LocalDataSource = new LocalDataSource();
+  historyTableData: LocalDataSource = new LocalDataSource();
 
   paymentTableSettings = {
     actions: false,
     hideSubHeader: true,
     columns: {
-      id: { title: 'ID' },
-      date: { title: 'Date' },
-      invNo: { title: 'Inv No' },
-      amount: { title: 'Amount' },
-      status: { title: 'Status' },
-    },
-  };
-
-  sponsorPaymentTableSettings = {
-    actions: false,
-    hideSubHeader: true,
-    columns: {
       sponsorName: { title: 'Name' },
-      sponsorshipAssetName: { title: 'Sponsor Asset Name' },
+      sponsorshipAssetName: { title: 'Asset Name' },
       sponsorshipPayable: { title: 'Payable' },
-      sponsorshipDeterminant: { title: 'Determinant', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
-      paidAmount: { title: 'Paid Amount'},
-      paymentStatus: { title: 'Payment Status', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
-      // status: { title: 'Status' },
+      sponsorshipDeterminant: { title: 'Determinant' },
+      paidAmount: { title: 'Amount' },
     },
   };
-
-
-  historyTableData = new LocalDataSource([
-    { id: 1, date: '2024-04-15', amount: 4000, comments: 'First installment' },
-    { id: 2, date: '2024-04-25', amount: 4000, comments: 'Second installment' },
-  ]);
 
   historyTableSettings = {
     actions: {
@@ -84,42 +73,119 @@ export class SponsorPaymentComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      id: { filter: false, title: 'ID' },
-      date: { filter: false, title: 'Date' },
-      amount: { filter: false, title: 'Amount' },
-      comments: { filter: false, title: 'Comments' },
-    },
+      paidToName: {
+        title: 'Name',
+        type: 'string',
+        filter: false
+      },
+      mainAccountName: {
+        title: 'Account Name',
+        type: 'string',
+        filter: false
+      },
+      paymentDate: {
+          title: 'Payment Date',
+          type: 'custom',
+          renderComponent: SmartTableDatepickerRenderComponentComponent,
+          filter: false,
+          editor: {
+            type: 'custom',
+            component: CustomDatepickerComponent,
+          }
+        },
+      reference: {
+        title: 'Reference',
+        type: 'string',
+        filter: false
+      },
+      remarks: {
+        title: 'Remarks',
+        type: 'string',
+        filter: false
+      },
+      paymentMethod: {
+        title: 'Method',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      paymentType: {
+        title: 'Type',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      amount: {
+        title: 'Amount',
+        type: 'number',
+        filter: false
+      },
+    }
   };
+  
   filteredData;
   status: any;
 
-  constructor(private assetService: AssetService, private toasterService: ToasterService) { }
+  paymentMethods = [
+    { key: 'BANK_TRANSFER', label: 'Bank Transfer' },
+    { key: 'CASH', label: 'Cash' },
+    { key: 'CHEQUE', label: 'Cheque' },
+    { key: 'ONLINE_TRANSFER', label: 'Online Transfer' },
+    { key: 'CREDIT_CARD', label: 'Credit Card' },
+    { key: 'DEBIT_CARD', label: 'Debit Card' },
+    { key: 'MOBILE_WALLET', label: 'Mobile Wallet' },
+    { key: 'OTHER', label: 'Other' }
+  ];
+  
+  paymentTypes = [
+    { key: 'INITIAL', label: 'Initial' },
+    { key: 'ADJUSTMENT', label: 'Adjustment' },
+    { key: 'FULL', label: 'Full' },
+    { key: 'REFUND', label: 'Refund' },
+    { key: 'ADVANCE', label: 'Advance' }
+  ];
+  getAccounts: any[];
+  
+  
+  constructor(private sponsorService: SponsorService, private toasterService: ToasterService,private expenseService : ExpenseService,private accountsService : AccountsService) { }
 
   ngOnInit(): void {
     this.selectedType = 'ALL';
-    this.loadAsset();
+    this.loadSponsor();
     this.onLoadList();
+    this.loadAccount();
   }
 
   onLoadList() {
-    this.assetService.getSponosrPayableByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
+    this.sponsorService.getSponsorPayblesByStatusAndAssetName(this.selectedType,this.selectedSponsorByName?.id).subscribe(
       (data) => {
         this.filteredData = data;
         this.sponsorPaymentTableData.load(this.filteredData?.payables);
       },
       (error) => {
-        console.error('Error loading assets:', error);
+        console.error('Error loading sponsors:', error);
       }
     );
   }
 
-  loadAsset() {
-    this.assetService.getAssetsByCompany().subscribe(
+  loadSponsor() {
+    this.sponsorService.getSponsors().subscribe(
       (data) => {
         this.sponsors = data;
       },
       (error) => {
-        console.error('Error loading assets:', error);
+        console.error('Error loading sponsors:', error);
+      }
+    );
+  }
+
+  loadAccount() {
+    this.accountsService.getAccounts().subscribe(
+      (data) => {
+        this.getAccounts = data;
+      },
+      (error) => {
+        console.error('Error loading sponsors:', error);
       }
     );
   }
@@ -128,8 +194,13 @@ export class SponsorPaymentComponent implements OnInit {
 
     //  const startDate = selectedDateRange?.start;
     //  const endDate = selectedDateRange?.end;
-    debugger;
-    this.assetService.getSponosrPayableByStatusAndAssetName(this.selectedType,this.selectedAssetByName?.sponsoredById).subscribe(
+
+    this.isSponsorNameSelected = true;
+    this.getPayableBySponsorName();
+  }
+
+  getPayableBySponsorName(){
+    this.sponsorService.getSponsorPayblesByStatusAndAssetName(this.selectedType,this.selectedSponsorByName?.id).subscribe(
       (data) => {
         this.filteredData = data;
         this.sponsorPaymentTableData.load(this.filteredData?.payables);
@@ -142,32 +213,68 @@ export class SponsorPaymentComponent implements OnInit {
       }
     );
   }
-  resetAssetSelection(): void {
-    this.selectedAssetByName = null;
-    this.selectedAssetByNumber = null;
-    // this.paymentTableData = [];
-    // this.historyTableData = [];
+
+  resetSponsorSelection(): void {
+    this.selectedSponsorByName = null;
+    this.selectedSponsorByNumber = null;
     this.totalAmount = 0;
     this.pendingAmount = 0;
-    this.payAmount = null;
-    this.payComment = '';
+    this.amount = null;
+    this.remarks = '';
     this.showPaymentTable = false;
     this.showHistoryTable = false;
   }
 
+  onPay(): void {
 
-  onPay() {
-    this.showHistoryTable = true;
-
-    // Push dummy data to history
-    const newEntry = {
-      id: this.historyTableData['data'].length + 1,
-      date: new Date().toISOString().split('T')[0],
-      amount: this.payAmount,
-      comments: this.payComment,
+    const paymentPayload = {
+      paidToType:"SPONSOR",
+      paidToId:this.selectedSponsorByName?.id,
+      amount: this.amount,
+      mainAccountId:this.mainAccountId,
+      remarks: this.remarks,
+      paymentDate: this.paymentDate ? this.paymentDate.toISOString() : null,
+      paymentMethod: this.paymentMethod,
+      reference: this.reference,
+      status:"COMPLETED",
+      paymentType: this.paymentType
     };
 
-    this.historyTableData.add(newEntry);
-    this.historyTableData.refresh();
+    this.expenseService.addPayment(paymentPayload).subscribe(
+      (data) => {
+        this.toasterService.showSuccess('Payment paid successfully!');
+        this.showHistoryTable = true;
+        this.getHistory();
+  
+        // Optionally reset form fields
+        this.resetForm();
+      },
+      (error) => {
+        console.error('Error adding payment:', error);
+        this.toasterService.showError('Failed to create payment.');
+      }
+    );
   }
+
+  getHistory(){
+   const paidToType = "SPONSOR";
+    this.expenseService.getPaymentsByFilter(this.selectedSponsorByName?.id,paidToType).subscribe(
+      (data) => {
+        this.historyTableData.load(data);
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+  
+  resetForm(): void {
+    this.amount = null;
+    this.remarks = '';
+    this.paymentDate = null;
+    this.paymentMethod = null;
+    this.reference = '';
+    this.paymentType = null;
+  }
+
 }

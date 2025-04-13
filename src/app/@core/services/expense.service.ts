@@ -58,7 +58,7 @@ export class ExpenseService {
         params = params.set('paidToId', assetId);
       }
     
-      return this.http.get<any[]>(`${this.apiUrl}/filter`, { params });
+      return this.http.get<any[]>(`${this.apiUrlForPayment}/filter`, { params });
     }
 }
 

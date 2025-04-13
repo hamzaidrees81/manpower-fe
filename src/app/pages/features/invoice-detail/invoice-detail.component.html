@@ -1,7 +1,7 @@
 <nb-card>
   <nb-card-header class="custom-header d-flex align-items-center">
     <nb-icon icon="file-text-outline"></nb-icon>
-    <span class="ms-2 fw-bold">Invoice Detail</span>
+    <span class="ms-2 fw-bold">Invoices Managment</span>
   </nb-card-header>
 
   <nb-card-body>
@@ -23,11 +23,31 @@
                   <nb-icon icon="person-outline" class="me-2 mr-2"></nb-icon> Select Status
                 </label>
                 <select id="clientSelect" class="form-control" [(ngModel)]="selectedType" (ngModelChange)="onClientSelect()">
-                  <option value="All">All</option>
+                  <option value="ALL">All</option>
                   <option value="PAID">Paid</option>
-                  <option value="UNPAID">Unpaid</option>
+                  <option value="UNPAID">Unpaid - <span class="text-danger">Make Payment</span></option>
                   <option value="DELETED">Deleted</option>
-                  <option value="clientId">By Client ID</option>
+                  <!-- <option value="clientId">By Client ID</option> -->
+                </select>
+              </div>
+
+              <div class="col-md-3 col-sm-12 mb-3" *ngIf="selectedType === 'UNPAID'">
+                <label for="ClientSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Client Name
+                </label>
+                <select id="ClientSelect" class="form-control" [(ngModel)]="selectedClientByName">
+                  <option [ngValue]="null" disabled selected>Select an Client</option>
+                  <option *ngFor="let item of getClientsList" [ngValue]="item">{{ item.name }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 col-sm-12 mb-3" *ngIf="selectedType === 'UNPAID'">
+                <label for="InvoiceSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Invoice Name
+                </label>
+                <select id="InvoiceSelect" class="form-control" [(ngModel)]="selectedInvoiceByName">
+                  <option [ngValue]="null" disabled selected>Select an Invoice</option>
+                  <option *ngFor="let item of getInvoicesList" [ngValue]="item">{{ item.name }}</option>
                 </select>
               </div>
     
@@ -47,64 +67,200 @@
     
     
 
-    <div *ngIf="showDetails" class="mt-4">
-      <div class="table-responsive table-container" style="max-height: 400px; overflow-y: auto;">
-        <table class="invoice-table table table-striped table-bordered">
-          <thead class="thead-dark">
-            <tr>
-              <th>#</th>
-              <th>Invoice ID</th>
-              <th>Creation Date</th>
-              <th>Start Date</th>
-              <th>End Date</th>
-              <th>Status</th>
-              <th>Payable Amount</th>
-              <th>Tax Amount</th>
-              <th>Total Amount</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let invoice of invoiceData?.content; let i = index">
-              <td>{{ (invoiceData.number * invoiceData.size) + i + 1 }}</td>
-              <td>{{ invoice.id }}</td>
-              <td>{{ invoice.creationDate }}</td>
-              <td>{{ invoice.startDate }}</td>
-              <td>{{ invoice.endDate }}</td>
-              <td>
-                <span [ngClass]="{ 'text-success': invoice.invoiceStatus === 'PAID', 'text-danger': invoice.invoiceStatus === 'UNPAID' }">
-                  {{ invoice.invoiceStatus }}
-                </span>
-              </td>
-              <td>{{ invoice.payableAmount }}</td>
-              <td>{{ invoice.taxAmount || 'N/A' }}</td>
-              <td>{{ invoice.totalAmountWithTax || 'N/A' }}</td>
-              <td>
-                <button class="btn btn-sm btn-primary" (click)="editInvoice(invoice)">
-                  <nb-icon icon="edit-outline"></nb-icon>
-                </button>
-                <button class="btn btn-sm btn-info ml-2 mr-2" (click)="viewInvoice(invoice)">
-                  <nb-icon icon="eye-outline"></nb-icon>
-                </button>
-                <button class="btn btn-sm btn-warning" (click)="printInvoice(invoice)">
-                  <nb-icon icon="printer-outline"></nb-icon>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <nb-accordion>
 
-      <!-- Pagination -->
-      <pagination-controls
-      (pageChange)="changePage($event)"
-      [totalItems]="invoiceData?.totalElements"
-      [itemsPerPage]="pageSize"
-      previousLabel="Prev"
-      nextLabel="Next"
-    ></pagination-controls>
+      <!-- Detail -->
+      <nb-accordion-item *ngIf="showDetails" [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-credit-card text-primary me-2" style="margin-right: 8px;"></i>
+          {{selectedType | titlecase }} Invoices
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+        <div  class="mt-4">
+          <div class="table-responsive table-container" style="max-height: 400px; overflow-y: auto;">
+            <table class="invoice-table table table-striped table-bordered">
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Invoice ID</th>
+                  <th>Creation Date</th>
+                  <th>Start Date</th>
+                  <th>End Date</th>
+                  <th>Status</th>
+                  <th>Payable Amount</th>
+                  <th>Tax Amount</th>
+                  <th>Total Amount</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let invoice of invoiceData?.content; let i = index">
+                  <td>{{ (invoiceData.number * invoiceData.size) + i + 1 }}</td>
+                  <td>{{ invoice.id }}</td>
+                  <td>{{ invoice.creationDate }}</td>
+                  <td>{{ invoice.startDate }}</td>
+                  <td>{{ invoice.endDate }}</td>
+                  <td>
+                    <span [ngClass]="{ 'text-success': invoice.invoiceStatus === 'PAID', 'text-danger': invoice.invoiceStatus === 'UNPAID' }">
+                      {{ invoice.invoiceStatus }}
+                    </span>
+                  </td>
+                  <td>{{ invoice.payableAmount }}</td>
+                  <td>{{ invoice.taxAmount || 'N/A' }}</td>
+                  <td>{{ invoice.totalAmountWithTax || 'N/A' }}</td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" (click)="editInvoice(invoice)">
+                      <nb-icon icon="edit-outline"></nb-icon>
+                    </button>
+                    <button class="btn btn-sm btn-info ml-2 mr-2" (click)="viewInvoice(invoice)">
+                      <nb-icon icon="eye-outline"></nb-icon>
+                    </button>
+                    <button class="btn btn-sm btn-warning" (click)="printInvoice(invoice)">
+                      <nb-icon icon="printer-outline"></nb-icon>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
     
-    </div>
+          <!-- Pagination -->
+          <pagination-controls
+          (pageChange)="changePage($event)"
+          [totalItems]="invoiceData?.totalElements"
+          [itemsPerPage]="pageSize"
+          previousLabel="Prev"
+          nextLabel="Next"
+        ></pagination-controls>
+        
+        </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
+           <!-- Make a Payment -->
+           <nb-accordion-item *ngIf="selectedType === 'UNPAID'">
+            <nb-accordion-item-header>
+              <i class="fas fa-credit-card text-primary me-2" style="margin-right: 8px;"></i>
+              Manage Payment
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <!-- Totals -->
+              <div class="row g-4 mb-4 mt-4">
+                <div class="ml-3 d-flex justify-content-start">
+                  <div class="text-end">
+                    <label class="form-label fw-semibold text-muted">Total Amount</label>
+                    <span class="form-control bg-light" style="border: none; color: green;">
+                      {{ totalAmount }} SAR
+                    </span>
+                  </div>
+                </div>
+                <div class="mr-5 ml-5 d-flex justify-content-start">
+                  <div class="text-end">
+                    <label class="form-label fw-semibold text-muted">Pending Amount</label>
+                    <span class="form-control bg-light" style="border: none; color: red;">
+                      {{ pendingAmount }} SAR
+                    </span>
+                  </div>
+                </div>
+                <div class="d-flex justify-content-start">
+                  <div class="text-end">
+                    <label class="form-label fw-semibold text-muted">Paid Amount</label>
+                    <span class="form-control bg-light" style="border: none; color: red;">
+                      {{ paidAmount }} SAR
+                    </span>
+                  </div>
+                </div>
+              </div>
+        
+              <!-- Payment Inputs -->
+              <div class="row g-4 mb-4 align-items-end">
+                <!-- Enter Amount -->
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Enter Amount</label>
+                  <input class="form-control" [(ngModel)]="amount" type="number" placeholder="e.g. 5000" />
+                </div>
+              
+                <!-- Comments -->
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Comments (Optional)</label>
+                  <input class="form-control" [(ngModel)]="remarks" placeholder="e.g. Paid partial amount" />
+                </div>
+              
+                <!-- Payment Date -->
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Payment Date</label>
+                  <input nbInput fullWidth placeholder="Pick a date" [(ngModel)]="paymentDate" [nbDatepicker]="datePicker">
+                  <nb-datepicker #datePicker></nb-datepicker>
+                </div>
+              
+                <!-- Payment Method Dropdown -->
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Payment Method</label>
+                  <nb-select [(ngModel)]="paymentMethod" fullWidth>
+                    <nb-option *ngFor="let method of paymentMethods" [value]="method?.key">{{ method?.label }}</nb-option>
+                  </nb-select>
+                </div>
+              </div>
+              <div class="row g-4 mb-4 align-items-end">
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Reference</label>
+                  <input class="form-control" [(ngModel)]="reference" placeholder="Enter reference" />
+                </div>
+              
+                <!-- Payment Type Dropdown -->
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Payment Type</label>
+                  <nb-select [(ngModel)]="paymentType" fullWidth>
+                    <nb-option *ngFor="let type of paymentTypes" [value]="type?.key">{{ type.label }}</nb-option>
+                  </nb-select>
+                </div>
+                <div class="col-md-3">
+                  <label class="form-label fw-bold">Account Name</label>
+                  <nb-select [(ngModel)]="mainAccountId" fullWidth>
+                    <nb-option *ngFor="let type of getAccounts" [value]="type?.id">{{ type.name }}</nb-option>
+                  </nb-select>
+                </div>
+              
+                <!-- Pay Button -->
+                <div class="col-md-2">
+                  <button nbButton status="primary" class="w-100 shadow-sm fw-bold" (click)="onPay()">
+                    <nb-icon icon="checkmark-circle-2-outline" class="me-1"></nb-icon> Pay
+                  </button>
+                </div>
+              </div>
+              
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+        
+          <!-- Payment History -->
+          <nb-accordion-item *ngIf="showHistoryTable">
+            <nb-accordion-item-header>
+              <i class="fas fa-history text-primary me-2" style="margin-right: 8px;"></i>
+              Payment History
+            </nb-accordion-item-header>
+            <nb-accordion-item-body>
+              <ng2-smart-table 
+                [settings]="historyTableSettings" 
+                [source]="historyTableData"
+                class="rounded shadow-sm table-responsive">
+              </ng2-smart-table>
+            </nb-accordion-item-body>
+          </nb-accordion-item>
+
+                <!-- Note -->
+      <nb-accordion-item *ngIf="selectedType != 'UNPAID'" [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-file-invoice-dollar text-danger me-2" style="margin-right: 8px;"></i>
+          Note
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <p class="text-muted ms-4">
+            For making payment & Check Expense, please select an Upaid Status.
+          </p>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+   
+    </nb-accordion>
 
     <div class="row justify-content-center" *ngIf="invoiceData?.content?.length === 0">
       <div class="col-12 col-md-12 col-lg-12">

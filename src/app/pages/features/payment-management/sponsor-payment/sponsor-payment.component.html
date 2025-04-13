@@ -1,141 +1,127 @@
-<p>sponsor-payment works!</p>
 <nb-card>
-    <nb-card-header class="custom-header">
-      <nb-icon icon="credit-card-outline"></nb-icon>
-      <span>Sponsor Payment Management</span>
-    </nb-card-header>
-  
-    <nb-card-body>
-      <!-- Search Filters + Buttons -->
-      <div class="row mb-4">
-        <!-- Filter Section -->
-        <div class="col-12">
-          <div class="filter-section card shadow-sm border-0">
-            <div class="card-header p-3">
-              <h4 class="mb-0 d-flex align-items-center">
-                <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
-              </h4>
-            </div>
-            <div class="card-body">
-              <div class="row align-items-end">
-  
-                <!-- Search by Asset Name -->
-                <div class="col-md-3 col-sm-12 mb-3">
-                  <label for="AssetSelect" class="fw-bold text-muted d-flex align-items-center">
-                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Asset Name
-                  </label>
-                  <select id="AssetSelect" class="form-control" [(ngModel)]="selectedAssetByName">
-                    <option [ngValue]="null" disabled selected>Select an Asset</option>
-                    <option *ngFor="let asset of sponsors" [ngValue]="asset">{{ asset.name }}</option>
-                  </select>
-                </div>
-  
-                <div class="col-md-3 col-sm-12 mb-3">
-                  <label for="selectedStatus" class="fw-bold text-muted d-flex align-items-center">
-                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Status
-                  </label>
-                  <select id="selectedStatus" class="form-control" [(ngModel)]="selectedType">
-                    <option value="ALL">All</option>
-                    <option value="PAID">Paid</option>
-                    <option value="UNPAID">Unpaid</option>
-                    <option value="DELETED">Deleted</option>
-                  </select>
-                </div>
-  
-                <!-- Search by Asset Number -->
-                <!-- <div class="col-md-2 col-sm-12 mb-3">
-                        <label for="AssetNumberSelect" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="hash-outline" class="me-2 mr-2"></nb-icon> Search by Asset Number
-                        </label>
-                        <select id="AssetNumberSelect" class="form-control" [(ngModel)]="selectedAssetByNumber" (ngModelChange)="onSelectedValue('number')">
-                          <option [ngValue]="null" disabled selected>Select Asset Number</option>
-                          <option *ngFor="let asset of assets" [ngValue]="asset">{{ asset.assetNumber }}</option>
-                        </select>
-                      </div> -->
-  
-                <!-- Select Date Range -->
-                <!-- <div class="col-md-3 col-sm-12 mb-3">
-                        <label for="dateRangePicker" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Select Date Range
-                        </label>
-                        <input nbInput placeholder="Select Date Range" class="form-control date-picker" [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
-                        <nb-rangepicker #rangepicker></nb-rangepicker>
-                      </div> -->
-  
-                <!-- Get Payment Button -->
-                <div class="col-md-2 col-sm-12 mb-3 text-center">
-                  <button nbButton status="success" class="w-100 fw-bold shadow-sm" (click)="preparePayment()">
-                    <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Payment
-                  </button>
-                </div>
-  
-                <!-- Reset Button -->
-                <div class="col-md-2 col-sm-12 mb-3 text-center">
-                  <button nbButton status="basic" class="w-100 fw-bold shadow-sm" (click)="resetAssetSelection()">
-                    <nb-icon icon="undo-outline" class="me-2"></nb-icon> Reset
-                  </button>
-                </div>
-  
-  
+  <nb-card-header class="custom-header">
+    <nb-icon icon="credit-card-outline"></nb-icon>
+    <span>Sponsor Payment Management</span>
+  </nb-card-header>
+
+  <nb-card-body>
+    <!-- Search Filters + Buttons -->
+    <div class="row mb-4">
+      <!-- Filter Section -->
+      <div class="col-12">
+        <div class="filter-section card shadow-sm border-0">
+          <div class="card-header p-3">
+            <h4 class="mb-0 d-flex align-items-center">
+              <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-end">
+
+              <!-- Search by Sponsor Name -->
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="SponsorSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Sponsor Name
+                </label>
+                <select id="SponsorSelect" class="form-control" [(ngModel)]="selectedSponsorByName">
+                  <option [ngValue]="null" disabled selected>Select an Sponsor</option>
+                  <option *ngFor="let item of sponsors" [ngValue]="item">{{ item.name }}</option>
+                </select>
               </div>
+
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="selectedStatus" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Status
+                </label>
+                <select id="selectedStatus" class="form-control" [(ngModel)]="selectedType">
+                  <option value="ALL">All</option>
+                  <option value="PAID">Paid</option>
+                  <option value="UNPAID">Unpaid</option>
+                  <option value="DELETED">Deleted</option>
+                </select>
+              </div>
+
+              <!-- Search by Sponsor Number -->
+              <!-- <div class="col-md-2 col-sm-12 mb-3">
+                      <label for="SponsorNumberSelect" class="fw-bold text-muted d-flex align-items-center">
+                        <nb-icon icon="hash-outline" class="me-2 mr-2"></nb-icon> Search by Sponsor Number
+                      </label>
+                      <select id="SponsorNumberSelect" class="form-control" [(ngModel)]="selectedSponsorByNumber" (ngModelChange)="onSelectedValue('number')">
+                        <option [ngValue]="null" disabled selected>Select Sponsor Number</option>
+                        <option *ngFor="let Sponsor of Sponsors" [ngValue]="Sponsor">{{ Sponsor.SponsorNumber }}</option>
+                      </select>
+                    </div> -->
+
+              <!-- Select Date Range -->
+              <!-- <div class="col-md-3 col-sm-12 mb-3">
+                      <label for="dateRangePicker" class="fw-bold text-muted d-flex align-items-center">
+                        <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Select Date Range
+                      </label>
+                      <input nbInput placeholder="Select Date Range" class="form-control date-picker" [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
+                      <nb-rangepicker #rangepicker></nb-rangepicker>
+                    </div> -->
+
+              <!-- Get Payment Button -->
+              <div class="col-md-2 col-sm-12 mb-3 text-center">
+                <button nbButton status="success" class="w-100 fw-bold shadow-sm" (click)="preparePayment()">
+                  <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Payment
+                </button>
+              </div>
+
+              <!-- Reset Button -->
+              <div class="col-md-2 col-sm-12 mb-3 text-center">
+                <button nbButton status="basic" class="w-100 fw-bold shadow-sm" (click)="resetSponsorSelection()">
+                  <nb-icon icon="undo-outline" class="me-2"></nb-icon> Reset
+                </button>
+              </div>
+
+
             </div>
           </div>
         </div>
       </div>
-  
-      <!-- Asset Payment  -->
-      <div class="mt-4">
-        <div class="section">
-          <h5 class="text-dark mb-3">
-            <i class="fas fa-file-invoice-dollar me-2 text-success mr-3"></i>
-            Sponsor Payable Detail
-          </h5>
-  
-          <!-- Payment Table -->
-          <ng2-smart-table [settings]="sponsorPaymentTableSettings" [source]="sponsorPaymentTableData"
+    </div>
+
+    <nb-accordion>
+
+      <!-- Payable Detail -->
+      <nb-accordion-item [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-file-invoice-dollar text-success me-2" style="margin-right: 8px;"></i>
+          Payable Detail
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <ng2-smart-table 
+            [settings]="paymentTableSettings" 
+            [source]="sponsorPaymentTableData"
             class="mb-4 rounded shadow-sm table-responsive">
           </ng2-smart-table>
-        </div>
-      </div>
-  
-      <!-- Payment Details Section -->
-      <div class="mt-4">
-        <div class="section">
-          <h5 class=" text-dark mb-3">
-            <i class="fas fa-file-invoice-dollar me-2 text-success mr-3"></i> Asset Detail
-          </h5>
-  
-          <!-- Payment Table -->
-          <ng2-smart-table [settings]="paymentTableSettings" [source]="paymentTableData"
-            class="mb-4 rounded shadow-sm table-responsive">
-          </ng2-smart-table>
-  
-        </div>
-      </div>
-  
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+     
       <!-- Note -->
-      <div *ngIf="!selectedAssetByName" class="mt-4">
-        <div class="section">
-          <h5 class="text-dark mb-3">
-            <i class="fas fa-file-invoice-dollar me-2 text-danger mr-3"></i> Note
-          </h5>
+      <nb-accordion-item *ngIf="!isSponsorNameSelected" [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-file-invoice-dollar text-danger me-2" style="margin-right: 8px;"></i>
+          Note
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
           <p class="text-muted ms-4">
-            For making payment, please select an asset name.
+            For making payment  please select an Sponsor name.
           </p>
-        </div>
-      </div>
-  
-  
-      <!-- Payment Input Section -->
-      <div class="mt-4" *ngIf="selectedAssetByName">
-        <div class="section">
-          <h5 class="fw-bold text-dark mb-3">
-            <i class="fas fa-credit-card me-2 text-primary mr-3"></i> Make a Payment
-          </h5>
-  
-          <!-- Total & Pending Amounts -->
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    
+      <!-- Make a Payment -->
+      <nb-accordion-item *ngIf="isSponsorNameSelected">
+        <nb-accordion-item-header>
+          <i class="fas fa-credit-card text-primary me-2" style="margin-right: 8px;"></i>
+          Manage Payment
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <!-- Totals -->
           <div class="row g-4 mb-4 mt-4">
-            <div class=" ml-3 d-flex justify-content-start">
+            <div class="ml-3 d-flex justify-content-start">
               <div class="text-end">
                 <label class="form-label fw-semibold text-muted">Total Amount</label>
                 <span class="form-control bg-light" style="border: none; color: green;">
@@ -143,7 +129,7 @@
                 </span>
               </div>
             </div>
-            <div class=" mr-5 ml-5 d-flex justify-content-start">
+            <div class="mr-5 ml-5 d-flex justify-content-start">
               <div class="text-end">
                 <label class="form-label fw-semibold text-muted">Pending Amount</label>
                 <span class="form-control bg-light" style="border: none; color: red;">
@@ -151,48 +137,93 @@
                 </span>
               </div>
             </div>
-            <div class=" d-flex justify-content-start">
+            <div class="d-flex justify-content-start">
               <div class="text-end">
-                <label class="form-label fw-semibold text-muted">Pending Amount</label>
+                <label class="form-label fw-semibold text-muted">Paid Amount</label>
                 <span class="form-control bg-light" style="border: none; color: red;">
                   {{ paidAmount }} SAR
                 </span>
               </div>
             </div>
           </div>
-  
+    
+          <!-- Payment Inputs -->
           <div class="row g-4 mb-4 align-items-end">
-            <!-- Enter Amount Field -->
+            <!-- Enter Amount -->
             <div class="col-md-3">
               <label class="form-label fw-bold">Enter Amount</label>
-              <input class="form-control" [(ngModel)]="payAmount" type="number" placeholder="e.g. 5000" />
+              <input class="form-control" [(ngModel)]="amount" type="number" placeholder="e.g. 5000" />
             </div>
-            <!-- Comments Field -->
-            <div class="col-md-5">
+          
+            <!-- Comments -->
+            <div class="col-md-3">
               <label class="form-label fw-bold">Comments (Optional)</label>
-              <input class="form-control" [(ngModel)]="payComment" placeholder="e.g. Paid partial amount" />
+              <input class="form-control" [(ngModel)]="remarks" placeholder="e.g. Paid partial amount" />
             </div>
+          
+            <!-- Payment Date -->
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Payment Date</label>
+              <input nbInput fullWidth placeholder="Pick a date" [(ngModel)]="paymentDate" [nbDatepicker]="datePicker">
+              <nb-datepicker #datePicker></nb-datepicker>
+            </div>
+          
+            <!-- Payment Method Dropdown -->
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Payment Method</label>
+              <nb-select [(ngModel)]="paymentMethod" fullWidth>
+                <nb-option *ngFor="let method of paymentMethods" [value]="method?.key">{{ method?.label }}</nb-option>
+              </nb-select>
+            </div>
+          </div>
+          <div class="row g-4 mb-4 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Reference</label>
+              <input class="form-control" [(ngModel)]="reference" placeholder="Enter reference" />
+            </div>
+          
+            <!-- Payment Type Dropdown -->
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Payment Type</label>
+              <nb-select [(ngModel)]="paymentType" fullWidth>
+                <nb-option *ngFor="let type of paymentTypes" [value]="type?.key">{{ type.label }}</nb-option>
+              </nb-select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Account Name</label>
+              <nb-select [(ngModel)]="mainAccountId" fullWidth>
+                <nb-option *ngFor="let type of getAccounts" [value]="type?.id">{{ type.name }}</nb-option>
+              </nb-select>
+            </div>
+          
             <!-- Pay Button -->
             <div class="col-md-2">
               <button nbButton status="primary" class="w-100 shadow-sm fw-bold" (click)="onPay()">
                 <nb-icon icon="checkmark-circle-2-outline" class="me-1"></nb-icon> Pay
               </button>
             </div>
-  
           </div>
-        </div>
-      </div>
-  
-      <!-- Payment History Section -->
-      <div *ngIf="showHistoryTable" class="mt-4">
-        <div class="section">
-          <h5 class="fw-bold text-dark mb-3">
-            <i class="fas fa-history me-2 text-primary mr-3"></i> Payment History
-          </h5>
-          <ng2-smart-table [settings]="historyTableSettings" [source]="historyTableData"
+          
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    
+      <!-- Payment History -->
+      <nb-accordion-item *ngIf="showHistoryTable">
+        <nb-accordion-item-header>
+          <i class="fas fa-history text-primary me-2" style="margin-right: 8px;"></i>
+          Payment History
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <ng2-smart-table 
+            [settings]="historyTableSettings" 
+            [source]="historyTableData"
             class="rounded shadow-sm table-responsive">
           </ng2-smart-table>
-        </div>
-      </div>
-    </nb-card-body>
-  </nb-card>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    
+    </nb-accordion>
+    
+    
+  </nb-card-body>
+</nb-card>

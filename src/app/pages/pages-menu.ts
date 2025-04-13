@@ -256,7 +256,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'file-text-outline',
     children: [
       {
-        title: 'View Invoices',
+        title: 'Invoices Managment',
         link: '/pages/features/invoice-detail',
       },
       {

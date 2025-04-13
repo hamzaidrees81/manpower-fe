@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { InvoiceService } from '../../../@core/services/invoice.service';
 import { Router } from '@angular/router';
+import { ClientService } from '../../../@core/services/client.service';
+import { ExpenseService } from '../../../@core/services/expense.service';
+import { ToasterService } from '../../../@core/services/toaster.service';
+import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { FormatTextPipe } from '../../../utils/format-text.pipe';
+import { LocalDataSource } from 'ng2-smart-table';
 
 @Component({
   selector: 'ngx-invoice-detail',
@@ -8,19 +15,153 @@ import { Router } from '@angular/router';
   styleUrls: ['./invoice-detail.component.scss']
 })
 export class InvoiceDetailComponent implements OnInit {
-  selectedType: string = 'All'; 
+  selectedType: string = 'ALL'; 
   showDetails = false;
+  selectedClientByName;
+  selectedInvoiceByName;
+  showHistoryTable = false;
   invoiceData: any = { content: [], totalElements: 0, totalPages: 0 };
   pagedInvoices = [];
   currentPage = 1;
   pageSize = 10;
 
-  constructor(private router: Router, private invoiceService: InvoiceService) {}
+  amount: number | null = null;
+  remarks: string = '';
+  mainAccountId;
+  paymentDate: Date | null = null;
+  paymentMethod: { label: string; value: string } | null = null;
+  reference: string = '';
+  paymentType: { label: string; value: string } | null = null;
 
-  ngOnInit(): void {}
+  totalAmount = 0;
+  pendingAmount = 0;
+  paidAmount = 0;
+
+   historyTableData: LocalDataSource = new LocalDataSource();
+   
+  getClientsList;
+  getInvoicesList: any[];
+
+    historyTableSettings = {
+      actions: {
+        add: false,
+        position: 'right',
+      },
+      edit: {
+        editButtonContent: '<i class="nb-edit"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+        confirmSave: true,
+      },
+      delete: {
+        deleteButtonContent: '<i class="nb-trash"></i>',
+        confirmDelete: true,
+      },
+      columns: {
+        paidToName: {
+          title: 'Name',
+          type: 'string',
+          filter: false
+        },
+        mainAccountName: {
+          title: 'Account Name',
+          type: 'string',
+          filter: false
+        },
+        paymentDate: {
+            title: 'Payment Date',
+            type: 'custom',
+            renderComponent: SmartTableDatepickerRenderComponentComponent,
+            filter: false,
+            editor: {
+              type: 'custom',
+              component: CustomDatepickerComponent,
+            }
+          },
+        reference: {
+          title: 'Reference',
+          type: 'string',
+          filter: false
+        },
+        remarks: {
+          title: 'Remarks',
+          type: 'string',
+          filter: false
+        },
+        paymentMethod: {
+          title: 'Method',
+          type: 'string',
+          filter: false,
+          valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+        },
+        paymentType: {
+          title: 'Type',
+          type: 'string',
+          filter: false,
+          valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+        },
+        amount: {
+          title: 'Amount',
+          type: 'number',
+          filter: false
+        },
+      }
+    };
+    
+    filteredData;
+    status: any;
+
+  paymentMethods = [
+    { key: 'BANK_TRANSFER', label: 'Bank Transfer' },
+    { key: 'CASH', label: 'Cash' },
+    { key: 'CHEQUE', label: 'Cheque' },
+    { key: 'ONLINE_TRANSFER', label: 'Online Transfer' },
+    { key: 'CREDIT_CARD', label: 'Credit Card' },
+    { key: 'DEBIT_CARD', label: 'Debit Card' },
+    { key: 'MOBILE_WALLET', label: 'Mobile Wallet' },
+    { key: 'OTHER', label: 'Other' }
+  ];
+  
+  paymentTypes = [
+    { key: 'INITIAL', label: 'Initial' },
+    { key: 'ADJUSTMENT', label: 'Adjustment' },
+    { key: 'FULL', label: 'Full' },
+    { key: 'REFUND', label: 'Refund' },
+    { key: 'ADVANCE', label: 'Advance' }
+  ];
+
+  constructor(private toasterService: ToasterService,private expenseService : ExpenseService,private router: Router, private invoiceService: InvoiceService , private clientService : ClientService) {}
+
+  ngOnInit(): void {
+    this.getClients();
+    this.getInvoices();
+  }
 
   onClientSelect() {
+    console.log("this",this.selectedType);
     this.showDetails = false;
+  }
+
+  getClients(){
+    this.clientService.getClients().subscribe(
+      (data) => {
+        this.getClientsList = data;
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+
+  getInvoices(){
+    this.invoiceService.getInvoices().subscribe(
+      (data) => {
+        this.getInvoicesList = data;
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
   }
 
   toggleDetails() {
@@ -73,5 +214,57 @@ export class InvoiceDetailComponent implements OnInit {
     console.log('Print:', invoice);
     this.invoiceService.setInvoice(invoice);
     this.router.navigate(['/pages/features/print-invoice']);
+  }
+
+  onPay(): void {
+
+    const paymentPayload = {
+      paidToType:"ASSET",
+      paidToId:this.selectedClientByName?.id,
+      amount: this.amount,
+      mainAccountId:this.mainAccountId,
+      remarks: this.remarks,
+      paymentDate: this.paymentDate ? this.paymentDate.toISOString() : null,
+      paymentMethod: this.paymentMethod,
+      reference: this.reference,
+      status:"COMPLETED",
+      paymentType: this.paymentType
+    };
+
+    this.expenseService.addPayment(paymentPayload).subscribe(
+      (data) => {
+        this.toasterService.showSuccess('Payment paid successfully!');
+        this.showHistoryTable = true;
+        this.getHistory();
+  
+        // Optionally reset form fields
+        this.resetForm();
+      },
+      (error) => {
+        console.error('Error adding payment:', error);
+        this.toasterService.showError('Failed to create payment.');
+      }
+    );
+  }
+
+  getHistory(){
+   const paidToType = "ASSET";
+    this.expenseService.getPaymentsByFilter(this.selectedClientByName?.id,paidToType).subscribe(
+      (data) => {
+        this.historyTableData.load(data);
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+  
+  resetForm(): void {
+    this.amount = null;
+    this.remarks = '';
+    this.paymentDate = null;
+    this.paymentMethod = null;
+    this.reference = '';
+    this.paymentType = null;
   }
 }

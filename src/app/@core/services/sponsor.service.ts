@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 export class SponsorService {
   private apiUrl = `${environment.apiUrl}/sponsors`; // Get API URL from environment
   private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/asset-sponsorships`;
+  private apiUrlForAssetPayables = `${environment.apiUrl}/invoice-sponsor-payables`; 
 
   constructor(private http: HttpClient) {}
 
@@ -55,6 +56,17 @@ export class SponsorService {
   // Delete Sponsors
   deleteProjectAssetSponsorships(id: number): Observable<any> {
     return this.http.delete<any>(`${this.projectAssetSponsorshipsApiUrl}/${id}`);
+  }
+
+
+  getSponsorPayblesByStatusAndAssetName(status: string, sponsorId: number): Observable<any[]> {
+    let params = new HttpParams();
+  
+    if (sponsorId !== undefined && sponsorId !== null) {
+      params = params.set('sponsorId', sponsorId);
+    }
+  
+    return this.http.get<any[]>(`${this.apiUrlForAssetPayables}/status/${status}/sponsor`, { params });
   }
 }
 

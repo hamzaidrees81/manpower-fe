@@ -5,6 +5,8 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { FormatTextPipe } from '../../../../utils/format-text.pipe';
 import { ExpenseService } from '../../../../@core/services/expense.service';
 import { AccountsService } from '../../../../@core/services/accounts.service';
+import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 
 @Component({
   selector: 'ngx-asset-payment',
@@ -86,49 +88,53 @@ export class AssetPaymentComponent implements OnInit {
       confirmDelete: true,
     },
     columns: {
-      assetName: {
-        title: 'Asset Name',
+      paidToName: {
+        title: 'Name',
         type: 'string',
         filter: false
+      },
+      mainAccountName: {
+        title: 'Account Name',
+        type: 'string',
+        filter: false
+      },
+      paymentDate: {
+          title: 'Payment Date',
+          type: 'custom',
+          renderComponent: SmartTableDatepickerRenderComponentComponent,
+          filter: false,
+          editor: {
+            type: 'custom',
+            component: CustomDatepickerComponent,
+          }
+        },
+      reference: {
+        title: 'Reference',
+        type: 'string',
+        filter: false
+      },
+      remarks: {
+        title: 'Remarks',
+        type: 'string',
+        filter: false
+      },
+      paymentMethod: {
+        title: 'Method',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      paymentType: {
+        title: 'Type',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
       },
       amount: {
         title: 'Amount',
         type: 'number',
         filter: false
       },
-      comment: {
-        title: 'Comment',
-        type: 'string',
-        filter: false
-      },
-      expenseCategoryName: {
-        title: 'Expense Category Name',
-        type: 'string',
-        filter: false
-      },
-      paymentDate: {
-        title: 'Payment Date',
-        type: 'string',
-        filter: false,
-        valuePrepareFunction: (date) => new Date(date).toLocaleDateString()
-      },
-      paymentMethod: {
-        title: 'Payment Method',
-        type: 'string',
-        filter: false,
-        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
-      },
-      expenseProjectName: {
-        title: 'Project Name',
-        type: 'string',
-        filter: false
-      },
-      expenseType: {
-        title: 'Payment Type',
-        type: 'string',
-        filter: false,
-        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
-      }
     }
   };
   
@@ -249,8 +255,6 @@ export class AssetPaymentComponent implements OnInit {
   resetAssetSelection(): void {
     this.selectedAssetByName = null;
     this.selectedAssetByNumber = null;
-    // this.paymentTableData = [];
-    // this.historyTableData = [];
     this.totalAmount = 0;
     this.pendingAmount = 0;
     this.amount = null;
@@ -313,19 +317,3 @@ export class AssetPaymentComponent implements OnInit {
 
 }
   
-
-//   onPay() {
-//     this.showHistoryTable = true;
-
-//     // Push dummy data to history
-//     const newEntry = {
-//       id: this.historyTableData['data'].length + 1,
-//       date: new Date().toISOString().split('T')[0],
-//       amount: this.payAmount,
-//       comments: this.payComment,
-//     };
-
-//     this.historyTableData.add(newEntry);
-//     this.historyTableData.refresh();
-//   }
-// }

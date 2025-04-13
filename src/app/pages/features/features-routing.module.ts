@@ -95,11 +95,3 @@ const routes: Routes = [{
   exports: [RouterModule],
 })
 export class FeaturesRoutingModule { }
-
-export const routedComponents = [
-  FeaturesComponent,
-  AssetComponent,
-  CompanyComponent,
-  ProjectsComponent,
-  UsersComponent
-];

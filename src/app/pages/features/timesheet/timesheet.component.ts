@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { SmartTableData } from '../../../@core/data/smart-table';
 import { DatePickerService } from '../../../@core/services/date-picker.service';
 import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/custom-datepicker.component';
@@ -262,7 +261,7 @@ export class TimesheetComponent  implements OnInit {
   // TIME SHEET CONFIG END
 
 
-  constructor(private router: Router,private dialogService: NbDialogService,private service: SmartTableData,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
+  constructor(private router: Router,private dialogService: NbDialogService,private toasterService: ToasterService,private datePickerService: DatePickerService,private projectService:ProjectService,private designationService:DesignationService,private assetService:AssetService,private timesheetService : TimesheetService) {}
 
   ngOnInit(): void {
     
@@ -607,8 +606,8 @@ export class TimesheetComponent  implements OnInit {
   
 
   getExpenses(){
-    const data = this.service.getExpenses();
-    this.sourceExpenses.load(data);
+    // const data = this.service.getExpenses();
+    // this.sourceExpenses.load(data);
   }
 
   getAsset(){

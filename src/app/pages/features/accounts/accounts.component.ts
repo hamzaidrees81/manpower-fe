@@ -2,7 +2,6 @@
 import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
-import { SmartTableData } from '../../../@core/data/smart-table';
 import { Account, Company, CompanyService } from '../../../@core/services/company.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
@@ -108,7 +107,7 @@ export class AccountsComponent {
   source: LocalDataSource = new LocalDataSource();
   getAccounts: Account[];
 
-  constructor(private service: SmartTableData, private companyService: CompanyService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
+  constructor(private companyService: CompanyService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
 
   ngOnInit(): void {

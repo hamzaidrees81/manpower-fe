@@ -3,7 +3,7 @@ import { NbAccordionModule, NbButtonModule, NbCardModule, NbDatepickerModule, Nb
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
-import { FeaturesRoutingModule, routedComponents } from './features-routing.module';
+import { FeaturesRoutingModule } from './features-routing.module';
 import { TimesheetComponent } from './timesheet/timesheet.component';
 import { FormsModule } from '@angular/forms';
 import { ClientComponent } from './client/client.component';
@@ -19,6 +19,11 @@ import { InvoiceReceivableComponent } from './payment-management/invoice-receiva
 import { SponsorModalComponent } from './sponsor-modal/sponsor-modal.component';
 import { ExpenseComponent } from './payment-management/expense/expense.component';
 import { AccountsComponent } from './accounts/accounts.component';
+import { AssetComponent } from './asset/asset.component';
+import { CompanyComponent } from './company/company.component';
+import { FeaturesComponent } from './features.component';
+import { ProjectsComponent } from './projects/projects.component';
+import { UsersComponent } from './users/users.component';
 
 @NgModule({
   imports: [
@@ -37,7 +42,11 @@ import { AccountsComponent } from './accounts/accounts.component';
     NbDatepickerModule, // ✅ Remove .forRoot() (it should only be in AppModule)
   ],
   declarations: [
-    ...routedComponents,
+    FeaturesComponent,
+    AssetComponent,
+    CompanyComponent,
+    ProjectsComponent,
+    UsersComponent,
     TimesheetComponent,
     ClientComponent,
     CustomDatepickerComponent,
@@ -51,8 +60,7 @@ import { AccountsComponent } from './accounts/accounts.component';
     InvoiceReceivableComponent,
     SponsorModalComponent,
     ExpenseComponent,
-    AccountsComponent,
-    
+    AccountsComponent, 
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules
 })

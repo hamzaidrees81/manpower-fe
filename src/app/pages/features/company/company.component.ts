@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
-import { SmartTableData } from '../../../@core/data/smart-table';
 import { Company, CompanyService } from '../../../@core/services/company.service';
 import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
@@ -84,7 +83,7 @@ export class CompanyComponent {
 
   source: LocalDataSource = new LocalDataSource();
 
-  constructor(private service: SmartTableData, private companyService: CompanyService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
+  constructor( private companyService: CompanyService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
 
   ngOnInit(): void {

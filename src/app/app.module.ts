@@ -14,7 +14,6 @@ import { AppRoutingModule } from './app-routing.module';
 import {
   NbButtonModule,
   NbCardModule,
-  NbChatModule,
   NbDatepickerModule,
   NbDialogModule,
   NbIconModule,
@@ -49,9 +48,6 @@ import { FormatTextPipe } from './utils/format-text.pipe';
     NbDialogModule.forRoot(),
     NbWindowModule.forRoot(),
     NbToastrModule.forRoot(),
-    NbChatModule.forRoot({
-      messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
-    }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
   ],

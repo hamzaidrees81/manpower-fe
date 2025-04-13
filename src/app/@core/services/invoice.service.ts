@@ -28,15 +28,17 @@ export class InvoiceService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  getInvoicesByStatus(status,page,size): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/list`,{
-      params:{
-        status:status,
-        page:page,
-        size:size
-      }
-    });
+  getInvoicesByStatus(status, clientId, page, size): Observable<any[]> {
+    const params: any = {};
+  
+    if (clientId !== null && clientId !== undefined) params.clientId = clientId;
+    if (status !== null && status !== undefined) params.status = status;
+    if (page !== null && page !== undefined) params.page = page;
+    if (size !== null && size !== undefined) params.size = size;
+  
+    return this.http.get<any[]>(`${this.apiUrl}/list`, { params });
   }
+  
 
   // get invoice by id 
   getInvoiceById(id): Observable<any[]> {

@@ -41,7 +41,7 @@
                 </select>
               </div>
 
-              <div class="col-md-3 col-sm-12 mb-3" *ngIf="selectedType === 'UNPAID'">
+              <!-- <div class="col-md-3 col-sm-12 mb-3" *ngIf="selectedType === 'UNPAID'">
                 <label for="InvoiceSelect" class="fw-bold text-muted d-flex align-items-center">
                   <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Invoice Name
                 </label>
@@ -49,7 +49,7 @@
                   <option [ngValue]="null" disabled selected>Select an Invoice</option>
                   <option *ngFor="let item of getInvoicesList" [ngValue]="item">{{ item.name }}</option>
                 </select>
-              </div>
+              </div> -->
     
               <!-- Get All Invoices Button -->
               <div class="col-md-3 col-sm-12 mb-3 text-center">
@@ -138,7 +138,7 @@
       </nb-accordion-item>
 
            <!-- Make a Payment -->
-           <nb-accordion-item *ngIf="selectedType === 'UNPAID'">
+           <nb-accordion-item *ngIf="isClientNameSelected">
             <nb-accordion-item-header>
               <i class="fas fa-credit-card text-primary me-2" style="margin-right: 8px;"></i>
               Manage Payment
@@ -248,7 +248,7 @@
           </nb-accordion-item>
 
                 <!-- Note -->
-      <nb-accordion-item *ngIf="selectedType != 'UNPAID'" [expanded]="true">
+      <nb-accordion-item *ngIf="!isClientNameSelected" [expanded]="true">
         <nb-accordion-item-header>
           <i class="fas fa-file-invoice-dollar text-danger me-2" style="margin-right: 8px;"></i>
           Note

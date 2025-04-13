@@ -5,9 +5,73 @@
     </nb-card-header>
   
     <nb-card-body>
-      <!-- Search Filters + Buttons -->
-
+      <div class="row mb-4" >
+        <!-- Filter Section -->
+        <div class="col-12">
+          <div class="filter-section card shadow-sm border-0">
+            <div class="card-header p-3">
+              <h4 class="mb-0 d-flex align-items-center">
+                <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
+              </h4>
+            </div>
+            <div class="card-body">
+              <div class="row align-items-end">
+                
+                <!-- Asset Select -->
+                <div class="col-md-3 col-sm-12 mb-3">
+                  <label for="AssetSelect" class="fw-bold text-muted d-flex align-items-center">
+                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Asset Name
+                  </label>
+                  <select id="AssetSelect" class="form-control" [(ngModel)]="selectedAssetByName">
+                    <option [ngValue]="null" disabled selected>Select an Asset</option>
+                    <option *ngFor="let item of getAssetsList" [ngValue]="item">{{ item.name }}</option>
+                  </select>
+                </div>
   
+                <div class="col-md-3 col-sm-12 mb-3">
+                  <label for="ProjectSelect" class="fw-bold text-muted d-flex align-items-center">
+                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Project Name
+                  </label>
+                  <select id="ProjectSelect" class="form-control" [(ngModel)]="selectedProjectByName">
+                    <option [ngValue]="null" disabled selected>Select an Project</option>
+                    <option *ngFor="let item of getProjectsList" [ngValue]="item">{{ item.name }}</option>
+                  </select>
+                </div>
+
+                <div class="col-md-3 col-sm-12 mb-3">
+                  <label for="CategorySelect" class="fw-bold text-muted d-flex align-items-center">
+                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Category Name
+                  </label>
+                  <select id="CategorySelect" class="form-control" [(ngModel)]="selectedCategoryByName">
+                    <option [ngValue]="null" disabled selected>Select an Category</option>
+                    <option *ngFor="let item of getCategorysList" [ngValue]="item">{{ item.categoryName }}</option>
+                  </select>
+                </div>
+  
+                <!-- <div class="col-md-3 col-sm-12 mb-3" *ngIf="selectedType === 'UNPAID'">
+                  <label for="InvoiceSelect" class="fw-bold text-muted d-flex align-items-center">
+                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Invoice Name
+                  </label>
+                  <select id="InvoiceSelect" class="form-control" [(ngModel)]="selectedInvoiceByName">
+                    <option [ngValue]="null" disabled selected>Select an Invoice</option>
+                    <option *ngFor="let item of getInvoicesList" [ngValue]="item">{{ item.name }}</option>
+                  </select>
+                </div> -->
+      
+                <!-- Get All Invoices Button -->
+                <div class="col-md-3 col-sm-12 mb-3 text-center">
+                  <button nbButton status="primary" class="w-100 fw-bold" (click)="toggleDetails()" [disabled]="!(selectedAssetByName || selectedProjectByName || selectedCategoryByName)">
+                    <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Expenses
+                  </button>
+                </div>
+                
+      
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Asset Payment  -->
       <div class="mt-4">
         <div class="section">

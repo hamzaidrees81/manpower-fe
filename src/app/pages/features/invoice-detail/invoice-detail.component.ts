@@ -8,6 +8,7 @@ import { CustomDatepickerComponent } from '../../../shared/custom-datepicker/cus
 import { SmartTableDatepickerRenderComponentComponent } from '../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
 import { FormatTextPipe } from '../../../utils/format-text.pipe';
 import { LocalDataSource } from 'ng2-smart-table';
+import { AccountsService } from '../../../@core/services/accounts.service';
 
 @Component({
   selector: 'ngx-invoice-detail',
@@ -19,6 +20,7 @@ export class InvoiceDetailComponent implements OnInit {
   showDetails = false;
   selectedClientByName;
   selectedInvoiceByName;
+  isClientNameSelected = false;
   showHistoryTable = false;
   invoiceData: any = { content: [], totalElements: 0, totalPages: 0 };
   pagedInvoices = [];
@@ -129,8 +131,9 @@ export class InvoiceDetailComponent implements OnInit {
     { key: 'REFUND', label: 'Refund' },
     { key: 'ADVANCE', label: 'Advance' }
   ];
+  getAccounts: any;
 
-  constructor(private toasterService: ToasterService,private expenseService : ExpenseService,private router: Router, private invoiceService: InvoiceService , private clientService : ClientService) {}
+  constructor(private toasterService: ToasterService,private expenseService : ExpenseService,private router: Router, private invoiceService: InvoiceService , private clientService : ClientService,private accountsService : AccountsService) {}
 
   ngOnInit(): void {
     this.getClients();
@@ -138,8 +141,18 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   onClientSelect() {
-    console.log("this",this.selectedType);
     this.showDetails = false;
+  }
+
+  loadAccount() {
+    this.accountsService.getAccounts().subscribe(
+      (data) => {
+        this.getAccounts = data;
+      },
+      (error) => {
+        console.error('Error loading assets:', error);
+      }
+    );
   }
 
   getClients(){
@@ -165,18 +178,24 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   toggleDetails() {
-    if (this.selectedType) {
-      this.fetchInvoices(this.selectedType);
+    if (this.selectedType || this.selectedClientByName) {
+      this.fetchInvoices(this.selectedType,this.selectedClientByName?.id);
     }
   }
 
-  fetchInvoices(selectedType: string): void {
-    this.invoiceService.getInvoicesByStatus(selectedType, this.currentPage - 1, this.pageSize).subscribe(
+  fetchInvoices(selectedType,clientId?): void {
+    this.invoiceService.getInvoicesByStatus(selectedType,clientId, this.currentPage - 1, this.pageSize).subscribe(
       (data) => {
         if (data) {
           this.invoiceData = data;
           this.pagedInvoices = this.invoiceData?.content || [];
-          this.showDetails = true;
+          if(this.selectedClientByName){
+            this.isClientNameSelected = true;
+            this.showDetails = true;
+            this.loadAccount();
+          }else {
+            this.showDetails = true;
+          }       
         }
       },
       (error) => {
@@ -219,8 +238,8 @@ export class InvoiceDetailComponent implements OnInit {
   onPay(): void {
 
     const paymentPayload = {
-      paidToType:"ASSET",
-      paidToId:this.selectedClientByName?.id,
+      paidToType:"INVOICES",
+      paidToId:null,
       amount: this.amount,
       mainAccountId:this.mainAccountId,
       remarks: this.remarks,
@@ -228,6 +247,7 @@ export class InvoiceDetailComponent implements OnInit {
       paymentMethod: this.paymentMethod,
       reference: this.reference,
       status:"COMPLETED",
+      paymentDirection:"OUTGOING",
       paymentType: this.paymentType
     };
 
@@ -248,7 +268,7 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   getHistory(){
-   const paidToType = "ASSET";
+   const paidToType = "INVOICE";
     this.expenseService.getPaymentsByFilter(this.selectedClientByName?.id,paidToType).subscribe(
       (data) => {
         this.historyTableData.load(data);

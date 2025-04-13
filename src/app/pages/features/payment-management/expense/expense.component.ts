@@ -6,6 +6,8 @@ import { validateRequiredFields } from '../../../../utils/validation-utils';
 import { ToasterService } from '../../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confirm-dialog.component';
 import { NbDialogService } from '@nebular/theme';
+import { AssetService } from '../../../../@core/services/asset.service';
+import { ProjectService } from '../../../../@core/services/projects.service';
 
 @Component({
   selector: 'ngx-expense',
@@ -16,10 +18,39 @@ export class ExpenseComponent implements OnInit {
 
   expenseDataTable: LocalDataSource = new LocalDataSource();
 
+  getCategorysList;
+  getProjectsList;
+  getAssetsList;
+
+  selectedCategoryByName;
+  selectedProjectByName;
+  selectedAssetByName;
+
   expenseSetting = {
-    actions: false,
-    hideSubHeader: true,
+    actions: {
+      position: 'right', // Moves action buttons to the right
+    },
+    add: {
+      addButtonContent: '<i class="nb-plus"></i>',
+      createButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmCreate: true,
+    },
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
+    },
+    delete: {
+      deleteButtonContent: '<i class="nb-trash"></i>',
+      confirmDelete: true,
+    },
     columns: {
+      assetName: {
+        title: 'Asset Name',
+        type: 'string',
+      },
       expenseType: {
         title: 'Type',
         filter: false,
@@ -30,20 +61,47 @@ export class ExpenseComponent implements OnInit {
           config: {
             selectText: 'Select...',
             list: [
-              { value: 'BILL', title: 'Bill' },
+              { value: 'PROJECT', title: 'Project' },
+              { value: 'SELF', title: 'Self' } // assuming more types
             ]
           }
         }
       },
-      amount: { title: 'Amount' },
-      expenseMetric: { title: 'Metric' },
-    },
+      expenseProjectName: {
+        title: 'Project Name',
+        type: 'string',
+      },
+      expenseMetric: {
+        title: 'Metric',
+        type: 'string',
+        filter: false,
+      },
+      expenseCategoryName: {
+        title: 'Category Name',
+        type: 'string',
+        filter: false,
+      },
+      amount: {
+        title: 'Amount',
+        type: 'number',
+        filter: false,
+      },
+      comment: {
+        title: 'Comment',
+        type: 'string',
+        filter: false,
+      }
+    }
   };
+  
 
-  constructor(private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService){}
+  constructor(private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService,private assetService : AssetService,private projectService : ProjectService){}
 
   ngOnInit(): void {
     this.loadExpense();
+    this.loadCatgories();
+    this.loadAsset();
+    this.loadProject();
   }
 
   loadExpense(): void {
@@ -57,15 +115,65 @@ export class ExpenseComponent implements OnInit {
     );
   }
 
+  loadCatgories(): void {
+    this.expenseService.getCategories().subscribe(
+      (data) => {
+        this.getCategorysList = data;
+      },
+      (error) => {
+        console.error('Error loading Sponsors:', error);
+      }
+    );
+  }
+
+  loadAsset(): void {
+    this.assetService.getAssetsByCompany().subscribe(
+      (data) => {
+        this.getAssetsList = data;
+      },
+      (error) => {
+        console.error('Error loading Sponsors:', error);
+      }
+    );
+  }
+
+  loadProject(): void {
+    this.projectService.getProjects().subscribe(
+      (data) => {
+        this.getProjectsList = data;
+      },
+      (error) => {
+        console.error('Error loading Sponsors:', error);
+      }
+    );
+  }
+
+  toggleDetails() {
+    if (this.selectedAssetByName || this.selectedProjectByName || this.selectedCategoryByName) {
+      this.fetchExpenses(this.selectedAssetByName?.id , this.selectedProjectByName?.id, this.selectedCategoryByName?.id);
+    }
+  }
+
+  fetchExpenses(assetId,projectId?,categoryId?): void {
+    this.expenseService.getExpenseByAssetName(assetId,projectId,categoryId,).subscribe(
+      (data) => {
+        this.expenseDataTable.load(data);
+      },
+      (error) => {
+        console.error('Error loading invoices:', error);
+      }
+    );
+  }
+
     // Add Sponsors
     onCreateConfirm(event: any): void {
       // const numericFields = [ "phone"];
-      const requiredFields = [ "name"];
+      // const requiredFields = [ "name"];
   
       // ✅ Validate required fields
-      if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
-        return; // Stop execution if validation fails
-      }
+      // if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      //   return; // Stop execution if validation fails
+      // }
   
       // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       //   return; // Stop execution if validation fails
@@ -88,12 +196,12 @@ export class ExpenseComponent implements OnInit {
     // Update Expenses
     onEditConfirm(event: any): void {
       // const numericFields = ["phone"];
-      const requiredFields = ["name"];
+      // const requiredFields = ["name"];
   
       // ✅ Validate required fields
-      if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
-        return; // Stop execution if validation fails
-      }
+      // if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
+      //   return; // Stop execution if validation fails
+      // }
   
       // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
       //   return; // Stop execution if validation fails

@@ -17,6 +17,10 @@ export class ExpenseService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getCategories(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/categories`);
+  }
+
   // Add a new Asset
   addExpense(Expense: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, Expense);
@@ -32,11 +36,17 @@ export class ExpenseService {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
-  getExpenseByAssetName(assetId: number): Observable<any[]> {
+  getExpenseByAssetName(assetId,projectId?,categoryId?): Observable<any[]> {
     let params = new HttpParams();
   
     if (assetId !== undefined && assetId !== null) {
       params = params.set('assetId', assetId);
+    }
+    if (projectId !== undefined && projectId !== null) {
+      params = params.set('projectId', projectId);
+    }
+    if (categoryId !== undefined && categoryId !== null) {
+      params = params.set('categoryId', categoryId);
     }
   
     return this.http.get<any[]>(`${this.apiUrl}/filter`, { params });

@@ -60,11 +60,13 @@ export class ExpenseService {
     }
 
 
-    getPaymentsByFilter(assetId: number,type): Observable<any[]> {
+    getPaymentsByFilter(assetId,type): Observable<any[]> {
       let params = new HttpParams();
     
-      if (assetId !== undefined && assetId !== null) {
+      if (type !== undefined && type !== null) {
         params = params.set('paidToType', type);
+      }
+      if (assetId !== undefined && assetId !== null) {
         params = params.set('paidToId', assetId);
       }
     

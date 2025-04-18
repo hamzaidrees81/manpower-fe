@@ -21,15 +21,17 @@ export class InvoiceDetailComponent implements OnInit {
   selectedClientByName;
   selectedInvoiceByName;
   isClientNameSelected = false;
+  noRecordFound= false;
   showHistoryTable = false;
   invoiceData: any = { content: [], totalElements: 0, totalPages: 0 };
-  pagedInvoices = [];
+  pagedInvoices;
   currentPage = 1;
   pageSize = 10;
 
   amount: number | null = null;
   remarks: string = '';
   mainAccountId;
+  invoiceId;
   paymentDate: Date | null = null;
   paymentMethod: { label: string; value: string } | null = null;
   reference: string = '';
@@ -142,6 +144,7 @@ export class InvoiceDetailComponent implements OnInit {
 
   onClientSelect() {
     this.showDetails = false;
+    this.isClientNameSelected = false;
   }
 
   loadAccount() {
@@ -188,11 +191,16 @@ export class InvoiceDetailComponent implements OnInit {
       (data) => {
         if (data) {
           this.invoiceData = data;
-          this.pagedInvoices = this.invoiceData?.content || [];
+          this.pagedInvoices = this.invoiceData?.page || [];
+          debugger;
+          if(this.pagedInvoices?.content?.length > 0){
+            this.noRecordFound = true;
+          }
           if(this.selectedClientByName){
             this.isClientNameSelected = true;
             this.showDetails = true;
             this.loadAccount();
+            this.getHistory();
           }else {
             this.showDetails = true;
           }       
@@ -238,8 +246,9 @@ export class InvoiceDetailComponent implements OnInit {
   onPay(): void {
 
     const paymentPayload = {
-      paidToType:"INVOICES",
-      paidToId:null,
+      paidToType:"INVOICE",
+      paidToId:this.selectedClientByName?.id,
+      invoiceId:this.invoiceId,
       amount: this.amount,
       mainAccountId:this.mainAccountId,
       remarks: this.remarks,
@@ -247,16 +256,14 @@ export class InvoiceDetailComponent implements OnInit {
       paymentMethod: this.paymentMethod,
       reference: this.reference,
       status:"COMPLETED",
-      paymentDirection:"OUTGOING",
+      paymentDirection:"INCOMING",
       paymentType: this.paymentType
     };
 
     this.expenseService.addPayment(paymentPayload).subscribe(
       (data) => {
         this.toasterService.showSuccess('Payment paid successfully!');
-        this.showHistoryTable = true;
-        this.getHistory();
-  
+        this.showHistoryTable = true; 
         // Optionally reset form fields
         this.resetForm();
       },

@@ -8,6 +8,7 @@ import { ConfirmDialogComponent } from '../../../../shared/confirm-dialog/confir
 import { NbDialogService } from '@nebular/theme';
 import { AssetService } from '../../../../@core/services/asset.service';
 import { ProjectService } from '../../../../@core/services/projects.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-expense',
@@ -49,7 +50,15 @@ export class ExpenseComponent implements OnInit {
     columns: {
       assetName: {
         title: 'Asset Name',
-        type: 'string',
+        type: 'html',
+        valuePrepareFunction: (asset) => asset.name ,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
       },
       expenseType: {
         title: 'Type',
@@ -69,7 +78,15 @@ export class ExpenseComponent implements OnInit {
       },
       expenseProjectName: {
         title: 'Project Name',
-        type: 'string',
+        type: 'html',
+        valuePrepareFunction: (project) => project.name ,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
       },
       expenseMetric: {
         title: 'Metric',
@@ -78,8 +95,15 @@ export class ExpenseComponent implements OnInit {
       },
       expenseCategoryName: {
         title: 'Category Name',
-        type: 'string',
-        filter: false,
+        type: 'html',
+        valuePrepareFunction: (category) => category.name ,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
       },
       amount: {
         title: 'Amount',
@@ -93,54 +117,110 @@ export class ExpenseComponent implements OnInit {
       }
     }
   };
+  getExpenseList
   
 
-  constructor(private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService,private assetService : AssetService,private projectService : ProjectService){}
+  constructor(private router : Router ,private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService,private assetService : AssetService,private projectService : ProjectService){}
 
   ngOnInit(): void {
+    this.loadDropdowns();
     this.loadExpense();
-    this.loadCatgories();
-    this.loadAsset();
-    this.loadProject();
+  }
+
+  loadDropdowns(): void {
+    this.assetService.getAssetsByCompany().subscribe((data) => {
+      
+      this.getAssetsList = data;
+      this.expenseSetting = {
+        ...this.expenseSetting,
+        columns: {
+          ...this.expenseSetting.columns,
+          assetName: {
+            ...this.expenseSetting.columns.assetName,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
+
+    this.projectService.getProjects().subscribe((data) => {
+      
+      this.getProjectsList = data;
+      this.expenseSetting = {
+        ...this.expenseSetting,
+        columns: {
+          ...this.expenseSetting.columns,
+          expenseProjectName: {
+            ...this.expenseSetting.columns.expenseProjectName,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.name, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
+
+    this.expenseService.getCategories().subscribe((data) => {
+      
+      this.getCategorysList = data;
+      this.expenseSetting = {
+        ...this.expenseSetting,
+        columns: {
+          ...this.expenseSetting.columns,
+          expenseCategoryName: {
+            ...this.expenseSetting.columns.expenseCategoryName,
+            editor: {
+              type: 'list',
+              config: {
+                selectText: 'Select...',
+                list: data.map((c) => ({
+                  value: JSON.stringify(c), // Store whole object as string
+                  title: c.categoryName, // Display name
+                })),
+              },
+            },
+          },
+        },
+      };
+    });
   }
 
   loadExpense(): void {
     this.expenseService.getExpenses().subscribe(
       (data) => {
-        this.expenseDataTable.load(data);
-      },
-      (error) => {
-        console.error('Error loading Sponsors:', error);
-      }
-    );
-  }
-
-  loadCatgories(): void {
-    this.expenseService.getCategories().subscribe(
-      (data) => {
-        this.getCategorysList = data;
-      },
-      (error) => {
-        console.error('Error loading Sponsors:', error);
-      }
-    );
-  }
-
-  loadAsset(): void {
-    this.assetService.getAssetsByCompany().subscribe(
-      (data) => {
-        this.getAssetsList = data;
-      },
-      (error) => {
-        console.error('Error loading Sponsors:', error);
-      }
-    );
-  }
-
-  loadProject(): void {
-    this.projectService.getProjects().subscribe(
-      (data) => {
-        this.getProjectsList = data;
+        this.getExpenseList = data;
+        const updatedList = this.getExpenseList?.map(item => ({
+          ...item,
+          assetName: {
+            id: item.assetId,
+            name: item.assetName
+          },
+          expenseCategoryName: {
+            id: item.expenseCategoryId,
+            name: item.expenseCategoryName
+          },
+          expenseProjectName: {
+            id: item.expenseProjectId,
+            name: item.expenseProjectName
+          }
+        }));
+        this.expenseDataTable.load(updatedList);
       },
       (error) => {
         console.error('Error loading Sponsors:', error);
@@ -157,7 +237,23 @@ export class ExpenseComponent implements OnInit {
   fetchExpenses(assetId,projectId?,categoryId?): void {
     this.expenseService.getExpenseByAssetName(assetId,projectId,categoryId,).subscribe(
       (data) => {
-        this.expenseDataTable.load(data);
+        this.getExpenseList = data;
+        const updatedList = this.getExpenseList?.map(item => ({
+          ...item,
+          assetName: {
+            id: item.assetId,
+            name: item.assetName
+          },
+          expenseCategoryName: {
+            id: item.expenseCategoryId,
+            categoryName: item.expenseCategoryName
+          },
+          expenseProjectName: {
+            id: item.expenseProjectId,
+            name: item.expenseProjectName
+          }
+        }));
+        this.expenseDataTable.load(updatedList);
       },
       (error) => {
         console.error('Error loading invoices:', error);
@@ -179,10 +275,24 @@ export class ExpenseComponent implements OnInit {
       //   return; // Stop execution if validation fails
       // }
       const newExpenses = event.newData;
+      const projectId = JSON.parse(newExpenses?.expenseProjectName);
+      const categoryId = JSON.parse(newExpenses?.expenseCategoryName);
+      const assetId = JSON.parse(newExpenses?.assetName);
+      const updateData = {
+        ...newExpenses,
+        expenseProjectId : projectId?.id,
+        expenseCategoryId : categoryId?.id,
+        assetId : assetId?.id,
+      }
+
+      delete newExpenses?.assetName;
+      delete newExpenses?.expenseProjectName;
+      delete newExpenses?.expenseCategoryName;
   
-      this.expenseService.addExpense(newExpenses).subscribe(
+      this.expenseService.addExpense(updateData).subscribe(
         (data) => {
-          event.confirm.resolve(data);
+          // event.confirm.resolve(data);
+          this.reloadCurrentRoute();
           this.toasterService.showSuccess('Expense created successfully!');
         },
         (error) => {
@@ -207,10 +317,24 @@ export class ExpenseComponent implements OnInit {
       //   return; // Stop execution if validation fails
       // }
       const updatedExpenses = event.newData;
+      const projectId = JSON.parse(updatedExpenses?.expenseProjectName);
+      const categoryId = JSON.parse(updatedExpenses?.expenseCategoryName);
+      const assetId = JSON.parse(updatedExpenses?.assetName);
+      const updateData = {
+        ...updatedExpenses,
+        expenseProjectId : projectId?.id,
+        expenseCategoryId : categoryId?.id,
+        assetId : assetId?.id,
+      }
+
+      delete updatedExpenses?.assetName;
+      delete updatedExpenses?.expenseProjectName;
+      delete updatedExpenses?.expenseCategoryName;
   
-      this.expenseService.updateExpense(updatedExpenses.id, updatedExpenses).subscribe(
+      this.expenseService.updateExpense(updateData.id, updateData).subscribe(
         (data) => {
-          event.confirm.resolve(data);
+          // event.confirm.resolve(data);
+          this.reloadCurrentRoute();
           this.toasterService.showSuccess('Expense updated successfully!');
         },
         (error) => {
@@ -219,6 +343,13 @@ export class ExpenseComponent implements OnInit {
           event.confirm.reject();
         }
       );
+    }
+
+    reloadCurrentRoute(): void {
+      const currentUrl = this.router.url;
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate([currentUrl]);
+      });
     }
   
     // Delete Expenses

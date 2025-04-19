@@ -20,7 +20,6 @@ export class DatePickerService {
   selectedPassportExpiryDate$ = this.selectedpassportExpiryDateSource.asObservable();
 
   updateSelectedDate(data: { field: string; date: Date }) {
-    debugger;
     if(data?.field === 'startDate'){
       this.selectedStartDateSource.next(data);
     }else if(data?.field === 'endDate'){

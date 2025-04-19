@@ -18,6 +18,7 @@ import { InvoiceReceivableComponent } from './payment-management/invoice-receiva
 import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
 import { ExpenseComponent } from './payment-management/expense/expense.component';
 import { AccountsComponent } from './accounts/accounts.component';
+import { LedgerComponent } from './ledger/ledger.component';
 
 const routes: Routes = [{
   path: '',
@@ -86,6 +87,10 @@ const routes: Routes = [{
     {
       path: 'payment-management/expense',
       component: ExpenseComponent,
+    },
+    {
+      path: 'ledger',
+      component: LedgerComponent,
     },
   ],
 }];

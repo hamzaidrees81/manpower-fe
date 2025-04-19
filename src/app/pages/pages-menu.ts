@@ -78,14 +78,19 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Sponsor Payment',
         link: '/pages/features/payment-management/sponsor-payment',
       },
-      {
-        title: 'Invoice Receivable',
-        link: '/pages/features/payment-management/invoice-receivable',
-      },
+      // {
+      //   title: 'Invoice Receivable',
+      //   link: '/pages/features/payment-management/invoice-receivable',
+      // },
       {
         title: 'Expense',
         link: '/pages/features/payment-management/expense',
       },
     ],
+  },
+  {
+    title: 'Ledger',
+    icon: 'credit-card-outline',
+    link: '/pages/features/ledger',
   },
 ];

@@ -112,7 +112,6 @@ export class SponsorModalComponent implements OnInit {
   ngOnInit(): void {
     this.rowData = this.dialogRef.componentRef.instance;
     if (this.rowData) {
-      debugger;
       if(this.rowData?.key === 'ASSET'){
         this.getsponsorshipBasis( { value: 'ASSET_BASED', title: 'Asset Based' },);
         this.getSponsorsByAssetId(this.rowData?.id);

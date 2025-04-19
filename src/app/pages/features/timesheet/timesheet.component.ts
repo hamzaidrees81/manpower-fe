@@ -763,7 +763,6 @@ onProjectCreateConfirm(event: any): void {
 onProjectEditConfirm(event: any): void {
   const designationId = JSON.parse(event.newData.designation);
   const projectId =  JSON.parse(event.newData.project);
-  debugger;
   const updatedProject = {
     ...event.newData,
     designationId: designationId?.id,

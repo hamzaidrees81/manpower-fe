@@ -16,6 +16,8 @@ export class CompanyComponent {
   settings = {
     actions: {
       position: 'right', // Moves action buttons to the right
+      delete: false,
+      add:false,
     },
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
@@ -31,7 +33,7 @@ export class CompanyComponent {
     },
     delete: {
       deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
+      confirmDelete: false,
     },
     columns: {
       name: {
@@ -43,41 +45,47 @@ export class CompanyComponent {
         type: 'string',
         filter: false,
       },
-      maxAssetCount: {
-        title: 'Asset Count',
-        type: 'number',
-        filter: false,
-      },
-      headerImageUrl: {
-        title: 'Header Image',
+      // maxAssetCount: {
+      //   title: 'Asset Count',
+      //   type: 'number',
+      //   filter: false,
+      // },
+      // headerImageUrl: {
+      //   title: 'Header Image',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      // footerImageUrl: {
+      //   title: 'Footer Image',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      // bankAccountTitle: {
+      //   title: 'Account Title',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      // bankAccountNumber: {
+      //   title: 'Account Number',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      // bankIban: {
+      //   title: 'Bank Iban',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      // bankName: {
+      //   title: 'Bank Name',
+      //   type: 'string',
+      //   filter: false,
+      // },
+      vat: {
+        title: 'VAT NO.',
         type: 'string',
         filter: false,
       },
-      footerImageUrl: {
-        title: 'Footer Image',
-        type: 'string',
-        filter: false,
-      },
-      bankAccountTitle: {
-        title: 'Account Title',
-        type: 'string',
-        filter: false,
-      },
-      bankAccountNumber: {
-        title: 'Account Number',
-        type: 'string',
-        filter: false,
-      },
-      bankIban: {
-        title: 'Bank Iban',
-        type: 'string',
-        filter: false,
-      },
-      bankName: {
-        title: 'Bank Name',
-        type: 'string',
-        filter: false,
-      },
+
     },
   };
 
@@ -91,9 +99,9 @@ export class CompanyComponent {
   }
 
   loadCompanies(): void {
-    this.companyService.getCompanies().subscribe(
+    this.companyService.myCompany().subscribe(
       (data) => {
-        this.source.load(data);
+        this.source.load([data]);
       },
       (error) => {
         console.error('Error fetching companies:', error);

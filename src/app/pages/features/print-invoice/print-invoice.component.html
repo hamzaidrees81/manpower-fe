@@ -14,7 +14,7 @@
   <!-- Center Section (Background Logo + Content) -->
   <div class="position-relative text-center my-4 bg-container">
     <!-- Background Image -->
-    <img src="assets/fav.jpg" class="bg-logo" alt="Background Logo">
+    <img src="https://i0.wp.com/ayedhalmutairi.com/wp-content/uploads/2023/01/logo_10-removebg-preview-1.png?w=602&ssl=1" class="bg-logo" alt="Background Logo">
 
     <!-- Content Overlay -->
     <div class="content position-relative ">
@@ -22,7 +22,7 @@
       <div class="row align-items-center inv-detail-mt">
         <!-- QR Code -->
         <div class="col-md-2 text-center">
-          <img src="assets/qr.png" class="qr-code img-fluid" alt="QR Code">
+          <img [src]="getQrCodeImage(invoiceList?.qrcode)" class="qr-code img-fluid" alt="QR Code">
         </div>
 
         <!-- Invoice Title -->

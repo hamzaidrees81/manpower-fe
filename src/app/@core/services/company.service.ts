@@ -38,6 +38,10 @@ export class CompanyService {
     return this.http.get<Company[]>(this.apiUrl);
   }
 
+  myCompany(): Observable<Company[]> {
+    return this.http.get<Company[]>(`${this.apiUrl}/myCompany`);
+  }
+
   // Add new company
   addCompany(company: Company): Observable<Company> {
     return this.http.post<Company>(this.apiUrl, company);

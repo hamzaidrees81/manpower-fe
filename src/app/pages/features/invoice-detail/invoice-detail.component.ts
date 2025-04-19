@@ -192,7 +192,6 @@ export class InvoiceDetailComponent implements OnInit {
         if (data) {
           this.invoiceData = data;
           this.pagedInvoices = this.invoiceData?.page || [];
-          debugger;
           if(this.pagedInvoices?.content?.length > 0){
             this.noRecordFound = true;
           }

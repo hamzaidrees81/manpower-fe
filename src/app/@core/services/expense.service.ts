@@ -17,6 +17,19 @@ export class ExpenseService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
+  getLedgers(paymentMethod, paymentDirection, paymentType, selectedPaidToTypes,startDate,endDate): Observable<any[]> {
+    const params: any = {};
+  
+    if (paymentDirection !== null && paymentDirection !== undefined) params.paymentDirection = paymentDirection;
+    if (paymentMethod !== null && paymentMethod !== undefined) params.paymentMethod = paymentMethod;
+    if (paymentType !== null && paymentType !== undefined) params.paymentType = paymentType;
+    if (selectedPaidToTypes !== null && selectedPaidToTypes !== undefined) params.selectedPaidToTypes = selectedPaidToTypes;
+    if (startDate !== null && startDate !== undefined) params.startDate = startDate;
+    if (endDate !== null && endDate !== undefined) params.endDate = endDate;
+  
+    return this.http.get<any[]>(`${this.apiUrlForPayment}/ledger/filter`, { params });
+  }
+
   getCategories(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/categories`);
   }

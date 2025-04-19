@@ -124,7 +124,6 @@ export class InvoiceComponent implements OnInit {
       totalWithVAT : this.totalWithVAT,
       invoiceDate: new Date().toISOString().split('T')[0] // Set to current date (YYYY-MM-DD)
     };
-debugger;
     this.invoiceService.addInvoice(updatedInvoice).subscribe({
       next: (response) => {
         this.toasterService.showSuccess('Invoice submitted successfully!');
@@ -200,7 +199,6 @@ calculateTotalAmount() {
     this.totalWithVAT = 0;
     return;
   }
-debugger;
   const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
 
   // Calculate totalAmount for each asset using the formula

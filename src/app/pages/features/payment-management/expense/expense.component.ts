@@ -9,6 +9,9 @@ import { NbDialogService } from '@nebular/theme';
 import { AssetService } from '../../../../@core/services/asset.service';
 import { ProjectService } from '../../../../@core/services/projects.service';
 import { Router } from '@angular/router';
+import { AccountsService } from '../../../../@core/services/accounts.service';
+import { SmartTableDatepickerRenderComponentComponent } from '../../../../shared/smart-table-datepicker-render-component/smart-table-datepicker-render-component.component';
+import { CustomDatepickerComponent } from '../../../../shared/custom-datepicker/custom-datepicker.component';
 
 @Component({
   selector: 'ngx-expense',
@@ -22,15 +25,93 @@ export class ExpenseComponent implements OnInit {
   getCategorysList;
   getProjectsList;
   getAssetsList;
+  selectedAssetId;
 
   selectedCategoryByName;
   selectedProjectByName;
   selectedAssetByName;
 
-  expenseSetting = {
+  amount: number | null = null;
+  remarks: string = '';
+  mainAccountId;
+  categoryId;
+  paymentDate: Date | null = null;
+  paymentMethod: { label: string; value: string } | null = null;
+  reference: string = '';
+  paymentType: { label: string; value: string } | null = null;
+
+  historyTableData: LocalDataSource = new LocalDataSource();
+  historyTableSettings = {
     actions: {
-      position: 'right', // Moves action buttons to the right
+      add: false,
+      position: 'right',
     },
+    edit: {
+      editButtonContent: '<i class="nb-edit"></i>',
+      saveButtonContent: '<i class="nb-checkmark"></i>',
+      cancelButtonContent: '<i class="nb-close"></i>',
+      confirmSave: true,
+    },
+    delete: {
+      deleteButtonContent: '<i class="nb-trash"></i>',
+      confirmDelete: true,
+    },
+    columns: {
+      paidToName: {
+        title: 'Name',
+        type: 'string',
+        filter: false
+      },
+      mainAccountName: {
+        title: 'Account Name',
+        type: 'string',
+        filter: false
+      },
+      paymentDate: {
+          title: 'Payment Date',
+          type: 'custom',
+          renderComponent: SmartTableDatepickerRenderComponentComponent,
+          filter: false,
+          editor: {
+            type: 'custom',
+            component: CustomDatepickerComponent,
+          }
+        },
+      reference: {
+        title: 'Reference',
+        type: 'string',
+        filter: false
+      },
+      remarks: {
+        title: 'Remarks',
+        type: 'string',
+        filter: false
+      },
+      paymentMethod: {
+        title: 'Method',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      paymentType: {
+        title: 'Type',
+        type: 'string',
+        filter: false,
+        valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
+      },
+      amount: {
+        title: 'Amount',
+        type: 'number',
+        filter: false
+      },
+    }
+  };
+
+  showHistoryTable = false;
+
+  expenseSetting = {
+    actions: false,
+    hideSubHeader: true,
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -117,87 +198,171 @@ export class ExpenseComponent implements OnInit {
       }
     }
   };
-  getExpenseList
+  getExpenseList;
+
+  paymentMethods = [
+    { key: 'BANK_TRANSFER', label: 'Bank Transfer' },
+    { key: 'CASH', label: 'Cash' },
+    { key: 'CHEQUE', label: 'Cheque' },
+    { key: 'ONLINE_TRANSFER', label: 'Online Transfer' },
+    { key: 'CREDIT_CARD', label: 'Credit Card' },
+    { key: 'DEBIT_CARD', label: 'Debit Card' },
+    { key: 'MOBILE_WALLET', label: 'Mobile Wallet' },
+    { key: 'OTHER', label: 'Other' }
+  ];
+  
+  paymentTypes = [
+    { key: 'INITIAL', label: 'Initial' },
+    { key: 'ADJUSTMENT', label: 'Adjustment' },
+    { key: 'FULL', label: 'Full' },
+    { key: 'REFUND', label: 'Refund' },
+    { key: 'ADVANCE', label: 'Advance' }
+  ];
+  getAccounts: any[];
   
 
-  constructor(private router : Router ,private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService,private assetService : AssetService,private projectService : ProjectService){}
+  constructor(private accountsService : AccountsService ,private router : Router ,private expenseService : ExpenseService,private toasterService : ToasterService,private dialogService: NbDialogService,private assetService : AssetService,private projectService : ProjectService){}
 
   ngOnInit(): void {
     this.loadDropdowns();
-    this.loadExpense();
+    // this.loadExpense();
+    this.getHistory();
+    this.loadAccount();
+  }
+
+  loadAccount() {
+    this.accountsService.getAccounts().subscribe(
+      (data) => {
+        this.getAccounts = data;
+      },
+      (error) => {
+        console.error('Error loading sponsors:', error);
+      }
+    );
+  }
+
+  onPay(): void {
+
+    const paymentPayload = {
+      paidToType:"EXPENSE",
+      paidToId:this.selectedAssetId,
+      amount: this.amount,
+      invoiceId:this.categoryId?.id,
+      mainAccountId:this.mainAccountId,
+      remarks: this.remarks,
+      paymentDate: this.paymentDate ? this.paymentDate.toISOString() : null,
+      paymentMethod: this.paymentMethod,
+      reference: this.reference,
+      status:"COMPLETED",
+      paymentType: this.paymentType
+    };
+    this.expenseService.addPayment(paymentPayload).subscribe(
+      (data) => {
+        this.toasterService.showSuccess('Payment paid successfully!');
+        this.showHistoryTable = true;
+        this.getHistory();
+  
+        // Optionally reset form fields
+        this.resetForm();
+      },
+      (error) => {
+        console.error('Error adding payment:', error);
+        this.toasterService.showError('Failed to create payment.');
+      }
+    );
+  }
+
+  getHistory(){
+   const paidToType = "EXPENSE";
+    this.expenseService.getPaymentsByFilter(this.selectedAssetByName,paidToType).subscribe(
+      (data) => {
+        this.historyTableData.load(data);
+      },
+      (error) => {
+        console.error('Error loading projects:', error);
+      }
+    );
+  }
+  
+  resetForm(): void {
+    this.amount = null;
+    this.remarks = '';
+    this.paymentDate = null;
+    this.paymentMethod = null;
+    this.reference = '';
+    this.paymentType = null;
   }
 
   loadDropdowns(): void {
     this.assetService.getAssetsByCompany().subscribe((data) => {
       
       this.getAssetsList = data;
-      this.expenseSetting = {
-        ...this.expenseSetting,
-        columns: {
-          ...this.expenseSetting.columns,
-          assetName: {
-            ...this.expenseSetting.columns.assetName,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
+      // this.expenseSetting = {
+      //   ...this.expenseSetting,
+      //   columns: {
+      //     ...this.expenseSetting.columns,
+      //     assetName: {
+      //       ...this.expenseSetting.columns.assetName,
+      //       editor: {
+      //         type: 'list',
+      //         config: {
+      //           selectText: 'Select...',
+      //           list: data.map((c) => ({
+      //             value: JSON.stringify(c), // Store whole object as string
+      //             title: c.name, // Display name
+      //           })),
+      //         },
+      //       },
+      //     },
+      //   },
+      // };
     });
 
     this.projectService.getProjects().subscribe((data) => {
       
       this.getProjectsList = data;
-      this.expenseSetting = {
-        ...this.expenseSetting,
-        columns: {
-          ...this.expenseSetting.columns,
-          expenseProjectName: {
-            ...this.expenseSetting.columns.expenseProjectName,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.name, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
+      // this.expenseSetting = {
+      //   ...this.expenseSetting,
+      //   columns: {
+      //     ...this.expenseSetting.columns,
+      //     expenseProjectName: {
+      //       ...this.expenseSetting.columns.expenseProjectName,
+      //       editor: {
+      //         type: 'list',
+      //         config: {
+      //           selectText: 'Select...',
+      //           list: data.map((c) => ({
+      //             value: JSON.stringify(c), // Store whole object as string
+      //             title: c.name, // Display name
+      //           })),
+      //         },
+      //       },
+      //     },
+      //   },
+      // };
     });
 
     this.expenseService.getCategories().subscribe((data) => {
-      
       this.getCategorysList = data;
-      this.expenseSetting = {
-        ...this.expenseSetting,
-        columns: {
-          ...this.expenseSetting.columns,
-          expenseCategoryName: {
-            ...this.expenseSetting.columns.expenseCategoryName,
-            editor: {
-              type: 'list',
-              config: {
-                selectText: 'Select...',
-                list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
-                  title: c.categoryName, // Display name
-                })),
-              },
-            },
-          },
-        },
-      };
+      // this.expenseSetting = {
+      //   ...this.expenseSetting,
+      //   columns: {
+      //     ...this.expenseSetting.columns,
+      //     expenseCategoryName: {
+      //       ...this.expenseSetting.columns.expenseCategoryName,
+      //       editor: {
+      //         type: 'list',
+      //         config: {
+      //           selectText: 'Select...',
+      //           list: data.map((c) => ({
+      //             value: JSON.stringify(c), // Store whole object as string
+      //             title: c.categoryName, // Display name
+      //           })),
+      //         },
+      //       },
+      //     },
+      //   },
+      // };
     });
   }
 

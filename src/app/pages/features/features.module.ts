@@ -24,6 +24,7 @@ import { CompanyComponent } from './company/company.component';
 import { FeaturesComponent } from './features.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { UsersComponent } from './users/users.component';
+import { LedgerComponent } from './ledger/ledger.component';
 
 @NgModule({
   imports: [
@@ -60,7 +61,8 @@ import { UsersComponent } from './users/users.component';
     InvoiceReceivableComponent,
     SponsorModalComponent,
     ExpenseComponent,
-    AccountsComponent, 
+    AccountsComponent,
+    LedgerComponent, 
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules
 })

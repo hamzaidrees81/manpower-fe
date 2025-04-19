@@ -47,6 +47,7 @@ export class ClientComponent implements OnInit {
       address: {
         title: 'Address',
         type: 'string',
+        filter: false,
       },
     },
   };

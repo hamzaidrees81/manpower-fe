@@ -32,7 +32,7 @@ export class InvoiceService {
     const params: any = {};
   
     if (clientId !== null && clientId !== undefined) params.clientId = clientId;
-    if (status !== null && status !== undefined) params.status = status;
+    if (status !== null && status !== undefined) params.status = status != "ALL" ? status : "";
     if (page !== null && page !== undefined) params.page = page;
     if (size !== null && size !== undefined) params.size = size;
   

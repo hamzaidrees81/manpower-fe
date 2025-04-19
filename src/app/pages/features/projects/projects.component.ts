@@ -10,6 +10,7 @@ import { NbDialogService } from '@nebular/theme';
 import { ToasterService } from '../../../@core/services/toaster.service';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { validateRequiredFields } from '../../../utils/validation-utils';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project',
@@ -107,7 +108,7 @@ export class ProjectsComponent implements OnInit {
   customEndDate: Date;
 
 
-  constructor(private projectService: ProjectService, private clientService: ClientService, private companyService: CompanyService, private datePickerService: DatePickerService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
+  constructor(private router:Router,private projectService: ProjectService, private clientService: ClientService, private companyService: CompanyService, private datePickerService: DatePickerService, private dialogService: NbDialogService, private toasterService: ToasterService) { }
 
   ngOnInit(): void {
     this.loadProjects();
@@ -136,16 +137,7 @@ export class ProjectsComponent implements OnInit {
   loadProjects(): void {
     this.projectService.getProjects().subscribe(
       (data) => {
-
-        const transformedData = data.map(item => ({
-          ...item,
-          client: {
-            name: item.clientName,
-            id: item.clientId
-          }
-        }));
-  
-        this.source.load(transformedData);
+        this.source.load(data);
       },
       (error) => {
         console.error('Error loading projects:', error);
@@ -218,19 +210,23 @@ export class ProjectsComponent implements OnInit {
       return; // Stop execution if validation fails
     }
 
+      const updateClient = JSON.parse(event.newData.client);
+
     // Parse necessary fields and prepare request data
     const newProject = {
       ...event.newData,
-      // company: JSON.parse(event.newData.company),
-      client: event.newData?.clientName,
+      clientId: updateClient?.id,
       startDate: this.customStartDate,
       endDate: this.customEndDate,
     };
 
+    delete newProject?.client;
+
     // Call service to add the project
     this.projectService.addProject(newProject).subscribe({
       next: (data) => {
-        event.confirm.resolve(data)
+        // event.confirm.resolve(data)
+        this.reloadCurrentRoute();
         this.toasterService.showSuccess('Project created successfully!');
       },
       error: (error) => {
@@ -249,17 +245,22 @@ export class ProjectsComponent implements OnInit {
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
       return; // Stop execution if validation fails
     }
-    const updatedProject = {
+    const updateClient = JSON.parse(event.newData.client);
+
+    // Parse necessary fields and prepare request data
+    const newProject = {
       ...event.newData,
-      // company: JSON.parse(event.newData.company),
-      client: event.newData?.clientName,
+      clientId: updateClient?.id,
       startDate: this.customStartDate,
       endDate: this.customEndDate,
     };
 
-    this.projectService.updateProject(updatedProject.id, updatedProject).subscribe({
+    delete newProject?.client;
+
+    this.projectService.updateProject(newProject.id, newProject).subscribe({
       next: (data) => {
-        event.confirm.resolve(data)
+        // event.confirm.resolve(data)
+        this.reloadCurrentRoute();
         this.toasterService.showSuccess('Project updated successfully!');
       },
       error: (error) => {
@@ -271,6 +272,12 @@ export class ProjectsComponent implements OnInit {
   }
 
 
+  reloadCurrentRoute(): void {
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+  }
 
 
   // Delete project

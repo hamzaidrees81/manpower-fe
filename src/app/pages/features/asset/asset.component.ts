@@ -60,7 +60,7 @@ export class AssetComponent implements OnInit {
       //   },
       // },
       button: {
-        title: 'View',
+        title: 'Timesheet',
         type: 'custom',
         filter: false,
         editable: false,
@@ -68,7 +68,6 @@ export class AssetComponent implements OnInit {
         renderComponent: ButtonViewComponent,
         onComponentInitFunction(instance) {
           const sub = instance.save.subscribe(row => {
-            console.log('Viewing:', row);
           });
 
           // ✅ Prevent memory leaks by unsubscribing
@@ -80,7 +79,7 @@ export class AssetComponent implements OnInit {
         type: "string",
       },
       idNumber: {
-        title: "ID Number",
+        title: "ID",
         type: "string",
         filter: false,
       },
@@ -138,7 +137,7 @@ export class AssetComponent implements OnInit {
         }
       },
       assetType: {
-        title: 'Asset Type',
+        title: 'Type',
         type: 'html',
         filter: false, // No filter needed
         valuePrepareFunction: (value) => new FormatTextPipe().transform(value),
@@ -155,7 +154,7 @@ export class AssetComponent implements OnInit {
       },
 
       assetNumber: {
-        title: "Asset Number",
+        title: "Number",
         type: "number",
         filter: false,
       },
@@ -212,8 +211,8 @@ export class AssetComponent implements OnInit {
         title: 'Add Sponsor',
         type: 'custom',
         filter: false,
-        // editable: false,
-        // addable: false,
+        editable: false,
+        addable: false,
         renderComponent: AddButtonComponent,
         onComponentInitFunction: (instance) => {
           const sub = instance.save.subscribe(row => {
@@ -369,17 +368,21 @@ export class AssetComponent implements OnInit {
     // }
     // Parse selected company data
     const latestData = event.newData;
-    const parseLatestData = latestData;
+    const parseLatestData = JSON.parse(latestData?.designation);
 
     // Prepare new asset object with dynamic company data
     const newAsset = {
       ...event.newData,
-      company: parseLatestData?.company, // Assign selected company
+      company: latestData?.company, // Assign selected company
+      designation: parseLatestData,
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
       // sponsoredBy: parseLatestData?.sponsorId
     };
+
+    delete newAsset?.addSponsorButton;
+    delete newAsset?.button;
 
     // Call service to add the asset
     this.assetService.addAsset(newAsset).subscribe({

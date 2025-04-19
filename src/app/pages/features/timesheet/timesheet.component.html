@@ -79,12 +79,21 @@
                         <input type="text" id="assetOwnership" class="form-control" [value]="assetData?.assetOwnership"
                           disabled style="background-color: white;">
                       </div>
+
+                        <div class="col-md-4 col-sm-12 mb-3">
+                          <label for="designation" class="fw-bold text-muted d-flex align-items-center">
+                            <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Designation
+                          </label>
+                          <input type="text" id="designation" class="form-control" [value]="assetData?.designation?.name"
+                            disabled style="background-color: white;">
+                        </div>
+                      
                     </div>
                   </nb-accordion-item-body>
                 </nb-accordion-item>
 
                 <!-- Sponsored By Accordion -->
-                <nb-accordion-item>
+                <!-- <nb-accordion-item>
                   <nb-accordion-item-header>
                     <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
                       <nb-icon icon="home-outline" class="me-2"></nb-icon> Sponsored By
@@ -99,7 +108,6 @@
                         <input type="text" id="sponsoredBy" class="form-control" [value]="assetData?.sponsoredName"
                           disabled style="background-color: white;">
                       </div>
-                      <!-- New Sponsorship Type Field -->
                       <div class="col-md-4 col-sm-12 mb-3">
                         <label for="sponsorshipType" class="fw-bold text-muted d-flex align-items-center">
                           <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Sponsorship Type
@@ -107,7 +115,6 @@
                         <input type="text" id="sponsorshipType" class="form-control"
                           [value]="assetData?.sponsorshipType" disabled style="background-color: white;">
                       </div>
-                      <!-- New Sponsorship Value Field -->
                       <div class="col-md-4 col-sm-12 mb-3">
                         <label for="sponsorshipValue" class="fw-bold text-muted d-flex align-items-center">
                           <nb-icon icon="pricetag-outline" class="me-2 mr-2"></nb-icon> Sponsorship Value
@@ -117,18 +124,17 @@
                       </div>
                     </div>
                 
-                    <!-- Add Nebular Button -->
 
                     <button nbButton  status="info" (click)="goToAnotherPage()">
                       <nb-icon icon="plus-outline"></nb-icon> Sponsor
                     </button>
                 
                   </nb-accordion-item-body>
-                </nb-accordion-item>
+                </nb-accordion-item> -->
                 
 
                 <!-- Other Accordion Items (e.g., Designation, Passport Information) -->
-                <nb-accordion-item>
+                <!-- <nb-accordion-item>
                   <nb-accordion-item-header>
                     <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
                       <nb-icon icon="briefcase-outline" class="me-2"></nb-icon> Designation
@@ -140,15 +146,15 @@
                         <label for="designation" class="fw-bold text-muted d-flex align-items-center">
                           <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Designation
                         </label>
-                        <input type="text" id="designation" class="form-control" [value]="assetData?.designation"
+                        <input type="text" id="designation" class="form-control" [value]="assetData?.designation?.name"
                           disabled style="background-color: white;">
                       </div>
                     </div>
                   </nb-accordion-item-body>
-                </nb-accordion-item>
+                </nb-accordion-item> -->
 
                 <!-- Passport Information Accordion -->
-                <nb-accordion-item>
+                <!-- <nb-accordion-item>
                   <nb-accordion-item-header>
                     <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
                       <nb-icon icon="clipboard-outline" class="me-2"></nb-icon> Passport Information
@@ -172,7 +178,7 @@
                       </div>
                     </div>
                   </nb-accordion-item-body>
-                </nb-accordion-item>
+                </nb-accordion-item> -->
               </nb-accordion>
             </div>
           </div>

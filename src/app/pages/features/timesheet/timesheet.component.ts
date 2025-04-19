@@ -57,7 +57,7 @@ export class TimesheetComponent  implements OnInit {
       //   type: "string"
       // },
       project: {
-        title: 'Project Name',
+        title: 'Name',
         type: 'html',
         valuePrepareFunction: (project) => project.name ,
         editor: {
@@ -256,7 +256,7 @@ export class TimesheetComponent  implements OnInit {
   selectedMonth = new Date().getMonth() + 1;
   selectedYear = new Date().getFullYear();
   weeks: any[] = [];
-  getProjects: { projectId: string; projectName: string }[] = [];
+  getProjects;
 
   // TIME SHEET CONFIG END
 
@@ -563,22 +563,15 @@ export class TimesheetComponent  implements OnInit {
   loadAssetProjects(): void {
     this.assetService.getAssetProjectsByAssetAndActiveStatus(this.assetData?.id,'ACTIVE').subscribe(
       (data) => {
-        console.log("data",data);
-        const newData = data.map(item => ({
-          ...item,
-          project:{
-            id: item?.projectId,
-            name: item?.projectName,
-          },
-          designation:{
-            id: item?.designationId,
-            name: item?.designationName,
-          }
-        }));
+        this.sourceProjects.load(data);
+        this.getProjects = data;
+        this.getProjects = this.getProjects.map(item => {
+          const temp = item.id;
+          item.id = item.projectId;
+          item.projectId = temp;
+          return item;
+        });
         
-        this.sourceProjects.load(newData);
-        this.getProjects = data
-        console.log("this.getProjects",this.getProjects);
       },
       (error) => {
         console.error('Error loading projects:', error);

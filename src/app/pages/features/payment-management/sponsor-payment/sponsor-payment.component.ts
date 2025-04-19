@@ -54,6 +54,7 @@ export class SponsorPaymentComponent implements OnInit {
       sponsorshipPayable: { title: 'Payable' },
       sponsorshipDeterminant: { title: 'Determinant' },
       paidAmount: { title: 'Amount' },
+      paymentStatus: { title: 'Payment Status', valuePrepareFunction: (value) => new FormatTextPipe().transform(value), },
     },
   };
 
@@ -120,6 +121,7 @@ export class SponsorPaymentComponent implements OnInit {
         type: 'number',
         filter: false
       },
+      
     }
   };
   

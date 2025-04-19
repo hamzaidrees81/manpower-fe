@@ -44,7 +44,7 @@ export class AccountsComponent {
         title: 'Name',
         type: 'string',
       },
-      bank_name: {
+      bankName: {
         title: 'Bank Name',
         type: 'string',
       },

@@ -140,13 +140,20 @@ export class LedgerComponent implements OnInit {
   ngOnInit(): void {
       this.toggleDetails();
   }
+
+   formatDateToLocal(date: Date): string {
+    if(date){
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      return `${date?.getFullYear()}-${pad(date?.getMonth() + 1)}-${pad(date?.getDate())}`;
+    }
+
+  }
   
   toggleDetails(): void {
     this.selectedDateRange;
     this.startDate = this.selectedDateRange?.start;
     this.endDate = this.selectedDateRange?.end;
-    debugger;
-    this.paymentService.getLedgers(this.paymentMethod,this.paymentDirection,this.paymentType,this.selectedPaidToTypes,this.startDate,this.endDate).subscribe(
+    this.paymentService.getLedgers(this.paymentMethod,this.paymentDirection,this.paymentType,this.selectedPaidToTypes,this.formatDateToLocal(this.startDate),this.formatDateToLocal(this.endDate)).subscribe(
       (data) => {
         if (data) {
           this.getLedgersList = data;

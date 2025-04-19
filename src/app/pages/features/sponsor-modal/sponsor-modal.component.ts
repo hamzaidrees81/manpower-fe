@@ -40,7 +40,7 @@ export class SponsorModalComponent implements OnInit {
       //   title: 'Sponsor ID',
       //   type: 'number',
       // },
-      sponsorName: {
+      sponsor: {
         title: 'Name',
         type: 'html',
         filter: false,
@@ -117,7 +117,8 @@ export class SponsorModalComponent implements OnInit {
         this.getSponsorsByAssetId(this.rowData?.id);
       }else {
         this.getsponsorshipBasis( { value: 'PROJECT_BASED', title: 'Project Based' },);
-        this.getSponsorsByAssetId(this.rowData?.id);
+        debugger;
+        this.getSponsorsByAssetId(this.rowData?.assetId);
       }     
     }
     this.loadDropdowns();
@@ -145,15 +146,7 @@ export class SponsorModalComponent implements OnInit {
   getSponsorsByAssetId(id) {
     this.sponsorService.getAssetSponsorshipsById(id).subscribe(
       (data) => {
-        const transformedData = data.map(item => ({
-          ...item,
-          sponsorName: {
-            name : item.sponsorName,
-            sponsorId : item.id
-          }
-        }));
-  
-        this.sponsorSource.load(transformedData);
+        this.sponsorSource.load(data);
       },
       (error) => {
         console.error('Error loading clients:', error);
@@ -182,8 +175,8 @@ export class SponsorModalComponent implements OnInit {
         ...this.sponsorSettings,
         columns: {
           ...this.sponsorSettings.columns,
-          sponsorName: {
-            ...this.sponsorSettings.columns.sponsorName,
+          sponsor: {
+            ...this.sponsorSettings.columns.sponsor,
             editor: {
               type: 'list',
               config: {
@@ -214,15 +207,18 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    // const parseLatestData = JSON.parse(event?.newData?.sponsorName);
-    delete event?.newData?.sponsorName;
+    const parseLatestData = JSON.parse(event?.newData?.sponsor);
+    // delete event?.newData?.sponsorName;
 
 
     const updateData = {
       ...event?.newData,
-      assetId: this.rowData?.id,
-      sponsorId:event?.newData?.id,
+      assetId: this.rowData?.assetId,
+      sponsorId:parseLatestData?.id,
+      assetProjectId:this.rowData?.id
     }
+
+    delete updateData?.sponsor
 
     // Call service to add the asset
     this.sponsorService.addProjectAssetSponsorships(updateData).subscribe({
@@ -254,15 +250,18 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    // const parseLatestData = JSON.parse(event?.newData?.sponsorName);
-    delete event?.newData?.sponsorName;
+    const parseLatestData = JSON.parse(event?.newData?.sponsor);
+    // delete event?.newData?.sponsorName;
 
 
     const updateData = {
       ...event?.newData,
-      assetId: this.rowData?.id,
-      sponsorId:event?.newData?.id,
+      assetId: this.rowData?.assetId,
+      sponsorId:parseLatestData?.id,
+      assetProjectId:this.rowData?.id
     }
+
+    delete updateData?.sponsor
 
     this.sponsorService.updateProjectAssetSponsorships(event?.newData?.id, updateData).subscribe({
       next: (data) => {

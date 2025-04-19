@@ -5,7 +5,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'ngx-button-view',
   template: `<div class="d-flex justify-content-center">
-    <nb-icon icon="eye-outline" (click)=onClick()></nb-icon>
+    <nb-icon icon="calendar-outline" (click)=onClick()></nb-icon>
   </div>`,
   changeDetection: ChangeDetectionStrategy.OnPush, // ✅ Optimized change detection
 })

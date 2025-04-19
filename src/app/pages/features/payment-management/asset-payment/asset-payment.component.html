@@ -100,7 +100,7 @@
       </nb-accordion-item>
     
       <!-- Expense -->
-      <nb-accordion-item *ngIf="isAssetNameSelected">
+      <!-- <nb-accordion-item *ngIf="isAssetNameSelected">
         <nb-accordion-item-header>
           <i class="fas fa-file-invoice-dollar text-success me-2" style="margin-right: 8px;"></i>
           Expense
@@ -113,7 +113,7 @@
           </ng2-smart-table>
         </nb-accordion-item-body>
       </nb-accordion-item>
-    
+     -->
       <!-- Note -->
       <nb-accordion-item *ngIf="!isAssetNameSelected" [expanded]="true">
         <nb-accordion-item-header>
@@ -122,7 +122,7 @@
         </nb-accordion-item-header>
         <nb-accordion-item-body>
           <p class="text-muted ms-4">
-            For making payment & Check Expense, please select an asset name.
+            For making payment, please select an asset name.
           </p>
         </nb-accordion-item-body>
       </nb-accordion-item>

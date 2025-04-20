@@ -5,7 +5,7 @@
   "scripts": {
     "ng": "ng",
     "conventional-changelog": "conventional-changelog",
-    "start": "http-server dist/supply-erp",
+    "start": "http-server dist/supply-erp -a 0.0.0.0 -p $PORT",
     "build": "ng build",
     "build:prod": "npm run build -- --configuration production --aot",
     "test": "ng test",

@@ -5,8 +5,8 @@
   "scripts": {
     "ng": "ng",
     "conventional-changelog": "conventional-changelog",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "http-server dist/supply-erp -p $PORT --spa",
+    "build": "ng build --configuration production",
     "build:prod": "npm run build -- --configuration production --aot",
     "test": "ng test",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",

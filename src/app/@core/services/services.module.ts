@@ -13,10 +13,18 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptor } from './auth-interceptor.service';
 import { ExpenseService } from './expense.service';
 import { AccountsService } from './accounts.service';
+import { AddSaleService } from './pos-services/add-sale.service';
+import { ProductService } from './pos-services/product.service';
+import { BrandService } from './pos-services/brand.service';
+import { CategoryService } from './pos-services/category.service';
+import { StockService } from './pos-services/stock.service';
+import { InventoryService } from './pos-services/inventory.service';
+import { SupplierService } from './pos-services/supplier.service';
 
 
 
 const SERVICES = [
+  // ERP SERVICES
   CompanyService,
   UserService,
   ProjectService,
@@ -27,7 +35,16 @@ const SERVICES = [
   TimesheetService,
   InvoiceService,
   ExpenseService,
-  AccountsService
+  AccountsService,
+
+  // POS SERVICES
+  AddSaleService,
+  StockService,
+  ProductService,
+  CategoryService,
+  BrandService,
+  InventoryService,
+  SupplierService
 ];
 
 @NgModule({

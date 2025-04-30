@@ -29,7 +29,6 @@ import { LedgerComponent } from './ledger/ledger.component';
 @NgModule({
   imports: [
     NbCardModule,
-    NbTreeGridModule,
     NbIconModule,
     NbInputModule,
     ThemeModule,

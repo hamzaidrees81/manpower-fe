@@ -28,7 +28,8 @@ export const routes: Routes = [
     loadChildren: () => import('./pages/pages.module').then(m => m.PagesModule),
     canActivate: [AuthGuard],
   },
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' }, // Redirect to login page first
+  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: 'pos', loadChildren: () => import('./pages/pos/pos.module').then(m => m.PosModule) }, // Redirect to login page first
   { path: '**', redirectTo: 'auth/login' },
 ];
 

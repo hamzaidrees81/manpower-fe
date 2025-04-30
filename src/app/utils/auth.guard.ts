@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 })
 export class AuthGuard implements CanActivate {
   constructor(private authService: NbAuthService, private router: Router) {}
-
+  isAsset = false;
   canActivate(
     next: ActivatedRouteSnapshot,
     state: RouterStateSnapshot
@@ -17,6 +17,15 @@ export class AuthGuard implements CanActivate {
     return this.authService.getToken().pipe(
       map((token: NbAuthJWTToken) => {
         if (token.isValid()) {
+          const payload = token.getPayload();
+
+          if (payload?.roles && Array.isArray(payload.roles)) {
+            this.isAsset = payload.roles.includes('ASSET');
+
+            // Optionally store in localStorage
+            localStorage.setItem('hasAssetRole', JSON.stringify(this.isAsset));
+
+          }
           return true; // Allow access
         } else {
           this.router.navigate(['/auth/login']);

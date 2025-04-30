@@ -9,6 +9,41 @@ export const MENU_ITEMS: NbMenuItem[] = [
   // },
 
   {
+    title: 'POS',
+    icon: 'shopping-cart-outline',
+    children: [
+      {
+        title: 'Sale',
+        link: '/pages/pos/add-sale',
+      },
+      {
+        title: 'Inventory',
+        link: '/pages/pos/add-inventory',
+      },
+      {
+        title: 'Product',
+        link: '/pages/pos/product',
+      },
+      {
+        title: 'Stock',
+        link: '/pages/pos/stock',
+      },
+      {
+        title: 'Category',
+        link: '/pages/pos/category',
+      },
+      {
+        title: 'Brand',
+        link: '/pages/pos/brand',
+      },
+      {
+        title: 'Supplier',
+        link: '/pages/pos/supplier',
+      },
+    ],
+  },
+
+  {
     title: 'Settings',
     icon: 'settings-outline',
     children: [

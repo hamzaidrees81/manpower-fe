@@ -14,6 +14,11 @@ const routes: Routes = [{
         .then(m => m.FeaturesModule),
     },
     {
+      path: 'pos',
+      loadChildren: () => import('./pos/pos.module')
+        .then(m => m.PosModule),
+    },
+    {
       path: 'miscellaneous',
       loadChildren: () => import('./miscellaneous/miscellaneous.module')
         .then(m => m.MiscellaneousModule),

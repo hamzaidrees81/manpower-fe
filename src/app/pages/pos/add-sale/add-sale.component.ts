@@ -25,10 +25,10 @@ export class AddSaleComponent {
   clients = [
     {
       name: 'CONSORTIUM OF NESMA',
-      address: 'Al-Khobar, Northern Khobar, Prince Majid bin Abdul Aziz, 34427, Saudi Arabia'
+      shopAddress: 'Al-Khobar, Northern Khobar, Prince Majid bin Abdul Aziz, 34427, Saudi Arabia'
     },
-    { name: 'Ali', address: 'Street 12, Dammam' },
-    { name: 'Sara', address: 'Street 34, Riyadh' }
+    { name: 'Ali', shopAddress: 'Street 12, Dammam' },
+    { name: 'Sara', shopAddress: 'Street 34, Riyadh' }
   ];
 
   products = [
@@ -49,10 +49,10 @@ export class AddSaleComponent {
 
   constructor(private fb: FormBuilder ,private saleService:AddSaleService, private toasterService: ToasterService) {
     this.form = this.fb.group({
-      shop: 'Dammam Shop',
+      shopName: '',
       client: 'CONSORTIUM OF NESMA AND PARTNERS - SICIM SAUDI ARABIA',
-      address: 'Al-Khobar, Northern Khobar, Prince Majid bin Abdul Aziz, 34427, Saudi Arabia',
-      date: '2025-04-21',
+      shopAddress: 'Al-Khobar, Northern Khobar, Prince Majid bin Abdul Aziz, 34427, Saudi Arabia',
+      dateCreated: '',
       poNumber: '123',
       paymentMode: 'Cash'
     });
@@ -70,7 +70,7 @@ export class AddSaleComponent {
     }
   onClientChange(clientName: string) {
     const client = this.clients.find(c => c.name === clientName);
-    this.form.patchValue({ address: client?.address || '' });
+    this.form.patchValue({ shopAddress: client?.shopAddress || '' });
   }
 
   onProductSelect(productName: string) {
@@ -101,15 +101,44 @@ export class AddSaleComponent {
   submitSale(){
 
     const content = {
-      id: this.form.get('id')?.value,
-      shopName: this.form.get('shopName')?.value,
-      shopAddress: this.form.get('shopAddress')?.value,
-      shopPhone1: this.form.get('shopPhone1')?.value,
-      shopPhone2: this.form.get('shopPhone2')?.value,
-      comments: this.form.get('comments')?.value,
+
+      totalAmount: this.form.get('totalAmount')?.value,
       status: this.form.get('status')?.value,
-      dateCreated: this.form.get('dateCreated')?.value,
+      customerId: this.form.get('customerId')?.value,
+      saleDate: this.form.get('saleDate')?.value,
+      shopId: this.form.get('shopId')?.value,
+      poNumber: this.form.get('poNumber')?.value,
+    
+      shop: {
+        shopName: this.form.get('shop.shopName')?.value,
+        shopAddress: this.form.get('shop.shopAddress')?.value,
+        shopPhone1: this.form.get('shop.shopPhone1')?.value,
+        shopPhone2: this.form.get('shop.shopPhone2')?.value,
+        comments: this.form.get('shop.comments')?.value,
+        status: this.form.get('shop.status')?.value,
+        dateCreated: this.form.get('shop.dateCreated')?.value,
+    
+        // company: {
+        //   id: this.form.get('shop.company.id')?.value,
+        //   name: this.form.get('shop.company.name')?.value,
+        //   shopAddress: this.form.get('shop.company.shopAddress')?.value,
+        //   maxAssetCount: this.form.get('shop.company.maxAssetCount')?.value,
+        //   headerImageUrl: this.form.get('shop.company.headerImageUrl')?.value,
+        //   footerImageUrl: this.form.get('shop.company.footerImageUrl')?.value,
+        //   bankAccountTitle: this.form.get('shop.company.bankAccountTitle')?.value,
+        //   bankAccountNumber: this.form.get('shop.company.bankAccountNumber')?.value,
+        //   bankIban: this.form.get('shop.company.bankIban')?.value,
+        //   bankName: this.form.get('shop.company.bankName')?.value,
+        //   status: this.form.get('shop.company.status')?.value,
+        //   vat: this.form.get('shop.company.vat')?.value,
+        // }
+      },
+    
+      payments: this.form.get('payments')?.value || [],
+    
+      saleItems: this.form.get('saleItems')?.value || [],
     };
+    
     
     
     this.saleService.addSale(content).subscribe(

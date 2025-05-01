@@ -56,16 +56,18 @@ export class ProjectsComponent implements OnInit {
       //   },
       // },
       client: {
-        title: 'Client Name',
+        title: 'Client',
         type: 'html',
-        filter: false,
-        valuePrepareFunction: (client) => client.name,
+        filter:false,
         editor: {
           type: 'list',
           config: {
-            selectText: 'Select...',
             list: [],
           },
+        },
+        valuePrepareFunction: (value) => {
+          const found = this.clients.find(b => b.id === value.id);
+          return found ? found.name : value;
         },
       },
       projectId: {
@@ -182,9 +184,8 @@ export class ProjectsComponent implements OnInit {
             editor: {
               type: 'list',
               config: {
-                selectText: 'Select...',
                 list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
+                  value: c.id, //Store whole object as string
                   title: c.name, // Display name
                 })),
               },

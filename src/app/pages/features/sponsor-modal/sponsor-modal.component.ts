@@ -213,9 +213,9 @@ export class SponsorModalComponent implements OnInit {
 
     const updateData = {
       ...event?.newData,
-      assetId: this.rowData?.assetId,
+      assetId: this.rowData?.key === 'ASSET' ? this.rowData?.id : this.rowData?.assetId,
       sponsorId:parseLatestData?.id,
-      assetProjectId:this.rowData?.id
+      assetProjectId: this.rowData?.key != 'ASSET' ? this.rowData?.id : undefined
     }
 
     delete updateData?.sponsor

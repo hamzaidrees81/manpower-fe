@@ -59,6 +59,7 @@ export class AssetComponent implements OnInit {
       //     },
       //   },
       // },
+      
       button: {
         title: 'Timesheet',
         type: 'custom',
@@ -74,14 +75,16 @@ export class AssetComponent implements OnInit {
           instance.ngOnDestroy = () => sub.unsubscribe();
         }
       },
-      name: {
-        title: "Name",
-        type: "string",
-      },
       idNumber: {
         title: "ID",
         type: "string",
         filter: false,
+        editable: false,
+        addable: false,
+      },
+      name: {
+        title: "Name",
+        type: "string",
       },
       iqamaExpiry: {
         title: 'Iqama Expiry',

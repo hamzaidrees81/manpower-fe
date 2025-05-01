@@ -34,7 +34,7 @@ export const NB_CORE_PROVIDERS = [
           endpoint: '/login',  
           method: 'post',
           redirect: {
-            success: '/pages/dashboard', 
+            success: '/pages/features/users', 
             failure: null,  
           },
           defaultErrors: ['Login failed, please try again.'],

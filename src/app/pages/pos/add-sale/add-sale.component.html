@@ -7,10 +7,10 @@
           <div class=" mr-3 mt-2">
             <label class="form-label">المحل البائع / Selling Shop</label>
             <div class="input-group">
-              <select class="form-select form-control small text-muted" [(ngModel)]="form.value.shop">
+              <select class="form-select form-control small text-muted" [(ngModel)]="form.value.shopName">
                 <option *ngFor="let shop of shops" [value]="shop">{{ shop }}</option>
               </select>
-              <button class="btn btn-outline-secondary small text-muted" type="button" (click)="form.patchValue({ shop: '' })">×</button>
+              <button class="btn btn-outline-secondary small text-muted" type="button" (click)="form.patchValue({ shopName: '' })">×</button>
             </div>
           </div>
       
@@ -21,7 +21,7 @@
               <select class="form-select form-control small text-muted" [(ngModel)]="form.value.client" (ngModelChange)="onClientChange($event)">
                 <option *ngFor="let client of clients" [value]="client.name">{{ client.name }}</option>
               </select>
-              <button class="btn btn-outline-secondary small text-muted" type="button" (click)="form.patchValue({ client: '', address: '' })">×</button>
+              <button class="btn btn-outline-secondary small text-muted" type="button" (click)="form.patchValue({ client: '', shopAddress: '' })">×</button>
             </div>
           </div>
       
@@ -37,14 +37,14 @@
           <!-- Client Address -->
           <div class="mr-3 mt-2">
             <label class="form-label">عنوان العميل / Client Address</label>
-            <input class="form-control small text-muted" [value]="form.value.address" readonly />
+            <input class="form-control small text-muted" [value]="form.value.shopAddress" readonly />
           </div>
       
           <!-- Date -->
           <div class="mr-3 mt-2">
             <label class="form-label">التاريخ / Date</label>
             <div class="input-group">
-              <input type="date" class="form-control small text-muted" [(ngModel)]="form.value.date" />
+              <input type="date" class="form-control small text-muted" [(ngModel)]="form.value.dateCreated" />
               <!-- <button class="btn btn-outline-secondary" type="button" (click)="form.patchValue({ date: '' })">×</button> -->
             </div>
           </div>

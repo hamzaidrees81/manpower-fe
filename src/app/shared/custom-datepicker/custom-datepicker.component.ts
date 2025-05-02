@@ -15,6 +15,12 @@ export class CustomDatepickerComponent extends DefaultEditor implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.cell && this.cell.newValue) {
+      this.inputModel = this.cell.newValue;
+    } else if (this.cell && this.cell['value']) {
+      this.inputModel = this.cell['value'];
+    }
+  
   }
 
   onDateChange() {

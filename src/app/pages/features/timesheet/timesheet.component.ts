@@ -63,22 +63,25 @@ export class TimesheetComponent  implements OnInit {
         editor: {
           type: 'list',
           config: {
-            selectText: 'Select...',
             list: [],
           },
         },
       },
-      designation: {
+      designationId: {
         title: 'Designation',
         type: 'html',
-        valuePrepareFunction: (designation) => designation.name,
+        filter:false,
         editor: {
           type: 'list',
           config: {
-            selectText: 'Select...',
             list: [],
           },
         },
+        valuePrepareFunction: (value) => {
+          const found = this.designation.find(b => b.id === value);
+          return found ? found?.name : value;
+        }
+        
       },
       regularRate: {
         title: "RegularRate",
@@ -683,9 +686,8 @@ export class TimesheetComponent  implements OnInit {
             editor: {
               type: 'list',
               config: {
-                selectText: 'Select...',
                 list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
+                  value: c.id, // Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -701,14 +703,13 @@ export class TimesheetComponent  implements OnInit {
         ...this.settingsProjects,
         columns: {
           ...this.settingsProjects.columns,
-          designation: {
-            ...this.settingsProjects.columns.designation,
+          designationId: {
+            ...this.settingsProjects.columns.designationId,
             editor: {
               type: 'list',
               config: {
-                selectText: 'Select...',
                 list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
+                  value: c.id, // Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -720,16 +721,18 @@ export class TimesheetComponent  implements OnInit {
   }
       // Add project
 onProjectCreateConfirm(event: any): void {
-  const designationId = JSON.parse(event.newData.designation);
-  const projectId =  JSON.parse(event.newData.project);
-  // Update start and end dates
   this.handleStartDate();
   this.handleEndDate();
+
+  // const designationId = JSON.parse(event.newData.designation);
+  const projectId =  JSON.parse(event.newData.project);
+  // Update start and end dates
+  
 
   // Parse necessary fields and prepare request data
   const newProject = {
     ...event.newData,
-    designationId: designationId?.id,
+    designationId: event?.newData?.designationId,
     projectId:projectId?.id,
     startDate: this.customStartDate,
     endDate: this.customEndDate,
@@ -754,14 +757,18 @@ onProjectCreateConfirm(event: any): void {
 
  
 onProjectEditConfirm(event: any): void {
-  const designationId = JSON.parse(event.newData.designation);
+
+  this.handleStartDate();
+  this.handleEndDate();
+
+  // const designationId = JSON.parse(event.newData.designation);
   const projectId =  JSON.parse(event.newData.project);
   const updatedProject = {
     ...event.newData,
-    designationId: designationId?.id,
+    designationId: event?.newData?.designationId,
     projectId:projectId?.id,
-    startDate: this.customStartDate,
-    endDate: this.customEndDate,
+    startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
+    endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,
     assetId: this.assetData.id,
     // company: {id:this.assetData.company.id},
     // status: event.newData.status === true ? 1 : 0, 

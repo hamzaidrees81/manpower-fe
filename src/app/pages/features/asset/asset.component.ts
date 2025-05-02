@@ -101,18 +101,21 @@ export class AssetComponent implements OnInit {
         type: "string",
         filter: false,
       },
-      designation: {
+      designationId: {
         title: 'Designation',
         type: 'html',
-        filter: false,
-        valuePrepareFunction: (designation) => designation?.name,
+        filter:false,
         editor: {
           type: 'list',
           config: {
-            selectText: 'Select...',
             list: [],
           },
         },
+        valuePrepareFunction: (value) => {
+          const found = this.designation.find(b => b.id === value);
+          return found ? found?.name : value;
+        }
+        
       },
       passport: {
         title: "Passport",
@@ -214,6 +217,7 @@ export class AssetComponent implements OnInit {
         title: 'Add Sponsor',
         type: 'custom',
         filter: false,
+        add:false,
         editable: false,
         addable: false,
         renderComponent: AddButtonComponent,
@@ -266,10 +270,11 @@ export class AssetComponent implements OnInit {
           sponsoredBy: {
             id: item?.sponsoredById,
             name: item?.sponsoredName
-          }
+          },
+          designationId:item?.designation?.id,
+          designationName:item?.designation?.nam,
         }));
         this.source.load(newData);
-        console.log("asset", newData);
       },
       (error) => {
         console.error('Error loading clients:', error);
@@ -307,14 +312,13 @@ export class AssetComponent implements OnInit {
         ...this.settings,
         columns: {
           ...this.settings.columns,
-          designation: {
-            ...this.settings.columns.designation,
+          designationId: {
+            ...this.settings.columns.designationId,
             editor: {
               type: 'list',
               config: {
-                selectText: 'Select...',
                 list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
+                  value: c.id, // Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -371,13 +375,13 @@ export class AssetComponent implements OnInit {
     // }
     // Parse selected company data
     const latestData = event.newData;
-    const parseLatestData = JSON.parse(latestData?.designation);
+    // const parseLatestData = JSON.parse(latestData?.designation);
 
     // Prepare new asset object with dynamic company data
     const newAsset = {
       ...event.newData,
       company: latestData?.company, // Assign selected company
-      designation: parseLatestData,
+      designation: {id:event?.newData?.designationId},
       passportExpiry: this.customSelectedPassportExpiryDate,
       joiningDate: this.customSelectedJoiningDate,
       iqamaExpiry: this.customSelectedIqamaExpiryDate,
@@ -391,6 +395,7 @@ export class AssetComponent implements OnInit {
     this.assetService.addAsset(newAsset).subscribe({
       next: (data) => {
         event.confirm.resolve(data)
+        this.reloadCurrentRoute();
         this.toasterService.showSuccess('Asset created successfully!');
       },
       error: (error) => {
@@ -401,7 +406,12 @@ export class AssetComponent implements OnInit {
     });
   }
 
-
+  reloadCurrentRoute(): void {
+    const currentUrl = this.router.url;
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate([currentUrl]);
+    });
+  }
 
   onEditConfirm(event: any): void {
     this.handleSelectedIqamaExpiryDate();
@@ -427,14 +437,16 @@ export class AssetComponent implements OnInit {
     const updatedAsset = {
       ...event.newData,
       company: parseLatestData?.company, // Assign selected company
-      passportExpiry: this.customSelectedPassportExpiryDate,
-      joiningDate: this.customSelectedJoiningDate,
-      iqamaExpiry: this.customSelectedIqamaExpiryDate,
+      designation: {id:event?.newData?.designationId},
+      passportExpiry: this.customSelectedPassportExpiryDate ? this.customSelectedPassportExpiryDate :event?.newData?.passportExpiry ,
+      joiningDate: this.customSelectedJoiningDate ? this.customSelectedJoiningDate : event?.newData?.joiningDate,
+      iqamaExpiry: this.customSelectedIqamaExpiryDate ? this.customSelectedIqamaExpiryDate : event?.newData?.iqamaExpiry,
       // sponsoredBy: parseLatestData?.sponsorId
     };
     this.assetService.updateAsset(updatedAsset.id, updatedAsset).subscribe({
       next: (data) => {
-        event.confirm.resolve(data)
+        event.confirm.resolve(data);
+        this.reloadCurrentRoute();
         this.toasterService.showSuccess('Asset updated successfully!');
       },
       error: (error) => {

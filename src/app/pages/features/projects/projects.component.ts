@@ -19,8 +19,8 @@ import { Router } from '@angular/router';
 })
 export class ProjectsComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource(); // Table data source
-  companies: any[] = []; // Store company list
-  clients: any[] = []; // Store client list
+  companies;
+  clients;
   settings = {
     actions: {
       position: 'right', // Moves action buttons to the right
@@ -55,7 +55,7 @@ export class ProjectsComponent implements OnInit {
       //     },
       //   },
       // },
-      client: {
+      clientId: {
         title: 'Client',
         type: 'html',
         filter:false,
@@ -66,9 +66,10 @@ export class ProjectsComponent implements OnInit {
           },
         },
         valuePrepareFunction: (value) => {
-          const found = this.clients.find(b => b.id === value.id);
-          return found ? found.name : value;
-        },
+          const found = this.clients.find(b => b.id === value);
+          return found ? found?.name : value;
+        }
+        
       },
       projectId: {
         title: 'ID',
@@ -179,8 +180,8 @@ export class ProjectsComponent implements OnInit {
         ...this.settings,
         columns: {
           ...this.settings.columns,
-          client: {
-            ...this.settings.columns.client,
+          clientId: {
+            ...this.settings.columns.clientId,
             editor: {
               type: 'list',
               config: {
@@ -211,12 +212,12 @@ export class ProjectsComponent implements OnInit {
       return; // Stop execution if validation fails
     }
 
-      const updateClient = JSON.parse(event.newData.client);
+      // const updateClient = JSON.parse(event.newData.client);
 
     // Parse necessary fields and prepare request data
     const newProject = {
       ...event.newData,
-      clientId: updateClient?.id,
+      // clientId: updateClient?.id,
       startDate: this.customStartDate,
       endDate: this.customEndDate,
     };
@@ -240,20 +241,25 @@ export class ProjectsComponent implements OnInit {
 
 
   onEditConfirm(event: any): void {
+
+     // Update start and end dates
+     this.handleStartDate();
+     this.handleEndDate();
+ 
     const requiredFields = ["name"];
 
     // ✅ Validate required fields
     if (!validateRequiredFields(event.newData, requiredFields, this.toasterService)) {
       return; // Stop execution if validation fails
     }
-    const updateClient = JSON.parse(event.newData.client);
+    // const updateClient = JSON.parse(event.newData.client);
 
     // Parse necessary fields and prepare request data
     const newProject = {
       ...event.newData,
-      clientId: updateClient?.id,
-      startDate: this.customStartDate,
-      endDate: this.customEndDate,
+      // clientId: updateClient?.id,
+      startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
+      endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,
     };
 
     delete newProject?.client;

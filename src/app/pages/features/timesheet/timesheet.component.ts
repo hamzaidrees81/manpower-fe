@@ -687,7 +687,7 @@ export class TimesheetComponent  implements OnInit {
               type: 'list',
               config: {
                 list: data.map((c) => ({
-                  value: c.id, // Store whole object as string
+                  value: JSON.stringify(c),// Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -724,7 +724,7 @@ onProjectCreateConfirm(event: any): void {
   this.handleStartDate();
   this.handleEndDate();
 
-  // const designationId = JSON.parse(event.newData.designation);
+  const designationId = JSON.parse(event.newData.designationId);
   const projectId =  JSON.parse(event.newData.project);
   // Update start and end dates
   
@@ -732,10 +732,11 @@ onProjectCreateConfirm(event: any): void {
   // Parse necessary fields and prepare request data
   const newProject = {
     ...event.newData,
-    designationId: event?.newData?.designationId,
-    projectId:projectId?.id,
-    startDate: this.customStartDate,
-    endDate: this.customEndDate,
+    designationId: designationId?.id,
+    designation:{id:designationId?.id},
+    projectId:projectId,
+    startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
+      endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,
     assetId: this.assetData.id,
     // company: {id:this.assetData.company.id},
     // status: event.newData.status === true ? 'ACTIVE' : 'INACTIVE', 
@@ -761,12 +762,13 @@ onProjectEditConfirm(event: any): void {
   this.handleStartDate();
   this.handleEndDate();
 
-  // const designationId = JSON.parse(event.newData.designation);
+  const designationId = JSON.parse(event.newData.designationId);
   const projectId =  JSON.parse(event.newData.project);
   const updatedProject = {
     ...event.newData,
-    designationId: event?.newData?.designationId,
-    projectId:projectId?.id,
+    designationId: designationId?.id,
+    designation:{id:designationId?.id},
+    projectId:projectId,
     startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
     endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,
     assetId: this.assetData.id,

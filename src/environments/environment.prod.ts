@@ -5,6 +5,5 @@
  */
 export const environment = {
   production: true,
-   apiUrl:'https://manpower-be-production-edab.up.railway.app/api',
-  posApiUrl:'https://manpower-be-production-edab.up.railway.app/pos/api'
+   apiUrl:'https://manpower-be-production-edab.up.railway.app',
 };

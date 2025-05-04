@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class ProjectService {
-  private apiUrl = `${environment.apiUrl}/projects`; // API endpoint
+  private apiUrl = `${environment.apiUrl}/api/projects`; // API endpoint
 
   constructor(private http: HttpClient) {}
 

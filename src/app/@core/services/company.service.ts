@@ -28,8 +28,8 @@ export interface Account {
   providedIn: 'root',
 })
 export class CompanyService {
-  private apiUrl = `${environment.apiUrl}/companies`;
-  private apiUrlForAccounts = `${environment.apiUrl}/accounts`;
+  private apiUrl = `${environment.apiUrl}/api/companies`;
+  private apiUrlForAccounts = `${environment.apiUrl}/api/accounts`;
 
   constructor(private http: HttpClient) { }
 

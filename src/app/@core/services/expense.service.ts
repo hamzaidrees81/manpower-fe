@@ -7,8 +7,8 @@ import { HttpClient, HttpParams } from '@angular/common/http';
   providedIn: 'root',
 })
 export class ExpenseService {
-  private apiUrl = `${environment.apiUrl}/expenses`; // Get API URL from environment
-  private apiUrlForPayment = `${environment.apiUrl}/payments`;
+  private apiUrl = `${environment.apiUrl}/api/expenses`; // Get API URL from environment
+  private apiUrlForPayment = `${environment.apiUrl}/api/payments`;
 
   constructor(private http: HttpClient) {}
 

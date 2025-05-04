@@ -8,9 +8,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
   providedIn: 'root',
 })
 export class SponsorService {
-  private apiUrl = `${environment.apiUrl}/sponsors`; // Get API URL from environment
-  private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/asset-sponsorships`;
-  private apiUrlForAssetPayables = `${environment.apiUrl}/invoice-sponsor-payables`; 
+  private apiUrl = `${environment.apiUrl}/api/sponsors`; // Get API URL from environment
+  private projectAssetSponsorshipsApiUrl = `${environment.apiUrl}/api/asset-sponsorships`;
+  private apiUrlForAssetPayables = `${environment.apiUrl}/api/invoice-sponsor-payables`; 
 
   constructor(private http: HttpClient) {}
 

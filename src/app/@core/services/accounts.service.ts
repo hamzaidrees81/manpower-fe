@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AccountsService {
-  private apiUrl = `${environment.apiUrl}/accounts`; // Get API URL from environment
+  private apiUrl = `${environment.apiUrl}/api/accounts`; // Get API URL from environment
 
   constructor(private http: HttpClient) {}
 

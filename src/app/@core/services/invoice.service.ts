@@ -8,7 +8,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class InvoiceService {
-  private apiUrl = `${environment.apiUrl}/api/invoices`; // Get API URL from environment
+  private apiUrl = `${environment.apiUrl}/invoices`; // Get API URL from environment
 
   private invoiceSubject = new BehaviorSubject<any>(null); // Holds the invoice data
   invoice$ = this.invoiceSubject.asObservable(); // Observable to listen for updates

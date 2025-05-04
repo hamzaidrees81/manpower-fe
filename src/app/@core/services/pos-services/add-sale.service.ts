@@ -7,7 +7,7 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root',
 })
 export class AddSaleService {
-  private apiUrl = `${environment.apiUrl}/pos/api/sales`;
+  private apiUrl = `${environment.posApiUrl}/sales`;
 
   constructor(private http: HttpClient) {}
 

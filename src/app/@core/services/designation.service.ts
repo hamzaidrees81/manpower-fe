@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
   providedIn: 'root',
 })
 export class DesignationService {
-  private apiUrl = `${environment.apiUrl}/api/designations`; // Get API URL from environment
+  private apiUrl = `${environment.apiUrl}/designations`; // Get API URL from environment
 
   constructor(private http: HttpClient) {}
 

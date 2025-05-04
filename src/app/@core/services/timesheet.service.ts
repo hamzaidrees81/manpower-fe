@@ -7,7 +7,7 @@ import { environment } from '../../../environments/environment';
   providedIn: 'root',
 })
 export class TimesheetService {
-  private apiUrl =`${environment.apiUrl}/api/timesheets`; // Get API URL from environment
+  private apiUrl =`${environment.apiUrl}/timesheets`; // Get API URL from environment
 
   constructor(private http: HttpClient) {}
 

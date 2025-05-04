@@ -7,12 +7,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
   providedIn: 'root',
 })
 export class AssetService {
-  private apiUrl = `${environment.apiUrl}/api/assets`; // Get API URL from environment
-  private customApiUrl = `${environment.apiUrl}/api/asset-projects`; // Get API URL from environment
+  private apiUrl = `${environment.apiUrl}/assets`; // Get API URL from environment
+  private customApiUrl = `${environment.apiUrl}/asset-projects`; // Get API URL from environment
 
   // For Payment 
-  private apiUrlForPayment = `${environment.apiUrl}/api/invoice-sponsor-payables`; // Get API URL from environment
-  private apiUrlForAssetPayables = `${environment.apiUrl}/api/asset-payables`; 
+  private apiUrlForPayment = `${environment.apiUrl}/invoice-sponsor-payables`; // Get API URL from environment
+  private apiUrlForAssetPayables = `${environment.apiUrl}/asset-payables`; 
 
   constructor(private http: HttpClient) {}
 

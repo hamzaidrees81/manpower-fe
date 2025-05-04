@@ -31,7 +31,7 @@ export const NB_CORE_PROVIDERS = [
         name: 'email',  
         baseEndpoint: environment.apiUrl,  
         login: {
-          endpoint: '/login',  
+          endpoint: 'api/login',  
           method: 'post',
           redirect: {
             success: '/pages/features/users', 

@@ -26,7 +26,7 @@ export class SponsorPaymentComponent implements OnInit {
   amount: number | null = null;
   remarks: string = '';
   mainAccountId;
-  paymentDate: Date | null = null;
+  paymentDate: Date = new Date();
   paymentMethod: { label: string; value: string } | null = null;
   reference: string = '';
   paymentType: { label: string; value: string } | null = null;

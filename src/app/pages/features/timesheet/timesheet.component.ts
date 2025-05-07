@@ -56,16 +56,21 @@ export class TimesheetComponent  implements OnInit {
       //   title: "Asset Name",
       //   type: "string"
       // },
-      project: {
-        title: 'Name',
+      projectId: {
+        title: 'Project',
         type: 'html',
-        valuePrepareFunction: (project) => project.name ,
+        filter:false,
         editor: {
           type: 'list',
           config: {
             list: [],
           },
         },
+        valuePrepareFunction: (value) => {
+          const found = this.projects.find(b => b.id === value);
+          return found ? found?.name : value;
+        }
+        
       },
       designationId: {
         title: 'Designation',
@@ -567,14 +572,8 @@ export class TimesheetComponent  implements OnInit {
     this.assetService.getAssetProjectsByAssetAndActiveStatus(this.assetData?.id,'ACTIVE').subscribe(
       (data) => {
         this.sourceProjects.load(data);
-        this.getProjects = data;
-        this.getProjects = this.getProjects.map(item => {
-          const temp = item.id;
-          item.id = item.projectId;
-          item.projectId = temp;
-          return item;
-        });
-        
+        debugger;
+        this.getProjects = data;       
       },
       (error) => {
         console.error('Error loading projects:', error);
@@ -681,13 +680,13 @@ export class TimesheetComponent  implements OnInit {
         ...this.settingsProjects,
         columns: {
           ...this.settingsProjects.columns,
-          project: {
-            ...this.settingsProjects.columns.project,
+          projectId: {
+            ...this.settingsProjects.columns.projectId,
             editor: {
               type: 'list',
               config: {
                 list: data.map((c) => ({
-                  value: JSON.stringify(c),// Store whole object as string
+                  value: c.id,// Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -725,15 +724,14 @@ onProjectCreateConfirm(event: any): void {
   this.handleEndDate();
 
   const designationId = JSON.parse(event.newData.designationId);
-  const projectId =  JSON.parse(event.newData.project);
+  const projectId =  JSON.parse(event.newData.projectId);
   // Update start and end dates
   
 
   // Parse necessary fields and prepare request data
   const newProject = {
     ...event.newData,
-    designationId: designationId?.id,
-    designation:{id:designationId?.id},
+    designationId: designationId,
     projectId:projectId,
     startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
       endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,
@@ -763,11 +761,10 @@ onProjectEditConfirm(event: any): void {
   this.handleEndDate();
 
   const designationId = JSON.parse(event.newData.designationId);
-  const projectId =  JSON.parse(event.newData.project);
+  const projectId =  JSON.parse(event.newData.projectId);
   const updatedProject = {
     ...event.newData,
-    designationId: designationId?.id,
-    designation:{id:designationId?.id},
+    designationId: designationId,
     projectId:projectId,
     startDate: this.customStartDate ? this.customStartDate : event?.newData?.startDate,
     endDate: this.customEndDate ? this.customEndDate : event?.newData?.endDate,

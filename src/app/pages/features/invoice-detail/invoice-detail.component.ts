@@ -32,7 +32,7 @@ export class InvoiceDetailComponent implements OnInit {
   remarks: string = '';
   mainAccountId;
   invoiceId;
-  paymentDate: Date | null = null;
+  paymentDate: Date = new Date();
   paymentMethod: { label: string; value: string } | null = null;
   reference: string = '';
   paymentType: { label: string; value: string } | null = null;
@@ -217,7 +217,6 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   editInvoice(invoice) {
-    console.log('Edit:', invoice);
     const editData = {
       ...invoice,
       edit:'EDIT'
@@ -227,7 +226,6 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   viewInvoice(invoice) {
-    console.log('View:', invoice);
     const viewData = {
       ...invoice,
       view:'VIEW'
@@ -237,7 +235,6 @@ export class InvoiceDetailComponent implements OnInit {
   }
 
   printInvoice(invoice) {
-    console.log('Print:', invoice);
     this.invoiceService.setInvoice(invoice);
     this.router.navigate(['/pages/features/print-invoice']);
   }
@@ -263,6 +260,7 @@ export class InvoiceDetailComponent implements OnInit {
       (data) => {
         this.toasterService.showSuccess('Payment paid successfully!');
         this.showHistoryTable = true; 
+        this.getHistory();
         // Optionally reset form fields
         this.resetForm();
       },

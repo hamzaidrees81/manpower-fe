@@ -113,7 +113,7 @@
                     <td>
                       <span
                         [ngClass]="{ 'text-success': invoice?.paymentStatus === 'PAID', 'text-danger': invoice?.paymentStatus === 'UNPAID' }">
-                        {{ invoice?.paymentStatus }}
+                        {{ invoice?.paymentStatus | titlecase  }}
                       </span>
                     </td>
                     <td>

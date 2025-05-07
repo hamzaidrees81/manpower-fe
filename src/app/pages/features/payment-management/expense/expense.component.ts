@@ -35,7 +35,7 @@ export class ExpenseComponent implements OnInit {
   remarks: string = '';
   mainAccountId;
   categoryId;
-  paymentDate: Date | null = null;
+  paymentDate: Date = new Date();
   paymentMethod: { label: string; value: string } | null = null;
   reference: string = '';
   paymentType: { label: string; value: string } | null = null;

@@ -32,12 +32,13 @@ export class InvoiceService {
     const params: any = {};
   
     if (clientId !== null && clientId !== undefined) params.clientId = clientId;
-    if (status !== null && status !== undefined) params.status = status != "ALL" ? status : "";
+    if (status !== null && status !== undefined && status !== "ALL") params.status = status;
     if (page !== null && page !== undefined) params.page = page;
     if (size !== null && size !== undefined) params.size = size;
   
     return this.http.get<any[]>(`${this.apiUrl}/list`, { params });
   }
+  
   
 
   // get invoice by id 

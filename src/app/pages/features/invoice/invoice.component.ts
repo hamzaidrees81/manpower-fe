@@ -198,7 +198,12 @@ calculateTotalAmount() {
     this.vatAmount = 0;
     this.totalWithVAT = 0;
     return;
-  }
+  }else if(this.routedInvoiceData?.view === 'VIEW'){
+    this.summeryTotalAmount = this.invoiceData?.totalAmount;
+    this.vatAmount = this.invoiceData?.vatAmount;
+    this.totalWithVAT = this.invoiceData?.totalWithVAT;
+  }else {
+
   const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
 
   // Calculate totalAmount for each asset using the formula
@@ -214,6 +219,7 @@ calculateTotalAmount() {
   // Set VAT and totalWithVAT if needed (set to 0 for now)
   this.vatAmount = this.summeryTotalAmount * 0.01 * this.invoiceData?.vatRate;
   this.totalWithVAT = this.summeryTotalAmount +  this.vatAmount;
+}
 }
 
 

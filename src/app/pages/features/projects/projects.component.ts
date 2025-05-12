@@ -66,7 +66,7 @@ export class ProjectsComponent implements OnInit {
           },
         },
         valuePrepareFunction: (value) => {
-          const found = this.clients.find(b => b.id === value);
+          const found = this.clients?.find(b => b.id === value);
           return found ? found?.name : value;
         }
         

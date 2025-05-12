@@ -40,11 +40,13 @@ export class SponsorModalComponent implements OnInit {
       //   title: 'Sponsor ID',
       //   type: 'number',
       // },
-      sponsor: {
-        title: 'Name',
+      project: {
+        title: 'Project Name',
         type: 'html',
         filter: false,
-        valuePrepareFunction: (sponsor) => sponsor.name,
+        editable: false,
+        addable: false,
+        valuePrepareFunction: (project) => project?.name,
         editor: {
           type: 'list',
           config: {
@@ -52,6 +54,22 @@ export class SponsorModalComponent implements OnInit {
             list: [],
           },
         },
+      },
+      sponsorId: {
+        title: 'Name',
+        type: 'html',
+        filter:false,
+        editor: {
+          type: 'list',
+          config: {
+            list: [],
+          },
+        },
+        valuePrepareFunction: (value) => {
+          const found = this.sponsors.find(b => b.id === value);
+          return found ? found?.name : value;
+        }
+        
       },
       sponsorshipType: {
         title: 'Type',
@@ -106,6 +124,7 @@ export class SponsorModalComponent implements OnInit {
     }
   };
   sponsors: any[];
+  createData: any;
 
   constructor(protected dialogRef: NbDialogRef<SponsorModalComponent>, private sponsorService: SponsorService, private toasterService: ToasterService, private dialogService: NbDialogService) { }
 
@@ -117,7 +136,7 @@ export class SponsorModalComponent implements OnInit {
         this.getSponsorsByAssetId(this.rowData?.id);
       }else {
         this.getsponsorshipBasis( { value: 'PROJECT_BASED', title: 'Project Based' },);
-        debugger;
+        
         this.getSponsorsByAssetId(this.rowData?.assetId);
       }     
     }
@@ -146,13 +165,31 @@ export class SponsorModalComponent implements OnInit {
   getSponsorsByAssetId(id) {
     this.sponsorService.getAssetSponsorshipsById(id).subscribe(
       (data) => {
-        this.sponsorSource.load(data);
+        let filteredData = data;
+  
+        if (this.rowData?.key === 'ASSET') {
+          // Prefer ASSET_BASED
+          const assetBased = data.filter(item => item.sponsorshipBasis === 'ASSET_BASED');
+  
+          if (assetBased.length > 0) {
+            filteredData = assetBased;
+          }
+        } else {
+          // Fallback to PROJECT_BASED
+          const projectBased = data.filter(item => item.sponsorshipBasis === 'PROJECT_BASED');
+          if (projectBased.length > 0) {
+            filteredData = projectBased;
+          }
+        }
+  
+        this.sponsorSource.load(filteredData);
       },
       (error) => {
         console.error('Error loading clients:', error);
       }
     );
   }
+  
   
   
 
@@ -175,14 +212,13 @@ export class SponsorModalComponent implements OnInit {
         ...this.sponsorSettings,
         columns: {
           ...this.sponsorSettings.columns,
-          sponsor: {
-            ...this.sponsorSettings.columns.sponsor,
+          sponsorId: {
+            ...this.sponsorSettings.columns.sponsorId,
             editor: {
               type: 'list',
               config: {
-                selectText: 'Select...',
                 list: data.map((c) => ({
-                  value: JSON.stringify(c), // Store whole object as string
+                  value: c.id, // Store whole object as string
                   title: c.name, // Display name
                 })),
               },
@@ -207,21 +243,31 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    const parseLatestData = JSON.parse(event?.newData?.sponsor);
+    // const parseLatestData = JSON.parse(event?.newData?.sponsor);
     // delete event?.newData?.sponsorName;
 
 
-    const updateData = {
-      ...event?.newData,
-      assetId: this.rowData?.key === 'ASSET' ? this.rowData?.id : this.rowData?.assetId,
-      sponsorId:parseLatestData?.id,
-      assetProjectId: this.rowData?.key != 'ASSET' ? this.rowData?.id : undefined
+    if(this.rowData?.key === 'ASSET'){
+      this.createData = {
+        ...event?.newData,
+        assetId: this.rowData?.id,
+        sponsorId:event?.newData?.sponsorId,
+      }
+    }else{
+      this.createData = {
+        ...event?.newData,
+        assetId:this.rowData?.assetId,
+        sponsorId:event?.newData?.sponsorId,
+        assetProjectId: this.rowData?.id
+      }
     }
 
-    delete updateData?.sponsor
+
+    delete this.createData?.sponsor;
+    delete this.createData?.project;
 
     // Call service to add the asset
-    this.sponsorService.addProjectAssetSponsorships(updateData).subscribe({
+    this.sponsorService.addProjectAssetSponsorships(this.createData).subscribe({
       next: (data) => {
         event.confirm.resolve(data)
         this.toasterService.showSuccess('Asset Sponsor created successfully!');
@@ -250,20 +296,30 @@ export class SponsorModalComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    const parseLatestData = JSON.parse(event?.newData?.sponsor);
+    // const parseLatestData = JSON.parse(event?.newData?.sponsor);
     // delete event?.newData?.sponsorName;
 
 
-    const updateData = {
-      ...event?.newData,
-      assetId: this.rowData?.assetId,
-      sponsorId:parseLatestData?.id,
-      assetProjectId:this.rowData?.id
+
+    if(this.rowData?.key === 'ASSET'){
+      this.createData = {
+        ...event?.newData,
+        assetId: event?.newData?.assetId,
+        sponsorId:event?.newData?.sponsorId,
+      }
+    }else{
+      this.createData = {
+        ...event?.newData,
+        assetId: event?.newData?.assetId,
+        sponsorId:event?.newData?.sponsorId,
+        assetProjectId: this.rowData?.id
+      }
     }
 
-    delete updateData?.sponsor
+    delete this.createData?.sponsor;
+    delete this.createData?.project;
 
-    this.sponsorService.updateProjectAssetSponsorships(event?.newData?.id, updateData).subscribe({
+    this.sponsorService.updateProjectAssetSponsorships(event?.newData?.id, this.createData).subscribe({
       next: (data) => {
         event.confirm.resolve(data)
         this.toasterService.showSuccess('Asset Sponsor updated successfully!');

@@ -572,7 +572,7 @@ export class TimesheetComponent  implements OnInit {
     this.assetService.getAssetProjectsByAssetAndActiveStatus(this.assetData?.id,'ACTIVE').subscribe(
       (data) => {
         this.sourceProjects.load(data);
-        debugger;
+        
         this.getProjects = data;       
       },
       (error) => {

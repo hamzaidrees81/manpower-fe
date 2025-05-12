@@ -1,157 +1,171 @@
 <nb-card>
-    <nb-card-header class="custom-header">
-      <nb-icon icon="credit-card-outline"></nb-icon>
-      <span>Ledger Management</span>
-    </nb-card-header>
-  
-    <nb-card-body>
-      <div class="row mb-4">
-        <!-- Filter Section -->
-        <div class="col-12">
-          <div class="filter-section card shadow-sm border-0">
-            <div class="card-header p-3">
-              <h4 class="mb-0 d-flex align-items-center">
-                <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
-              </h4>
-            </div>
-            <div class="card-body">
-              <div class="row align-items-end">
-  
-                <!-- Asset Select -->
-                <div class="col-md-3 col-sm-12 mb-3">
-                  <label for="AssetSelect" class="fw-bold text-muted d-flex align-items-center">
-                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Direction
-                  </label>
-                  <select id="AssetSelect" class="form-control" [(ngModel)]="paymentDirection">
-                    <option [ngValue]="null" disabled selected>Select Payment Direction</option>
-                    <option *ngFor="let item of paymentDirections" [ngValue]="item?.key">{{ item.label }}</option>
-                  </select>
-                </div>
-  
-                <div class="col-md-3 col-sm-12 mb-3">
-                  <label for="ProjectSelect" class="fw-bold text-muted d-flex align-items-center">
-                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Method
-                  </label>
-                  <select id="ProjectSelect" class="form-control" [(ngModel)]="paymentMethod">
-                    <option [ngValue]="null" disabled selected>Select Payment Method</option>
-                    <option *ngFor="let item of paymentMethods" [ngValue]="item?.key">{{ item?.label }}</option>
-                  </select>
-                </div>
-  
-                <div class="col-md-3 col-sm-12 mb-3">
-                  <label for="CategorySelect" class="fw-bold text-muted d-flex align-items-center">
-                    <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Type
-                  </label>
-                  <select id="CategorySelect" class="form-control" [(ngModel)]="paymentType">
-                    <option [ngValue]="null" disabled selected>Select Payment Type</option>
-                    <option *ngFor="let item of paymentTypes" [ngValue]="item?.key">{{ item?.label }}</option>
-                  </select>
-                </div>
+  <nb-card-header class="custom-header">
+    <nb-icon icon="credit-card-outline"></nb-icon>
+    <span>Ledger Management</span>
+  </nb-card-header>
 
-                <div class="col-md-3 col-sm-12 mb-3">
-                    <label for="paidToType" class="fw-bold text-muted d-flex align-items-center">
-                      <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Paid Type
-                    </label>
-                    <select id="paidToType" class="form-control" [(ngModel)]="selectedPaidToTypes">
-                      <option [ngValue]="null" disabled selected>Select Paid Type</option>
-                      <option *ngFor="let item of paidToTypes" [ngValue]="item?.key">{{ item?.label }}</option>
-                    </select>
-                  </div>
+  <nb-card-body>
+    <div class="row mb-4">
+      <!-- Filter Section -->
+      <div class="col-12">
+        <div class="filter-section card shadow-sm border-0">
+          <div class="card-header p-3">
+            <h4 class="mb-0 d-flex align-items-center">
+              <nb-icon icon="options-2-outline" class="me-2 mr-3"></nb-icon> Filters
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-end">
 
-                  <div class="col-md-3 col-sm-12 mb-3">
-                    <label for="dateRangePicker" class="fw-bold text-muted d-flex align-items-center">
-                      <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Select Date Range
-                    </label>
-                    <input nbInput placeholder="Select Date Range" class="form-control date-picker" [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
-                    <nb-rangepicker #rangepicker></nb-rangepicker>
-                  </div>
-  
-  
-                <!-- Get All Invoices Button -->
-                <div class="col-md-3 col-sm-12 mb-3 text-center">
-                  <button nbButton status="primary" class="w-100 fw-bold" (click)="toggleDetails()"
-                    [disabled]="!(paymentType || paymentMethod || paymentDirection || selectedDateRange)">
-                    <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Expenses
-                  </button>
-                </div>
-  
-  
+              <!-- Asset Select -->
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="AssetSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Direction
+                </label>
+                <select id="AssetSelect" class="form-control" [(ngModel)]="paymentDirection">
+                  <option [ngValue]="null" disabled selected>Select Payment Direction</option>
+                  <option *ngFor="let item of paymentDirections" [ngValue]="item?.key">{{ item.label }}</option>
+                </select>
               </div>
+
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="ProjectSelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Method
+                </label>
+                <select id="ProjectSelect" class="form-control" [(ngModel)]="paymentMethod">
+                  <option [ngValue]="null" disabled selected>Select Payment Method</option>
+                  <option *ngFor="let item of paymentMethods" [ngValue]="item?.key">{{ item?.label }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="CategorySelect" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Payment Type
+                </label>
+                <select id="CategorySelect" class="form-control" [(ngModel)]="paymentType">
+                  <option [ngValue]="null" disabled selected>Select Payment Type</option>
+                  <option *ngFor="let item of paymentTypes" [ngValue]="item?.key">{{ item?.label }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="paidToType" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="search-outline" class="me-2 mr-2"></nb-icon> Search by Paid Type
+                </label>
+                <select id="paidToType" class="form-control" [(ngModel)]="selectedPaidToTypes">
+                  <option [ngValue]="null" disabled selected>Select Paid Type</option>
+                  <option *ngFor="let item of paidToTypes" [ngValue]="item?.key">{{ item?.label }}</option>
+                </select>
+              </div>
+
+              <div class="col-md-3 col-sm-12 mb-3">
+                <label for="dateRangePicker" class="fw-bold text-muted d-flex align-items-center">
+                  <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Select Date Range
+                </label>
+                <input nbInput placeholder="Select Date Range" class="form-control date-picker"
+                  [nbDatepicker]="rangepicker" [(ngModel)]="selectedDateRange">
+                <nb-rangepicker #rangepicker></nb-rangepicker>
+              </div>
+
+
+              <!-- Get All Invoices Button -->
+              <div class="col-md-3 col-sm-12 mb-3 text-center">
+                <button nbButton status="primary" class="w-100 fw-bold" (click)="toggleDetails()"
+                  [disabled]="!(paymentType || paymentMethod || paymentDirection || selectedDateRange)">
+                  <nb-icon icon="file-outline" class="me-2"></nb-icon> Get Expenses
+                </button>
+              </div>
+
+
             </div>
           </div>
         </div>
       </div>
-  
-      <nb-accordion>
+    </div>
 
-        <nb-accordion-item [expanded]="true">
-            <nb-accordion-item-header>
-              <i class="fas fa-history text-primary me-2" style="margin-right: 8px;"></i>
-              Dashboard
-            </nb-accordion-item-header>
-            <nb-accordion-item-body>
-              <div class="container mt-4 mb-4">
-                <div class="row g-3">
-                  <!-- Paid To Sponsor -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Paid To Sponsor</label>
-                    <span class="form-control bg-light border-0 text-success">
-                      {{ getLedgersList?.totalPaidToSponsors }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Paid To Asset -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Paid To Asset</label>
-                    <span class="form-control bg-light border-0 text-danger">
-                      {{ getLedgersList?.totalPaidToAssets }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Income -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Income</label>
-                    <span class="form-control bg-light border-0 text-success">
-                      {{ getLedgersList?.totalIncome }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Expense -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Expense</label>
-                    <span class="form-control bg-light border-0 text-danger">
-                      {{ getLedgersList?.totalExpense }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Company Expense -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Company Expense</label>
-                    <span class="form-control bg-light border-0 text-danger">
-                      {{ getLedgersList?.totalCompanyExpenses }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Asset Expense -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Asset Expense</label>
-                    <span class="form-control bg-light border-0 text-danger">
-                      {{ getLedgersList?.totalAssetExpenses }} SAR
-                    </span>
-                  </div>
-          
-                  <!-- Profit -->
-                  <div class="col-md-4 mb-3">
-                    <label class="form-label fw-semibold text-muted">Profit</label>
-                    <span class="form-control bg-light border-0 text-primary fw-bold">
-                      {{ getLedgersList?.profit }} SAR
-                    </span>
-                  </div>
-                </div>
+    <nb-accordion>
+
+      <nb-accordion-item [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-history text-primary me-2" style="margin-right: 8px;"></i>
+          Dashboard
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <div class="container mt-4 mb-4">
+
+
+            <div class="row g-3">
+                          <!-- Income -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold text-muted">Income</label>
+              <span class="form-control bg-light border-0 text-success">
+                {{ getLedgersList?.totalIncome }} SAR
+              </span>
+            </div>
+
+            <!-- Profit -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold text-muted">Projected Profit</label>
+              <span class="form-control bg-light border-0 text-success fw-bold">
+                {{ getLedgersList?.projectedProfit }} SAR
+              </span>
+            </div>
+
+            <!-- Profit -->
+            <div class="col-md-4 mb-3">
+              <label class="form-label fw-semibold text-muted">Actual Profit</label>
+              <span class="form-control bg-light border-0 text-success fw-bold">
+                {{ getLedgersList?.profit }} SAR
+              </span>
+            </div>
+              <!-- Paid To Sponsor -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-muted">Paid To Sponsor</label>
+                <span class="form-control bg-light border-0 text-danger">
+                  {{ getLedgersList?.totalPaidToSponsors }} SAR
+                </span>
               </div>
-            </nb-accordion-item-body>
-          </nb-accordion-item>
-          
+
+              <!-- Paid To Asset -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-muted">Paid To Asset</label>
+                <span class="form-control bg-light border-0 text-danger">
+                  {{ getLedgersList?.totalPaidToAssets }} SAR
+                </span>
+              </div>
+
+
+
+              <!-- Expense -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-muted">Expense</label>
+                <span class="form-control bg-light border-0 text-danger">
+                  {{ getLedgersList?.totalExpense }} SAR
+                </span>
+              </div>
+
+              <!-- Company Expense -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-muted">Other Expense</label>
+                <span class="form-control bg-light border-0 text-danger">
+                  {{ getLedgersList?.totalCompanyExpenses }} SAR
+                </span>
+              </div>
+
+              <!-- Asset Expense -->
+              <div class="col-md-4 mb-3">
+                <label class="form-label fw-semibold text-muted">Asset Expense</label>
+                <span class="form-control bg-light border-0 text-danger">
+                  {{ getLedgersList?.totalAssetExpenses }} SAR
+                </span>
+              </div>
+
+
+            </div>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
 
       <!-- Payment History -->
       <nb-accordion-item [expanded]="true">
@@ -166,5 +180,5 @@
         </nb-accordion-item-body>
       </nb-accordion-item>
     </nb-accordion>
-    </nb-card-body>
-  </nb-card>
+  </nb-card-body>
+</nb-card>

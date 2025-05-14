@@ -22,75 +22,28 @@
                   </nb-accordion-item-header>
                   <nb-accordion-item-body>
                     <div class="row g-3">
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="name" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="person-outline" class="me-2 mr-2"></nb-icon> Name
-                        </label>
-                        <input type="text" id="name" class="form-control" [value]="assetData?.name" disabled
-                          style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="idNumber" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="hash-outline" class="me-2 mr-2"></nb-icon> ID Number
-                        </label>
-                        <input type="text" id="idNumber" class="form-control" [value]="assetData?.idNumber" disabled
-                          style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="iqamaExpiry" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Iqama Expiry
-                        </label>
-                        <input type="text" id="iqamaExpiry" class="form-control" [value]="assetData?.iqamaExpiry"
-                          disabled style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="phone" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="phone-outline" class="me-2 mr-2"></nb-icon> Phone
-                        </label>
-                        <input type="text" id="phone" class="form-control" [value]="assetData?.phone" disabled
-                          style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="joiningDate" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="calendar-outline" class="me-2 mr-2"></nb-icon> Joining Date
-                        </label>
-                        <input type="text" id="joiningDate" class="form-control" [value]="assetData?.joiningDate"
-                          disabled style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="assetType" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="archive-outline" class="me-2 mr-2"></nb-icon> Asset Type
-                        </label>
-                        <input type="text" id="assetType" class="form-control" [value]="assetData?.assetType" disabled
-                          style="background-color: white;">
-                      </div>
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="assetNumber" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="keypad-outline" class="me-2 mr-2"></nb-icon> Asset Number
-                        </label>
-                        <input type="text" id="assetNumber" class="form-control" [value]="assetData?.assetNumber"
-                          disabled style="background-color: white;">
-                      </div>
-                      <!-- New Asset Ownership Field -->
-                      <div class="col-md-4 col-sm-12 mb-3">
-                        <label for="assetOwnership" class="fw-bold text-muted d-flex align-items-center">
-                          <nb-icon icon="checkmark-circle-outline" class="me-2 mr-2"></nb-icon> Asset Ownership
-                        </label>
-                        <input type="text" id="assetOwnership" class="form-control" [value]="assetData?.assetOwnership"
-                          disabled style="background-color: white;">
-                      </div>
-
-                        <div class="col-md-4 col-sm-12 mb-3">
-                          <label for="designation" class="fw-bold text-muted d-flex align-items-center">
-                            <nb-icon icon="briefcase-outline" class="me-2 mr-2"></nb-icon> Designation
-                          </label>
-                          <input type="text" id="designation" class="form-control" [value]="assetData?.designation?.name"
-                            disabled style="background-color: white;">
+                
+                      <div class="col-md-4 col-sm-12 mb-3" *ngFor="let field of [
+                        { label: 'Name', value: assetData?.name },
+                        { label: 'ID Number', value: assetData?.idNumber },
+                        { label: 'Iqama Expiry', value: assetData?.iqamaExpiry },
+                        { label: 'Phone', value: assetData?.phone },
+                        { label: 'Joining Date', value: assetData?.joiningDate },
+                        { label: 'Asset Type', value: assetData?.assetType },
+                        { label: 'Asset Number', value: assetData?.assetNumber },
+                        { label: 'Asset Ownership', value: assetData?.assetOwnership },
+                        { label: 'Designation', value: assetData?.designation?.name }
+                      ]">
+                        <label class="fw-bold text-muted mb-1">{{ field.label }}</label>
+                        <div class="text-dark">
+                          {{ field.value || '-' }}
                         </div>
-                      
+                      </div>
+                
                     </div>
                   </nb-accordion-item-body>
                 </nb-accordion-item>
+                
 
                 <!-- Sponsored By Accordion -->
                 <!-- <nb-accordion-item>

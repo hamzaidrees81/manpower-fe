@@ -1,0 +1,126 @@
+<nb-card>
+    <nb-card-header class="custom-header">
+        <nb-icon icon="layers-outline"></nb-icon>
+        <span>Asset Statistics Detail</span>
+      </nb-card-header>
+    <nb-card-body>
+        <div class="row mb-4">
+            <div class="col-12">
+              <nb-accordion>
+                <!-- Basic Asset Info -->
+       <!-- Asset Overview -->
+<nb-accordion-item [expanded]="true">
+    <nb-accordion-item-header>
+      <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+        <nb-icon icon="briefcase-outline" class="me-2"></nb-icon> Asset Overview
+      </h5>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <div class="row g-3">
+        <div class="col-md-4 mb-3" *ngFor="let field of [
+          { label: 'Asset ID', key: 'assetId' },
+          { label: 'Asset Name', key: 'assetName' },
+          { label: 'Asset Type', key: 'assetType' },
+          { label: 'Status', key: 'status' },
+          { label: 'Assigned to Project', key: 'assignedToProject' }
+        ]">
+          <label class="fw-bold text-muted d-block">{{ field.label }}</label>
+          <span class="text-dark">{{ assetStatsList?.[field.key] || '-' }}</span>
+        </div>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  
+  <!-- Invoice Summary -->
+  <nb-accordion-item>
+    <nb-accordion-item-header>
+      <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+        <nb-icon icon="file-text-outline" class="me-2"></nb-icon> Invoice Summary
+      </h5>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <div class="row g-3">
+        <div class="col-md-3 mb-3" *ngFor="let field of [
+          { label: 'Active Projects', key: 'activeProjects' },
+          { label: 'Total Invoices', key: 'totalInvoiceCount' },
+          { label: 'Paid Invoices', key: 'paidInvoiceCount' },
+          { label: 'Unpaid Invoices', key: 'unpaidInvoiceCount' },
+          { label: 'Undue Invoices', key: 'undueInvoiceCount' }
+        ]">
+          <label class="fw-bold text-muted d-block">{{ field.label }}</label>
+          <span class="text-dark">{{ assetStatsList?.[field.key] || '-' }}</span>
+        </div>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  
+  <!-- Financial Summary -->
+  <nb-accordion-item>
+    <nb-accordion-item-header>
+      <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+        <nb-icon icon="bar-chart-outline" class="me-2"></nb-icon> Financial Summary
+      </h5>
+    </nb-accordion-item-header>
+    <nb-accordion-item-body>
+      <div class="row g-3">
+        <div class="col-md-3 mb-3" *ngFor="let field of [
+          { label: 'Total Revenue', key: 'totalRevenue' },
+          { label: 'Amount Earned', key: 'amountEarned' },
+          { label: 'Upcoming Earnings', key: 'upcomingEarning' },
+          { label: 'Amount Paid', key: 'amountPaid' },
+          { label: 'Sponsor Payable', key: 'sponsorPayable' },
+          { label: 'Total Expenses', key: 'totalExpenses' },
+          { label: 'Profit', key: 'profitFromAsset' },
+          { label: 'Profitability Ratio', key: 'profitabilityRatio' },
+          { label: 'Last Used Date', key: 'lastUsedDate' }
+        ]">
+          <label class="fw-bold text-muted d-block">{{ field.label }}</label>
+          <span class="text-dark">{{ assetStatsList?.[field.key] || '-' }}</span>
+        </div>
+      </div>
+    </nb-accordion-item-body>
+  </nb-accordion-item>
+  
+          
+                <!-- Project Assignments Table -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="layers-outline" class="me-2"></nb-icon> Project Assignments
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <ng2-smart-table [settings]="projectSettings" [source]="sourceProjects"></ng2-smart-table>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+          
+                <!-- Invoice Table -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="file-text-outline" class="me-2"></nb-icon> Invoice List
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <ng2-smart-table [settings]="invoiceSettings" [source]="sourceInvoices"></ng2-smart-table>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+          
+                <!-- Payment Table -->
+                <nb-accordion-item>
+                  <nb-accordion-item-header>
+                    <h5 class="mb-0 fw-bold" style="font-size: 1.25rem; color: #004B87;">
+                      <nb-icon icon="credit-card-outline" class="me-2"></nb-icon> Payment History
+                    </h5>
+                  </nb-accordion-item-header>
+                  <nb-accordion-item-body>
+                    <ng2-smart-table [settings]="paymentSettings" [source]="sourcePayments"></ng2-smart-table>
+                  </nb-accordion-item-body>
+                </nb-accordion-item>
+              </nb-accordion>
+            </div>
+          </div>
+          
+    </nb-card-body>
+  </nb-card>
+  

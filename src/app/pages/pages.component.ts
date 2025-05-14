@@ -40,6 +40,14 @@ export class PagesComponent implements OnInit {
           { title: 'Accounts', link: '/pages/features/accounts' },
         ],
       },
+      {
+        title: 'Dashboard',
+        icon: 'cube-outline',
+        children: [
+          { title: 'Asset Statistics', link: '/pages/features/asset-statistics' },
+          { title: 'Project Statistics', link: '/pages/features/project-statistics' },
+        ],
+      },
       { title: 'Client', icon: 'people-outline', link: '/pages/features/client' },
       { title: 'Sponsor', icon: 'star-outline', link: '/pages/features/sponsor' },
       { title: 'Users', icon: 'person-outline', link: '/pages/features/users' },

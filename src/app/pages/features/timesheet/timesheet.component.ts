@@ -143,17 +143,17 @@ export class TimesheetComponent  implements OnInit {
           instance.ngOnDestroy = () => sub.unsubscribe();
         }
       },
-      isActive: {
-        title: "Is Active",
-        type: "html",
-        filter: false,
-        editor: {
-          type: "checkbox"
-        },
-        valuePrepareFunction: (value: boolean) => {
-          return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
-        }
-      },
+      // isActive: {
+      //   title: "Is Active",
+      //   type: "html",
+      //   filter: false,
+      //   editor: {
+      //     type: "checkbox"
+      //   },
+      //   valuePrepareFunction: (value: boolean) => {
+      //     return value ? '<i class="nb-checkmark text-success"></i>' : '<i class="nb-close text-danger"></i>';
+      //   }
+      // },
       // status: {
       //   title: "Status",
       //   type: "html",
@@ -589,8 +589,8 @@ export class TimesheetComponent  implements OnInit {
   
     this.timesheetService.updateTimesheet(this.timeSheetCollection).subscribe({
       next: (response) => {
-        console.log("Timesheet submitted successfully:", response);
         this.toasterService.showSuccess('Timesheet submitted successfully!');
+        this.router.navigate(['/pages/features/invoice']);
       },
       error: (error) => {
         console.error("Error submitting timesheet:", error);

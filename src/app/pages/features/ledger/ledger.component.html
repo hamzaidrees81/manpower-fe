@@ -87,84 +87,117 @@
 
       <nb-accordion-item [expanded]="true">
         <nb-accordion-item-header>
-          <i class="fas fa-history text-primary me-2" style="margin-right: 8px;"></i>
-          Dashboard
+          <i class="fas fa-chart-line text-primary me-2" style="margin-right: 8px;"></i>
+          Dashboard Overview
         </nb-accordion-item-header>
+      
         <nb-accordion-item-body>
           <div class="container mt-4 mb-4">
-
-
-            <div class="row g-3">
-                          <!-- Income -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold text-muted">Income</label>
-              <span class="form-control bg-light border-0 text-success">
-                {{ getLedgersList?.totalIncome }} SAR
-              </span>
-            </div>
-
-            <!-- Profit -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold text-muted">Projected Profit</label>
-              <span class="form-control bg-light border-0 text-success fw-bold">
-                {{ getLedgersList?.projectedProfit }} SAR
-              </span>
-            </div>
-
-            <!-- Profit -->
-            <div class="col-md-4 mb-3">
-              <label class="form-label fw-semibold text-muted">Actual Profit</label>
-              <span class="form-control bg-light border-0 text-success fw-bold">
-                {{ getLedgersList?.profit }} SAR
-              </span>
-            </div>
+            <div class="row g-4">
+      
+              <!-- Income -->
+              <div class="col-md-4">
+                <nb-card status="success" accent="success">
+                  <nb-card-header>
+                    <i class="fas fa-coins me-2"></i> Income
+                  </nb-card-header>
+                  <nb-card-body class="text-success fw-bold fs-5">
+                    {{ getLedgersList?.totalIncome || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
+              </div>
+      
+              <!-- Projected Profit -->
+              <div class="col-md-4">
+                <nb-card status="info" accent="info">
+                  <nb-card-header>
+                    <i class="fas fa-chart-pie me-2"></i> Projected Profit
+                  </nb-card-header>
+                  <nb-card-body class="text-info fw-bold fs-5">
+                    {{ getLedgersList?.projectedProfit || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
+              </div>
+      
+              <!-- Actual Profit -->
+              <div class="col-md-4">
+                <nb-card status="success" accent="success">
+                  <nb-card-header>
+                    <i class="fas fa-wallet me-2"></i> Actual Profit
+                  </nb-card-header>
+                  <nb-card-body class="text-success fw-bold fs-5">
+                    {{ getLedgersList?.profit || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
+              </div>
+      
               <!-- Paid To Sponsor -->
-              <div class="col-md-4 mb-3">
-                <label class="form-label fw-semibold text-muted">Paid To Sponsor</label>
-                <span class="form-control bg-light border-0 text-danger">
-                  {{ getLedgersList?.totalPaidToSponsors }} SAR
-                </span>
+              <div class="col-md-4">
+                <nb-card status="danger" accent="danger">
+                  <nb-card-header>
+                    <i class="fas fa-hand-holding-usd me-2"></i> Paid To Sponsor
+                  </nb-card-header>
+                  <nb-card-body class="text-danger fw-bold fs-5">
+                    {{ getLedgersList?.totalPaidToSponsors || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
               </div>
-
+      
               <!-- Paid To Asset -->
-              <div class="col-md-4 mb-3">
-                <label class="form-label fw-semibold text-muted">Paid To Asset</label>
-                <span class="form-control bg-light border-0 text-danger">
-                  {{ getLedgersList?.totalPaidToAssets }} SAR
-                </span>
+              <div class="col-md-4">
+                <nb-card status="danger" accent="danger">
+                  <nb-card-header>
+                    <i class="fas fa-landmark me-2"></i> Paid To Asset
+                  </nb-card-header>
+                  <nb-card-body class="text-danger fw-bold fs-5">
+                    {{ getLedgersList?.totalPaidToAssets || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
               </div>
-
-
-
-              <!-- Expense -->
-              <div class="col-md-4 mb-3">
-                <label class="form-label fw-semibold text-muted">Expense</label>
-                <span class="form-control bg-light border-0 text-danger">
-                  {{ getLedgersList?.totalExpense }} SAR
-                </span>
+      
+              <!-- Total Expense -->
+              <div class="col-md-4">
+                <nb-card status="warning" accent="warning">
+                  <nb-card-header>
+                    <i class="fas fa-receipt me-2"></i> Total Expense
+                  </nb-card-header>
+                  <nb-card-body class="text-warning fw-bold fs-5">
+                    {{ getLedgersList?.totalExpense || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
               </div>
-
+      
               <!-- Company Expense -->
-              <div class="col-md-4 mb-3">
-                <label class="form-label fw-semibold text-muted">Other Expense</label>
-                <span class="form-control bg-light border-0 text-danger">
-                  {{ getLedgersList?.totalCompanyExpenses }} SAR
-                </span>
+              <div class="col-md-4">
+                <nb-card status="warning" accent="warning">
+                  <nb-card-header>
+                    <i class="fas fa-building me-2"></i> Other Expense
+                  </nb-card-header>
+                  <nb-card-body class="text-warning fw-bold fs-5">
+                    {{ getLedgersList?.totalCompanyExpenses || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
               </div>
-
+      
               <!-- Asset Expense -->
-              <div class="col-md-4 mb-3">
-                <label class="form-label fw-semibold text-muted">Asset Expense</label>
-                <span class="form-control bg-light border-0 text-danger">
-                  {{ getLedgersList?.totalAssetExpenses }} SAR
-                </span>
+              <div class="col-md-4">
+                <nb-card status="warning" accent="warning">
+                  <nb-card-header>
+                    <i class="fas fa-cogs me-2"></i> Asset Expense
+                  </nb-card-header>
+                  <nb-card-body class="text-warning fw-bold fs-5">
+                    {{ getLedgersList?.totalAssetExpenses || 0 }} SAR
+                  </nb-card-body>
+                </nb-card>
               </div>
-
-
+      
             </div>
           </div>
         </nb-accordion-item-body>
       </nb-accordion-item>
+      
+      
+      
 
 
       <!-- Payment History -->

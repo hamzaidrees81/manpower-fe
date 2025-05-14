@@ -19,6 +19,10 @@ import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sp
 import { ExpenseComponent } from './payment-management/expense/expense.component';
 import { AccountsComponent } from './accounts/accounts.component';
 import { LedgerComponent } from './ledger/ledger.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { AssetStatisticsComponent } from './dashboard/asset-statistics/asset-statistics.component';
+import { ProjectStatisticsComponent } from './dashboard/project-statistics/project-statistics.component';
+import { AssetStatisticsDetailComponent } from './dashboard/asset-statistics-detail/asset-statistics-detail.component';
 
 const routes: Routes = [{
   path: '',
@@ -91,6 +95,22 @@ const routes: Routes = [{
     {
       path: 'ledger',
       component: LedgerComponent,
+    },
+    {
+      path: 'dashboard',
+      component: DashboardComponent,
+    },
+    {
+      path: 'asset-statistics',
+      component: AssetStatisticsComponent,
+    },
+    {
+      path: 'project-statistics',
+      component: ProjectStatisticsComponent,
+    },
+    {
+      path: 'asset-statistics-detail',
+      component: AssetStatisticsDetailComponent,
     },
   ],
 }];

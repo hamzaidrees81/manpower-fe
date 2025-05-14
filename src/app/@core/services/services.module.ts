@@ -20,6 +20,7 @@ import { CategoryService } from './pos-services/category.service';
 import { StockService } from './pos-services/stock.service';
 import { InventoryService } from './pos-services/inventory.service';
 import { SupplierService } from './pos-services/supplier.service';
+import { DashboardService } from './dashboard.service';
 
 
 
@@ -36,6 +37,7 @@ const SERVICES = [
   InvoiceService,
   ExpenseService,
   AccountsService,
+  DashboardService,
 
   // POS SERVICES
   AddSaleService,

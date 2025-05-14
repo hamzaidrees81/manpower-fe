@@ -12,12 +12,21 @@ import { Subscription } from 'rxjs';
 export class ButtonViewComponent implements OnDestroy {
   @Input() rowData: any;
   @Output() save: EventEmitter<any> = new EventEmitter();
-  
+
   private subscription: Subscription;
-constructor(private router:Router){}
+  constructor(private router: Router) { }
   onClick() {
-    localStorage.setItem('selectedPerson', JSON.stringify(this.rowData));
-    this.router.navigate(['/pages/features/timesheet']);
+    // Check if 'revenueEarned' key exists in the rowData
+    if ('revenueEarned' in this.rowData) {
+      // Route to asset stats page
+      localStorage.setItem('selectedAssetStats', JSON.stringify(this.rowData));
+      this.router.navigate(['/pages/features/asset-statistics-detail']);
+    } else {
+      // Default route
+      localStorage.setItem('selectedPerson', JSON.stringify(this.rowData));
+      this.router.navigate(['/pages/features/timesheet']);
+    }
+    
   }
 
   ngOnDestroy() {

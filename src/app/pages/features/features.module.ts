@@ -25,6 +25,10 @@ import { FeaturesComponent } from './features.component';
 import { ProjectsComponent } from './projects/projects.component';
 import { UsersComponent } from './users/users.component';
 import { LedgerComponent } from './ledger/ledger.component';
+import { DashboardComponent } from './dashboard/dashboard.component';
+import { AssetStatisticsComponent } from './dashboard/asset-statistics/asset-statistics.component';
+import { ProjectStatisticsComponent } from './dashboard/project-statistics/project-statistics.component';
+import { AssetStatisticsDetailComponent } from './dashboard/asset-statistics-detail/asset-statistics-detail.component';
 
 @NgModule({
   imports: [
@@ -61,7 +65,11 @@ import { LedgerComponent } from './ledger/ledger.component';
     SponsorModalComponent,
     ExpenseComponent,
     AccountsComponent,
-    LedgerComponent, 
+    LedgerComponent,
+    DashboardComponent,
+    AssetStatisticsComponent,
+    ProjectStatisticsComponent,
+    AssetStatisticsDetailComponent, 
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules
 })

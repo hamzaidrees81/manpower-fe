@@ -1,0 +1,112 @@
+<nb-card>
+    <nb-card-header>
+      <nb-icon icon="bar-chart-outline"></nb-icon>
+      <span class="ms-2">Project Statistics Detail</span>
+    </nb-card-header>
+  
+    <nb-card-body>
+      <nb-accordion>
+  
+        <!-- Client Overview -->
+        <nb-accordion-item [expanded]="true">
+          <nb-accordion-item-header>
+            <nb-icon icon="person-outline" class="me-2 mr-2"></nb-icon> Client Overview
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <div class="row g-3">
+              <div class="col-md-4 mb-3">
+                <label class="fw-bold text-muted">Client ID</label>
+                <div>{{ clientStats?.clientId || '-' }}</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="fw-bold text-muted">Client Name</label>
+                <div>{{ clientStats?.clientName || '-' }}</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="fw-bold text-muted">Total Projects</label>
+                <div>{{ clientStats?.totalProjects || 0 }}</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="fw-bold text-muted">Active Projects</label>
+                <div>{{ clientStats?.activeProjects || 0 }}</div>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="fw-bold text-muted">Total Assets</label>
+                <div>{{ clientStats?.totalAssets || 0 }}</div>
+              </div>
+            </div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+  
+        <!-- Financial Summary -->
+        <nb-accordion-item>
+          <nb-accordion-item-header>
+            <nb-icon icon="trending-up-outline" class="me-2 mr-2"></nb-icon> Financial Summary
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <div class="row g-3">
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Total Revenue</label>
+                <div>{{ clientStats?.totalRevenue || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Total Received</label>
+                <div>{{ clientStats?.totalReceived || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Profit</label>
+                <div>{{ clientStats?.profit || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Outstanding Amount</label>
+                <div>{{ clientStats?.outstandingAmount || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Profitability Ratio</label>
+                <div>{{ clientStats?.profitabilityRatio || 0 }}%</div>
+              </div>
+            </div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+  
+        <!-- Invoice Summary -->
+        <nb-accordion-item>
+          <nb-accordion-item-header>
+            <nb-icon icon="file-text-outline" class="me-2 mr-2"></nb-icon> Invoice Summary
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <div class="row g-3">
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Total Invoices</label>
+                <div>{{ clientStats?.invoiceCount || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Paid Invoices</label>
+                <div>{{ clientStats?.paidInvoices || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Unpaid Invoices</label>
+                <div>{{ clientStats?.unpaidInvoices || 0 }}</div>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Undue Invoices</label>
+                <div>{{ clientStats?.undueInvoices || 0 }}</div>
+              </div>
+            </div>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+  
+        <!-- Project Summaries Table -->
+        <nb-accordion-item>
+          <nb-accordion-item-header>
+            <nb-icon icon="layers-outline" class="me-2 mr-2"></nb-icon> Project Summaries
+          </nb-accordion-item-header>
+          <nb-accordion-item-body>
+            <ng2-smart-table [settings]="projectSettings" [source]="sourceProjects"></ng2-smart-table>
+          </nb-accordion-item-body>
+        </nb-accordion-item>
+  
+      </nb-accordion>
+    </nb-card-body>
+  </nb-card>
+  

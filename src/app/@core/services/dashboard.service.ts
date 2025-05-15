@@ -20,10 +20,10 @@ export class DashboardService {
   }
 
   getProjectsStats(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/projects`);
+    return this.http.get<any[]>(`${this.apiUrl}/clients`);
   }
 
   getProjectsStatsDetailByProjectId(id): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/projects/${id}`);
+    return this.http.get<any[]>(`${this.apiUrl}/clients/${id}`);
   }
 }

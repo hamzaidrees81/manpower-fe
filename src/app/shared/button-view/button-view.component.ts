@@ -16,11 +16,16 @@ export class ButtonViewComponent implements OnDestroy {
   private subscription: Subscription;
   constructor(private router: Router) { }
   onClick() {
+    debugger;
     // Check if 'revenueEarned' key exists in the rowData
     if ('revenueEarned' in this.rowData) {
       // Route to asset stats page
       localStorage.setItem('selectedAssetStats', JSON.stringify(this.rowData));
       this.router.navigate(['/pages/features/asset-statistics-detail']);
+    }else if ('activeProjects' in this.rowData) {
+      // Route to asset stats page
+      localStorage.setItem('selectedProjectStats', JSON.stringify(this.rowData));
+      this.router.navigate(['/pages/features/project-statistics-detail']);
     } else {
       // Default route
       localStorage.setItem('selectedPerson', JSON.stringify(this.rowData));

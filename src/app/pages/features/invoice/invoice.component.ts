@@ -5,7 +5,7 @@ import { ToasterService } from '../../../@core/services/toaster.service';
 import { NbDialogService } from '@nebular/theme';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-invoice',
@@ -17,7 +17,7 @@ export class InvoiceComponent implements OnInit {
   selectedDateRange; // Stores selected date range
   showDetails = false; // Controls the accordion visibility
   selectedClientProjects: any[] = []; // Stores projects of selected client
-
+  dueDate: Date = new Date();
   clients = [];
 
   // Smart Table Settings
@@ -26,40 +26,54 @@ export class InvoiceComponent implements OnInit {
   routedInvoiceData: any;
   assetSettings: {
     actions: {
-      add: boolean; edit: boolean; position:string; // Disable edit if view mode is true
+      add: boolean; edit: boolean; position: string; // Disable edit if view mode is true
       delete: boolean; // Disable delete if view mode is true
     }; edit: { editButtonContent: string; saveButtonContent: string; cancelButtonContent: string; confirmSave: boolean; }; delete: { deleteButtonContent: string; confirmDelete: boolean; }; columns: { assetName: { title: string; type: string; filter: boolean; }; assetType: { title: string; type: string; filter: boolean; }; regularHours: { title: string; type: string; filter: boolean; }; overtimeHours: { title: string; type: string; filter: boolean; }; regularRate: { title: string; type: string; filter: boolean; }; overtimeRate: { title: string; type: string; filter: boolean; }; totalAmount: { title: string; type: string; filter: boolean; editable: boolean; addable: boolean; valuePrepareFunction: (cell: any, row: any) => number; }; };
   };
   title: string;
   vatAmount: number;
   totalWithVAT: number;
+  mode: any;
 
-  constructor(private router: Router,private clientService : ClientService,private invoiceService : InvoiceService,private toasterService: ToasterService,private dialogService: NbDialogService) {}
+  constructor(private route: ActivatedRoute, private router: Router, private clientService: ClientService, private invoiceService: InvoiceService, private toasterService: ToasterService, private dialogService: NbDialogService) { }
 
   ngOnInit(): void {
-    this.routedInvoiceData = this.invoiceService.getInvoice();
-    this.setTitle();
+    this.route.queryParams.subscribe(params => {
+      const invoiceId = params['id'];
+      this.mode = params['mode'];
+
+       this.summeryTotalAmount = 0;
+      this.vatAmount = 0;
+      this.totalWithVAT = 0;
+
+      this.invoiceData = [];
+
+      this.showDetails = false;
+
+      this.setTitle(this.mode); // Set page title based on mode
+      if (invoiceId) {
+        this.loadInvoiceData(invoiceId);
+      }
+    });
+
     this.updateAssetSettings();
-    // For View 
-    if(this.routedInvoiceData){
-      this.loadInvoiceData(this.routedInvoiceData?.id)
-    }
     this.loadClients();
   }
 
-  setTitle() {
-    if (this.routedInvoiceData?.view) {
+  setTitle(mode: string) {
+    if (mode === 'view') {
       this.title = 'View Invoice';
-    } else if (this.routedInvoiceData?.edit) {
+    } else if (mode === 'edit') {
       this.title = 'Edit Invoice';
     } else {
       this.title = 'Prepare Invoice';
     }
   }
 
+
   updateAssetSettings() {
     const isViewMode = this.routedInvoiceData?.view; // Check the condition
-  
+
     this.assetSettings = {
       actions: {
         add: false,
@@ -98,15 +112,17 @@ export class InvoiceComponent implements OnInit {
   }
 
   loadInvoiceData(id): void {
-    if(!id){
-        this.router.navigate(['/pages/features/invoice']); 
+    if (!id) {
+      this.router.navigate(['/pages/features/invoice']);
     }
     this.invoiceService.getInvoiceById(id).subscribe(
       (data) => {
+        debugger;
         this.invoiceData = data;
+        this.dueDate = this.invoiceData?.dueDate;
         if (this.invoiceData?.detailedProjectInvoiceList) {
           this.showDetails = true;
-            this.calculateTotalAmount();
+          this.calculateTotalAmount();
         }
       },
       (error) => {
@@ -115,21 +131,25 @@ export class InvoiceComponent implements OnInit {
     );
   }
 
-  submitInvoice(){
-    
+  submitInvoice() {
+
     const updatedInvoice = {
       ...this.invoiceData, // Copy existing data
       totalAmount: this.summeryTotalAmount, // Update totalAmount
-      vatAmount : this.vatAmount,
-      totalWithVAT : this.totalWithVAT,
+      vatAmount: this.vatAmount,
+      totalWithVAT: this.totalWithVAT,
+      dueDate: this.dueDate,
       invoiceDate: new Date().toISOString().split('T')[0] // Set to current date (YYYY-MM-DD)
     };
     this.invoiceService.addInvoice(updatedInvoice).subscribe({
       next: (response) => {
         this.toasterService.showSuccess('Invoice submitted successfully!');
         // ✅ Store invoice in service
-      this.invoiceService.setInvoice(response);
-        this.router.navigate(['/pages/features/print-invoice']);
+        this.router.navigate(['/pages/features/invoice'], {
+          queryParams: { id: response, mode: 'view' }
+        });
+
+
       },
       error: (error) => {
         console.error("Error submitting timesheet:", error);
@@ -163,7 +183,7 @@ export class InvoiceComponent implements OnInit {
   // Toggle Invoice Details
   toggleDetails() {
     if (this.selectedClient && this.selectedDateRange) {
-      this.prepareInvoice(this.selectedClient,this.selectedDateRange);
+      this.prepareInvoice(this.selectedClient, this.selectedDateRange);
     }
   }
 
@@ -181,8 +201,8 @@ export class InvoiceComponent implements OnInit {
         this.invoiceData = data;
         if (this.invoiceData?.detailedProjectInvoiceList?.length != 0) {
           this.showDetails = true;
-            this.calculateTotalAmount();
-        }else{
+          this.calculateTotalAmount();
+        } else {
           this.toasterService.showSuccess('No Record Found!');
         }
       },
@@ -190,85 +210,85 @@ export class InvoiceComponent implements OnInit {
         console.error('Error loading projects:', error);
       }
     );
-}
-
-calculateTotalAmount() {
-  if (!this.invoiceData?.detailedProjectInvoiceList) {
-    this.summeryTotalAmount = 0;
-    this.vatAmount = 0;
-    this.totalWithVAT = 0;
-    return;
-  }else if(this.routedInvoiceData?.view === 'VIEW'){
-    this.summeryTotalAmount = this.invoiceData?.totalAmount;
-    this.vatAmount = this.invoiceData?.vatAmount;
-    this.totalWithVAT = this.invoiceData?.totalWithVAT;
-  }else {
-
-  const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
-
-  // Calculate totalAmount for each asset using the formula
-  allAssets.forEach(asset => {
-    asset.totalAmount = 
-      (asset.regularHours || 0) * (asset.regularRate || 0) +
-      (asset.overtimeHours || 0) * (asset.overtimeRate || 0);
-  });
-
-  // Sum up totalAmount from all assets
-  this.summeryTotalAmount = allAssets.reduce((sum, asset) => sum + (asset.totalAmount ?? 0), 0);
-
-  // Set VAT and totalWithVAT if needed (set to 0 for now)
-  this.vatAmount = this.summeryTotalAmount * 0.01 * this.invoiceData?.vatRate;
-  this.totalWithVAT = this.summeryTotalAmount +  this.vatAmount;
-}
-}
-
-
-
-
-
-onAssetEdit(event: any, index: number, pId?: number) {
-  const newData = event.newData;
-  const assetId = newData.assetId;
-
- // ✅ Validate numeric fields
- const numericFields = ["regularRate", "regularHours", "overtimeRate", "overtimeHours"];
-if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-  return; // Stop execution if validation fails
-}
-
-  // ✅ Calculate Total Amount
-  newData.totalAmount = (parseInt(newData.regularHours) * parseInt(newData.regularRate)) + 
-                        (parseInt(newData.overtimeHours) * parseInt(newData.overtimeRate));
-
-  let isUpdated = false;
-
-  // ✅ Iterate through projects
-  this.invoiceData.detailedProjectInvoiceList.forEach((project: any) => {
-    if (project.projectId === pId) {
-      project.assetInvoicesList.forEach((asset: any) => {
-        if (asset.assetId === assetId) {
-          // ✅ Update asset properties before resolving
-          Object.assign(asset, newData);
-          isUpdated = true;
-        }
-      });
-    }
-  });
-
-  if (isUpdated) {
-    // ✅ Recalculate total after updating invoiceData
-    this.calculateTotalAmount();
-
-    // ✅ Now resolve the event AFTER updating data
-    event.confirm.resolve(event.newData);
-  } else {
-    event.confirm.reject();
-    console.warn(`No matching asset found for assetId: ${assetId} inside projectId: ${pId}`);
   }
-}
+
+  calculateTotalAmount() {
+    if (!this.invoiceData?.detailedProjectInvoiceList) {
+      this.summeryTotalAmount = 0;
+      this.vatAmount = 0;
+      this.totalWithVAT = 0;
+      return;
+    } else if (this.routedInvoiceData?.view === 'VIEW') {
+      this.summeryTotalAmount = this.invoiceData?.totalAmount;
+      this.vatAmount = this.invoiceData?.vatAmount;
+      this.totalWithVAT = this.invoiceData?.totalWithVAT;
+    } else {
+
+      const allAssets = this.invoiceData.detailedProjectInvoiceList.flatMap(project => project.assetInvoicesList || []);
+
+      // Calculate totalAmount for each asset using the formula
+      allAssets.forEach(asset => {
+        asset.totalAmount =
+          (asset.regularHours || 0) * (asset.regularRate || 0) +
+          (asset.overtimeHours || 0) * (asset.overtimeRate || 0);
+      });
+
+      // Sum up totalAmount from all assets
+      this.summeryTotalAmount = allAssets.reduce((sum, asset) => sum + (asset.totalAmount ?? 0), 0);
+
+      // Set VAT and totalWithVAT if needed (set to 0 for now)
+      this.vatAmount = this.summeryTotalAmount * 0.01 * this.invoiceData?.vatRate;
+      this.totalWithVAT = this.summeryTotalAmount + this.vatAmount;
+    }
+  }
 
 
-  
+
+
+
+  onAssetEdit(event: any, index: number, pId?: number) {
+    const newData = event.newData;
+    const assetId = newData.assetId;
+
+    // ✅ Validate numeric fields
+    const numericFields = ["regularRate", "regularHours", "overtimeRate", "overtimeHours"];
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
+
+    // ✅ Calculate Total Amount
+    newData.totalAmount = (parseInt(newData.regularHours) * parseInt(newData.regularRate)) +
+      (parseInt(newData.overtimeHours) * parseInt(newData.overtimeRate));
+
+    let isUpdated = false;
+
+    // ✅ Iterate through projects
+    this.invoiceData.detailedProjectInvoiceList.forEach((project: any) => {
+      if (project.projectId === pId) {
+        project.assetInvoicesList.forEach((asset: any) => {
+          if (asset.assetId === assetId) {
+            // ✅ Update asset properties before resolving
+            Object.assign(asset, newData);
+            isUpdated = true;
+          }
+        });
+      }
+    });
+
+    if (isUpdated) {
+      // ✅ Recalculate total after updating invoiceData
+      this.calculateTotalAmount();
+
+      // ✅ Now resolve the event AFTER updating data
+      event.confirm.resolve(event.newData);
+    } else {
+      event.confirm.reject();
+      console.warn(`No matching asset found for assetId: ${assetId} inside projectId: ${pId}`);
+    }
+  }
+
+
+
 
   // Handle Smart Table Delete Confirmation
   onAssetDelete(event: any, index: number, pId: number) {
@@ -282,10 +302,10 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
         event.confirm.reject();
         return;
       }
-  
+
       const assetId = event.data.assetId;
       let isDeleted = false;
-  
+
       // ✅ Iterate through all projects
       this.invoiceData.detailedProjectInvoiceList = this.invoiceData.detailedProjectInvoiceList.filter((project: any) => {
         if (project.projectId === pId) {
@@ -293,17 +313,17 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
           project.assetInvoicesList = project.assetInvoicesList.filter(
             (asset: any) => asset.assetId !== assetId
           );
-  
+
           // ✅ If assetInvoicesList is empty, remove the project
           if (project.assetInvoicesList.length === 0) {
             return false; // ❌ Remove this project
           }
-  
+
           isDeleted = true;
         }
         return true; // ✅ Keep this project
       });
-  
+
       if (isDeleted) {
         event.confirm.resolve();
         this.calculateTotalAmount();
@@ -313,7 +333,7 @@ if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterSe
       }
     });
   }
-  
-  
-  
+
+
+
 }

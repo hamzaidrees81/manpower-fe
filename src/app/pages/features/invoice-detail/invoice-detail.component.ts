@@ -216,28 +216,24 @@ export class InvoiceDetailComponent implements OnInit {
     this.fetchInvoices(this.selectedType);
   }
 
-  editInvoice(invoice) {
-    const editData = {
-      ...invoice,
-      edit:'EDIT'
-    }
-    this.invoiceService.setInvoice(editData);
-    this.router.navigate(['/pages/features/invoice']);
-  }
+editInvoice(invoice) {
+  this.router.navigate(['/pages/features/invoice'], {
+    queryParams: { id: invoice.id, mode: 'edit' }
+  });
+}
 
-  viewInvoice(invoice) {
-    const viewData = {
-      ...invoice,
-      view:'VIEW'
-    }
-    this.invoiceService.setInvoice(viewData);
-    this.router.navigate(['/pages/features/invoice']);
-  }
+viewInvoice(invoice) {
+  this.router.navigate(['/pages/features/invoice'], {
+    queryParams: { id: invoice.id, mode: 'view' }
+  });
+}
 
-  printInvoice(invoice) {
-    this.invoiceService.setInvoice(invoice);
-    this.router.navigate(['/pages/features/print-invoice']);
-  }
+printInvoice(invoice) {
+  this.router.navigate(['/pages/features/print-invoice'], {
+    queryParams: { id: invoice.id, mode: 'print' }
+  });
+}
+
 
   onPay(): void {
 

@@ -6,7 +6,7 @@
 
   <nb-card-body>
     <!-- Dropdowns: Client & Date Range (Side by Side on Large Screens) -->
-    <div class="row mb-4" *ngIf="!(this.routedInvoiceData?.view === 'VIEW' || this.routedInvoiceData?.edit === 'EDIT')">
+    <div class="row mb-4" *ngIf="!(this.mode === 'view' || this.mode === 'edit')">
       <!-- Filter Section -->
       <div class="col-12">
         <div class="filter-section card shadow-sm">
@@ -153,12 +153,32 @@
 </div>
 
         
-    <!-- Submit Invoice Button -->
-    <div *ngIf="showDetails && !(this.routedInvoiceData?.view === 'VIEW')" class="text-center mt-4">
-      <button nbButton status="primary" class="px-4 py-2 fw-bold" (click)="submitInvoice()">
-        <nb-icon icon="paper-plane-outline" class="me-2"></nb-icon> Submit Invoice
-      </button>
-    </div>
+<div  class="d-flex flex-column align-items-center mt-4">
+
+  <!-- Due Date input centered -->
+  <div *ngIf="showDetails" class="d-flex align-items-center mb-3 mt-3">
+    <label for="dueDate" class="fw-bold me-3 mb-0" style="min-width: 80px;">Due Date:</label>
+    <input
+      nbInput
+      placeholder="Pick a date"
+      [(ngModel)]="dueDate"
+      [nbDatepicker]="duePicker"
+      id="dueDate"
+      style="width: 320px;"
+    />
+    <nb-datepicker #duePicker></nb-datepicker>
+  </div>
+
+  <!-- Submit button centered below -->
+  <button *ngIf="showDetails && !(mode === 'view')" nbButton status="primary" class="px-4 py-2 fw-bold" (click)="submitInvoice()">
+    <nb-icon icon="paper-plane-outline" class="me-2"></nb-icon> Submit Invoice
+  </button>
+
+</div>
+
+
+
+
     
 
   </nb-card-body>

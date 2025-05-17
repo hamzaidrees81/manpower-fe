@@ -26,6 +26,11 @@ export class ButtonViewComponent implements OnDestroy {
       // Route to asset stats page
       localStorage.setItem('selectedProjectStats', JSON.stringify(this.rowData));
       this.router.navigate(['/pages/features/project-statistics-detail']);
+    }else if ('totalAssets' in this.rowData) {
+      // Coming Client Stats Projects
+      // Route to asset stats page
+      localStorage.setItem('selectedClientProjectsStats', JSON.stringify(this.rowData));
+      this.router.navigate(['/pages/features/clinet-project-statistics-detail']);
     } else {
       // Default route
       localStorage.setItem('selectedPerson', JSON.stringify(this.rowData));

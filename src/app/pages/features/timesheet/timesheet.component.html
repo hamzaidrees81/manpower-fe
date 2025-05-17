@@ -227,7 +227,7 @@
                         </td>
                         <td class="active-field">{{ row.rateType }}</td>
                         <td *ngFor="let day of week.days" [ngClass]="day.isDisabled ? 'disabled-field' : 'active-field'">
-                          <input *ngIf="!day.isDisabled" type="number" min="0" [(ngModel)]="row.days[day.date]" class="form-control" (change)="updateTimesheet(row.projectName, row.rateType, day.date, row.days[day.date], row)">
+                          <input *ngIf="!day.isDisabled" type="number" min="0" [(ngModel)]="row.days[day.date]" class="form-control" (change)="updateTimesheet(row.id, row.rateType, day.date, row.days[day.date], row)">
                           <span *ngIf="day.isDisabled">--</span>
                         </td>
                         <td class="active-field">

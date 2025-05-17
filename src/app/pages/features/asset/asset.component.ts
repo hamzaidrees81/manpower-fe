@@ -362,7 +362,7 @@ export class AssetComponent implements OnInit {
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    // const numericFields = ["idNumber", "phone", "assetNumber"];
+    const numericFields = ["assetNumber"];
     // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
     // ✅ Validate required fields
@@ -370,9 +370,9 @@ export class AssetComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-    //   return; // Stop execution if validation fails
-    // }
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     // Parse selected company data
     const latestData = event.newData;
     // const parseLatestData = JSON.parse(latestData?.designation);
@@ -418,7 +418,7 @@ export class AssetComponent implements OnInit {
     this.handleSelectedPassportExpiryDate();
     this.handleSelectedJoiningDate();
 
-    // const numericFields = ["idNumber", "phone", "assetNumber"];
+    const numericFields = ["assetNumber"];
     // const requiredFields = ["idNumber", "name", "assetOwnership", "assetNumber", "assetType"];
 
     // // ✅ Validate required fields
@@ -426,9 +426,9 @@ export class AssetComponent implements OnInit {
     //   return; // Stop execution if validation fails
     // }
 
-    // if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
-    //   return; // Stop execution if validation fails
-    // }
+    if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
     // Parse selected company data
     const latestData = event.newData;
     const parseLatestData = latestData

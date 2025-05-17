@@ -30,6 +30,7 @@ import { AssetStatisticsComponent } from './dashboard/asset-statistics/asset-sta
 import { ProjectStatisticsComponent } from './dashboard/project-statistics/project-statistics.component';
 import { AssetStatisticsDetailComponent } from './dashboard/asset-statistics-detail/asset-statistics-detail.component';
 import { ProjectStatisticsDetailComponent } from './dashboard/project-statistics-detail/project-statistics-detail.component';
+import { ClinetStatsProjectDetailComponent } from './dashboard/clinet-stats-project-detail/clinet-stats-project-detail.component';
 
 @NgModule({
   imports: [
@@ -71,7 +72,8 @@ import { ProjectStatisticsDetailComponent } from './dashboard/project-statistics
     AssetStatisticsComponent,
     ProjectStatisticsComponent,
     AssetStatisticsDetailComponent,
-    ProjectStatisticsDetailComponent, 
+    ProjectStatisticsDetailComponent,
+    ClinetStatsProjectDetailComponent, 
   ],
   exports: [CustomDatepickerComponent], // Export it if used in other modules
 })

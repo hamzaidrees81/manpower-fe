@@ -13,6 +13,7 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
 import { SponsorModalComponent } from '../sponsor-modal/sponsor-modal.component';
 import { AddButtonComponent } from '../../../shared/add-button/add-button.component';
 import { Router } from '@angular/router';
+import { validateAndHandleNumericFields } from '../../../utils/validation-utils';
 
 @Component({
   selector: 'ngx-timesheet',
@@ -299,7 +300,7 @@ export class TimesheetComponent  implements OnInit {
     this.weeks = [];
   
     let date = new Date(this.selectedYear, this.selectedMonth - 1, 1);
-    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].projectId : '';
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
   
     if (date.getDay() !== 1) {
       date.setDate(date.getDate() - (date.getDay() === 0 ? 6 : date.getDay() - 1));
@@ -413,7 +414,7 @@ export class TimesheetComponent  implements OnInit {
     this.router.navigate(['pages/features/sponsor']);
   }
   addMoreRows(week: any,) {
-    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].projectId : '';
+    const defaultProjectId = this.getProjects.length > 0 ? this.getProjects[0].id : '';
   
     // Find the next SR No
     let srNo = week.rows.length > 0 ? Math.max(...week.rows.map(r => r.rowSrNo)) + 1 : 1;
@@ -572,7 +573,7 @@ export class TimesheetComponent  implements OnInit {
     this.assetService.getAssetProjectsByAssetAndActiveStatus(this.assetData?.id,'ACTIVE').subscribe(
       (data) => {
         this.sourceProjects.load(data);
-        
+        debugger;
         this.getProjects = data;       
       },
       (error) => {
@@ -590,7 +591,7 @@ export class TimesheetComponent  implements OnInit {
     this.timesheetService.updateTimesheet(this.timeSheetCollection).subscribe({
       next: (response) => {
         this.toasterService.showSuccess('Timesheet submitted successfully!');
-        this.router.navigate(['/pages/features/invoice']);
+        // this.router.navigate(['/pages/features/invoice']);
       },
       error: (error) => {
         console.error("Error submitting timesheet:", error);
@@ -672,7 +673,7 @@ export class TimesheetComponent  implements OnInit {
         }
       });
     }
-      // Fetch Companies and Clients
+      // THIS IS ONLY SIMPLE PROJECT LIST
   loadDropdowns(): void {
     this.projectService.getProjects().subscribe((data) => {
       this.projects = data;
@@ -723,6 +724,12 @@ onProjectCreateConfirm(event: any): void {
   this.handleStartDate();
   this.handleEndDate();
 
+     const numericFields = ["overtimeRatePaid","regularRatePaid","overtimeRate","regularRate"];
+
+      if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
+
   const designationId = JSON.parse(event.newData.designationId);
   const projectId =  JSON.parse(event.newData.projectId);
   // Update start and end dates
@@ -759,6 +766,12 @@ onProjectEditConfirm(event: any): void {
 
   this.handleStartDate();
   this.handleEndDate();
+
+       const numericFields = ["overtimeRatePaid","regularRatePaid","overtimeRate","regularRate"];
+
+      if (!validateAndHandleNumericFields(event.newData, numericFields, this.toasterService, event)) {
+      return; // Stop execution if validation fails
+    }
 
   const designationId = JSON.parse(event.newData.designationId);
   const projectId =  JSON.parse(event.newData.projectId);

@@ -24,6 +24,7 @@ import { AssetStatisticsComponent } from './dashboard/asset-statistics/asset-sta
 import { ProjectStatisticsComponent } from './dashboard/project-statistics/project-statistics.component';
 import { AssetStatisticsDetailComponent } from './dashboard/asset-statistics-detail/asset-statistics-detail.component';
 import { ProjectStatisticsDetailComponent } from './dashboard/project-statistics-detail/project-statistics-detail.component';
+import { ClinetStatsProjectDetailComponent } from './dashboard/clinet-stats-project-detail/clinet-stats-project-detail.component';
 
 const routes: Routes = [{
   path: '',
@@ -116,6 +117,10 @@ const routes: Routes = [{
     {
       path: 'project-statistics-detail',
       component: ProjectStatisticsDetailComponent,
+    },
+     {
+      path: 'clinet-project-statistics-detail',
+      component: ClinetStatsProjectDetailComponent,
     },
   ],
 }];

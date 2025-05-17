@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../../../../@core/services/dashboard.service';
 import { LocalDataSource } from 'ng2-smart-table';
 import { FormatTextPipe } from '../../../../utils/format-text.pipe';
+import { ButtonViewComponent } from '../../../../shared/button-view/button-view.component';
 
 @Component({
   selector: 'ngx-project-statistics-detail',
@@ -15,6 +16,21 @@ export class ProjectStatisticsDetailComponent implements OnInit {
   projectSettings = {
     actions: false,
     columns: {
+            button: {
+              title: 'View Detail',
+              type: 'custom',
+              filter: false,
+              editable: false,
+              addable: false,
+              renderComponent: ButtonViewComponent,
+              onComponentInitFunction(instance) {
+                const sub = instance.save.subscribe(row => {
+                });
+      
+                // ✅ Prevent memory leaks by unsubscribing
+                instance.ngOnDestroy = () => sub.unsubscribe();
+              }
+            },
       projectId: { title: 'Project ID', type: 'number', filter: false },
       projectName: { title: 'Project Name', type: 'string', filter: false },
       startDate: { title: 'Start Date', type: 'string', filter: false },

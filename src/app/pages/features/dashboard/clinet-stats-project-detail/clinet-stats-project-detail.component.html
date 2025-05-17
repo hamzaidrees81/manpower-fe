@@ -1,0 +1,71 @@
+<nb-card>
+  <nb-card-header>
+    <nb-icon icon="file-text-outline"></nb-icon>
+    <span class="ms-2">Client Project Detail</span>
+  </nb-card-header>
+
+  <nb-card-body>
+    <nb-accordion>
+
+      <!-- Project Info -->
+      <nb-accordion-item [expanded]="true">
+        <nb-accordion-item-header>
+          <nb-icon icon="folder-outline" class="me-2 mr-2"></nb-icon> Project Overview
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <div class="row g-3">
+            <div class="col-md-4 mb-3"><label class="fw-bold text-muted">Project ID</label><div>{{ projectDetail?.projectId || '-' }}</div></div>
+            <div class="col-md-4 mb-3"><label class="fw-bold text-muted">Project Name</label><div>{{ projectDetail?.projectName || '-' }}</div></div>
+            <div class="col-md-4 mb-3"><label class="fw-bold text-muted">Client Name</label><div>{{ projectDetail?.clientName || '-' }}</div></div>
+            <div class="col-md-4 mb-3"><label class="fw-bold text-muted">Total Assets</label><div>{{ projectDetail?.totalAssets || 0 }}</div></div>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
+      <!-- Invoices -->
+      <nb-accordion-item>
+        <nb-accordion-item-header>
+          <nb-icon icon="credit-card-outline" class="me-2 mr-2"></nb-icon> Invoices
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <div class="row g-3">
+            <div class="col-md-3 mb-3"><label>Total Invoices</label><div>{{ projectDetail?.totalInvoices || 0 }}</div></div>
+            <div class="col-md-3 mb-3"><label>Paid Invoices</label><div>{{ projectDetail?.paidInvoices || 0 }}</div></div>
+            <div class="col-md-3 mb-3"><label>Unpaid Invoices</label><div>{{ projectDetail?.unpaidInvoices || 0 }}</div></div>
+            <div class="col-md-3 mb-3"><label>Due Invoices</label><div>{{ projectDetail?.dueInvoices || 0 }}</div></div>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
+      <!-- Financial Summary -->
+      <nb-accordion-item>
+        <nb-accordion-item-header>
+          <nb-icon icon="trending-up-outline" class="me-2 mr-2"></nb-icon> Financial Summary
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <div class="row g-3">
+            <div class="col-md-4 mb-3"><label>Invoiced Before Tax</label><div>{{ projectDetail?.totalInvoicedBeforeTax || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Tax</label><div>{{ projectDetail?.totalInvoicedTax || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Invoiced With Tax</label><div>{{ projectDetail?.totalInvoicedWithTax || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Total Paid</label><div>{{ projectDetail?.totalPaidAmount || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Asset Payable</label><div>{{ projectDetail?.totalAssetPayable || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Sponsor Payable</label><div>{{ projectDetail?.totalSponsorPayable || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Total Profit</label><div>{{ projectDetail?.totalProfit || 0 }}</div></div>
+            <div class="col-md-4 mb-3"><label>Profitability Ratio</label><div>{{ projectDetail?.profitabilityRatio || 0 }}%</div></div>
+          </div>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
+      <!-- Asset Stats Table -->
+      <nb-accordion-item *ngIf="projectDetail?.assetStats?.length">
+        <nb-accordion-item-header>
+          <nb-icon icon="layers-outline" class="me-2 mr-2"></nb-icon> Asset Breakdown
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+          <ng2-smart-table [settings]="assetSettings" [source]="sourceAssets"></ng2-smart-table>
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+
+    </nb-accordion>
+  </nb-card-body>
+</nb-card>

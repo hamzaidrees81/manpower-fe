@@ -45,7 +45,7 @@ export class PagesComponent implements OnInit {
         icon: 'cube-outline',
         children: [
           { title: 'Asset Statistics', link: '/pages/features/asset-statistics' },
-          { title: 'Project Statistics', link: '/pages/features/project-statistics' },
+          { title: 'Clinet Statistics', link: '/pages/features/project-statistics' },
         ],
       },
       { title: 'Client', icon: 'people-outline', link: '/pages/features/client' },

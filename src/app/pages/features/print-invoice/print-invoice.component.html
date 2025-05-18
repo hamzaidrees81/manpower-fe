@@ -1,6 +1,9 @@
 <!-- Invoice Container -->
 <div class="d-flex justify-content-end">
-  <button nbButton status="success" outline (click)="printInvoice()">
+   <button nbButton status="success" class="mr-3" outline (click)="backToInvoice()">
+    <nb-icon icon="arrow-back-outline"></nb-icon> Back To Invoice
+  </button>
+  <button nbButton status="primary" outline (click)="printInvoice()">
     <nb-icon icon="printer-outline"></nb-icon> Print
   </button>
 </div>
@@ -22,7 +25,7 @@
       <div class="row align-items-center inv-detail-mt">
         <!-- QR Code -->
         <div class="col-md-2 text-center">
-          <img [src]="getQrCodeImage(invoiceList?.qrcode)" class="qr-code img-fluid" alt="QR Code">
+          <img [src]="qrCodeImageUrl" class="qr-code img-fluid" alt="QR Code">
         </div>
 
         <!-- Invoice Title -->

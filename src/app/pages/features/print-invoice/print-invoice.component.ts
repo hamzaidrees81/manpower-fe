@@ -3,7 +3,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import html2canvas from 'html2canvas';
 import { InvoiceService } from '../../../@core/services/invoice.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
@@ -14,13 +14,20 @@ import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 export class PrintInvoiceComponent implements OnInit {
   invoiceData: any;
   invoiceList;
+  mode: any;
+  qrCodeImageUrl: SafeUrl;
 
   
-  constructor(private invoiceService : InvoiceService,private router:Router,private sanitizer: DomSanitizer){}
+  constructor(private route: ActivatedRoute,private invoiceService : InvoiceService,private router:Router,private sanitizer: DomSanitizer){}
 
   ngOnInit() {
-    this.invoiceData = this.invoiceService.getInvoice();
-    this.loadInvoiceData(this.invoiceData?.id)
+        this.route.queryParams.subscribe(params => {
+      const invoiceId = params['id'];
+      this.mode = params['mode'];
+      if (invoiceId) {
+        this.loadInvoiceData(invoiceId);
+      }
+    });
 
   }
   loadInvoiceData(id): void {
@@ -30,13 +37,19 @@ export class PrintInvoiceComponent implements OnInit {
     this.invoiceService.getInvoiceById(id).subscribe(
       (data) => {
         this.invoiceList = data;
-        console.log(this.invoiceList?.qrcode)
+        this.qrCodeImageUrl = this.getQrCodeImage(this.invoiceList.qrcode); // ✅ Only call once
+        
       },
       (error) => {
         console.error('Error loading clients:', error);
       }
     );
   }
+
+    backToInvoice(){
+ this.router.navigate(['/pages/features/invoice']);
+  }
+
   getQrCodeImage(base64: string): SafeUrl | null {
     if (!base64) return null;
   

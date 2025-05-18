@@ -131,6 +131,18 @@ export class InvoiceComponent implements OnInit {
     );
   }
 
+  backToInvoice(){
+    this.summeryTotalAmount = 0;
+      this.vatAmount = 0;
+      this.totalWithVAT = 0;
+
+      this.invoiceData = [];
+
+      this.showDetails = false;
+
+ this.router.navigate(['/pages/features/invoice']);
+  }
+
   submitInvoice() {
 
     const updatedInvoice = {

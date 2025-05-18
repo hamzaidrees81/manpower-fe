@@ -15,7 +15,6 @@ import { PrintInvoiceComponent } from './print-invoice/print-invoice.component';
 import { InvoiceDetailComponent } from './invoice-detail/invoice-detail.component';
 import { AssetPaymentComponent } from './payment-management/asset-payment/asset-payment.component';
 import { SponsorPaymentComponent } from './payment-management/sponsor-payment/sponsor-payment.component';
-import { InvoiceReceivableComponent } from './payment-management/invoice-receivable/invoice-receivable.component';
 import { SponsorModalComponent } from './sponsor-modal/sponsor-modal.component';
 import { ExpenseComponent } from './payment-management/expense/expense.component';
 import { AccountsComponent } from './accounts/accounts.component';
@@ -63,7 +62,6 @@ import { ClinetStatsProjectDetailComponent } from './dashboard/clinet-stats-proj
     InvoiceDetailComponent,
     AssetPaymentComponent,
     SponsorPaymentComponent,
-    InvoiceReceivableComponent,
     SponsorModalComponent,
     ExpenseComponent,
     AccountsComponent,

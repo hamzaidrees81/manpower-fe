@@ -169,10 +169,15 @@
     <nb-datepicker #duePicker></nb-datepicker>
   </div>
 
+<div class="d-flex">
+     <button *ngIf="mode === 'view' || mode === 'edit'" nbButton status="success" class="px-4 py-2 fw-bold mr-3" (click)="backToInvoice()">
+    <nb-icon icon="arrow-back-outline" class="me-2"></nb-icon> Back To Invoice
+  </button>
   <!-- Submit button centered below -->
   <button *ngIf="showDetails && !(mode === 'view')" nbButton status="primary" class="px-4 py-2 fw-bold" (click)="submitInvoice()">
     <nb-icon icon="paper-plane-outline" class="me-2"></nb-icon> Submit Invoice
   </button>
+</div>
 
 </div>
 

@@ -170,6 +170,7 @@ export class AssetPaymentComponent implements OnInit {
     this.onLoadList();
     this.loadExpense();
     this.loadAccount();
+    this.getHistory();
   }
 
   onLoadList() {

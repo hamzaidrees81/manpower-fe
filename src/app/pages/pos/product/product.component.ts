@@ -113,7 +113,17 @@ export class ProductComponent implements OnInit {
           const found = this.brands.find(b => b.id === value);
           return found ? found.brandName : value;
         },
-      }
+      },
+       sellingPrice: {
+        title: 'Selling Price',
+        type: 'string',
+        filter:false,
+      },
+       stockQty: {
+        title: 'Stock QTY',
+        type: 'string',
+        filter:false,
+      },
     }
     
   };

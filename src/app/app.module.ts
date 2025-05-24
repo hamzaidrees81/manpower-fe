@@ -29,9 +29,10 @@ import { ServicesModule } from './@core/services/services.module';
 import { ButtonViewComponent } from './shared/button-view/button-view.component';
 import { AddButtonComponent } from './shared/add-button/add-button.component';
 import { FormatTextPipe } from './utils/format-text.pipe';
+import { SelectStockModalComponent } from './shared/select-stock-modal/select-stock-modal.component';
 
 @NgModule({
-  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent, FormatTextPipe],
+  declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent, FormatTextPipe, SelectStockModalComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 
 @Injectable({
@@ -13,6 +13,15 @@ export class StockService {
 
   getStocks(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
+  }
+
+  getStocksByStatus(status): Observable<any[]> {
+     let params = new HttpParams();
+
+  if (status !== undefined && status !== null) {
+    params = params.set('stocksForPage', status);
+  }
+    return this.http.get<any[]>(this.apiUrl,{ params });
   }
 
   addStock(stock: any): Observable<any> {

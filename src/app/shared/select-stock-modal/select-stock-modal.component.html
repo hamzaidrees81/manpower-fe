@@ -1,0 +1,44 @@
+<nb-card>
+    <nb-card-header class="text-muted small px-3 py-2">
+        🛒 اختر الصنف / Select Product
+    </nb-card-header>
+
+    <nb-card-body class="p-3">
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm text-center align-middle"
+                style="font-size: 0.85rem; border-color: #ccc;">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-muted small">✔</th>
+                        <th class="text-muted small">Product ID</th>
+                        <th class="text-muted small" *ngIf="salelist.isSale != true">Buy Price</th>
+                        <th class="text-muted small">Retail Price</th>
+                        <th class="text-muted small">Min Price</th>
+                        <th class="text-muted small">Quantity</th>
+                        <th class="text-muted small">Storage Rack</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of salelist">
+                    <td class="text-muted small"> <input type="checkbox" [checked]="isItemSelected(item)"
+                            (change)="toggleSelection(item, $event)" /></td>
+
+                        <td class="text-muted small">{{ item.productId }}</td>
+                        <td class="text-muted small" *ngIf="salelist?.isSale != true">{{ item.buyPrice | number: '1.2-2' }}</td>
+                        <td class="text-muted small">{{ item.retailPrice | number: '1.2-2' }}</td>
+                        <td class="text-muted small">{{ item.minPrice | number: '1.2-2' }}</td>
+                        <td class="text-muted small">{{ item.quantity }}</td>
+                        <td class="text-muted small">{{ item.storageRack }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </nb-card-body>
+
+    <nb-card-footer class="d-flex justify-content-end px-3 py-2">
+        <button nbButton size="small" status="basic" class="me-2 text-muted small mr-3" (click)="submit()"
+            appearance="outline">✅ Select</button>
+        <button nbButton size="small" status="basic" class="text-muted small" (click)="cancel()" appearance="outline">❌
+            Cancel</button>
+    </nb-card-footer>
+</nb-card>

@@ -17,7 +17,7 @@ export class StockComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource();
 
   settings = {
-    actions: { position: 'right' },
+    actions: false,
     add: {
       addButtonContent: '<i class="nb-plus"></i>',
       createButtonContent: '<i class="nb-checkmark"></i>',
@@ -61,14 +61,42 @@ export class StockComponent implements OnInit {
           },
         },
       },
+       shopId: {
+        title: 'Shop',
+        type: 'html',
+        filter: false,
+        valuePrepareFunction: (shop) => shop?.name,
+        editor: {
+          type: 'list',
+          config: {
+            selectText: 'Select...',
+            list: [],
+          },
+        },
+      },
       quantity: {
         title: 'Quantity',
         type: 'number',
         filter:false,
       },
-      price: {
+      retailPrice: {
         title: 'Price',
         type: 'number',
+        filter:false,
+      },
+       minPrice: {
+        title: 'Min Price',
+        type: 'string',
+        filter:false,
+      },
+       buyPrice: {
+        title: 'Buy Price',
+        type: 'string',
+        filter:false,
+      },
+       storageRack: {
+        title: 'Storage Rack',
+        type: 'string',
         filter:false,
       },
     },

@@ -14,6 +14,7 @@ import { CategoryComponent } from './category/category.component';
 import { ProductComponent } from './product/product.component';
 import { StockComponent } from './stock/stock.component';
 import { SupplierComponent } from './supplier/supplier.component';
+import { ShopComponent } from './shop/shop.component';
 
 
 @NgModule({
@@ -24,7 +25,8 @@ import { SupplierComponent } from './supplier/supplier.component';
     CategoryComponent,
     ProductComponent,
     StockComponent,
-    SupplierComponent
+    SupplierComponent,
+    ShopComponent
   ],
   imports: [
     CommonModule,

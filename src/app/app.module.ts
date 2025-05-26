@@ -30,6 +30,7 @@ import { ButtonViewComponent } from './shared/button-view/button-view.component'
 import { AddButtonComponent } from './shared/add-button/add-button.component';
 import { FormatTextPipe } from './utils/format-text.pipe';
 import { SelectStockModalComponent } from './shared/select-stock-modal/select-stock-modal.component';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
   declarations: [AppComponent, SmartTableDatepickerRenderComponentComponent, ConfirmDialogComponent, ButtonViewComponent, AddButtonComponent, FormatTextPipe, SelectStockModalComponent],
@@ -42,6 +43,7 @@ import { SelectStockModalComponent } from './shared/select-stock-modal/select-st
     NbIconModule,
     NbButtonModule ,
     NbCardModule,
+    Ng2SmartTableModule,
     ServicesModule.forRoot(),
     NbSidebarModule.forRoot(),
     NbMenuModule.forRoot(),

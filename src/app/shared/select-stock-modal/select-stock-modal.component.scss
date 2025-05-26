@@ -1,0 +1,14 @@
+.table td,
+.table th {
+  vertical-align: middle;
+  font-size: 0.85rem;
+}
+
+.table thead th {
+  font-weight: 600;
+  background-color: #f8f9fa;
+}
+
+input[type="checkbox"] {
+  transform: scale(1.2);
+}

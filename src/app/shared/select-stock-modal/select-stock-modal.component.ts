@@ -1,39 +1,52 @@
-import { Component, Inject, Input } from "@angular/core";
-import { NbDialogRef, NB_DIALOG_CONFIG } from "@nebular/theme";
+import { Component, Inject, Input } from '@angular/core';
+import { NbDialogRef, NB_DIALOG_CONFIG } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-select-stock-modal',
   templateUrl: './select-stock-modal.component.html',
-  styleUrls: ['./select-stock-modal.component.scss']
+  styleUrls: ['./select-stock-modal.component.scss'],
 })
 export class SelectStockModalComponent {
- salelist;
+  salelist: any[] = [];
+  filteredList;
+   isSale: boolean = false;
+
   selectedItems: any[] = [];
+  searchTerm = '';
 
   @Input() initialSelected: any[] = [];
   @Input() onSelectChange: (selected: any[]) => void = () => {};
 
   constructor(
     protected ref: NbDialogRef<SelectStockModalComponent>,
-    @Inject(NB_DIALOG_CONFIG) private config
+    @Inject(NB_DIALOG_CONFIG) private config: any
   ) {
     this.salelist = config.salelist || [];
+    this.initialSelected = config.initialSelected || [];
+    this.isSale = config.isSale || false;
+    this.onSelectChange = config.onSelectChange || (() => {});
   }
 
   ngOnInit(): void {
-    // Initialize selectedItems from initialSelected input
-    this.selectedItems = [...this.initialSelected];
+    this.salelist = this.salelist.map(item => ({
+      ...item,
+      selected: this.initialSelected.some(sel => sel.productId === item.productId),
+    }));
+
+    this.filteredList = [...this.salelist];
+    this.selectedItems = this.salelist.filter(item => item.selected);
   }
 
-  isItemSelected(item: any): boolean {
-    return this.selectedItems.some(i => i.productId === item.productId);
+  filterTable(): void {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredList = this.salelist.filter(item =>
+      item.product?.name?.toLowerCase().includes(term)
+    );
   }
 
-  toggleSelection(item: any, event: any) {
-    if (event.target.checked) {
-      if (!this.isItemSelected(item)) {
-        this.selectedItems.push(item);
-      }
+  onCheckboxChange(item: any): void {
+    if (item.selected) {
+      this.selectedItems.push(item);
     } else {
       this.selectedItems = this.selectedItems.filter(i => i.productId !== item.productId);
     }
@@ -41,11 +54,11 @@ export class SelectStockModalComponent {
     this.onSelectChange(this.selectedItems);
   }
 
-  submit() {
+  submit(): void {
     this.ref.close(this.selectedItems);
   }
 
-  cancel() {
+  cancel(): void {
     this.ref.close();
   }
 }

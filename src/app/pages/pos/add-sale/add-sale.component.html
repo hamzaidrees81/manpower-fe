@@ -8,7 +8,7 @@
         <label class="form-label">المحل البائع / Selling Shop</label>
         <div class="input-group">
           <select class="form-select form-control small text-muted" [(ngModel)]="form.value.shopName">
-            <option *ngFor="let item of shops" [value]="item.shopName">{{ item.shopName }}</option>
+            <option *ngFor="let item of shops" [value]="item.id">{{ item.shopName }}</option>
           </select>
           <button class="btn btn-outline-secondary small text-muted" type="button"
             (click)="form.patchValue({ shopName: '' })">×</button>
@@ -21,7 +21,7 @@
         <div class="input-group">
           <select class="form-select form-control small text-muted" [(ngModel)]="form.value.client"
             (ngModelChange)="onClientChange($event)">
-            <option *ngFor="let client of clients" [value]="client.name">{{ client.name }}</option>
+            <option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</option>
           </select>
           <button class="btn btn-outline-secondary small text-muted" type="button"
             (click)="form.patchValue({ client: '', shopAddress: '' })">×</button>
@@ -93,21 +93,24 @@
             <td class="small text-muted">{{ selectedItem?.product?.name }}</td>
             <td class="small text-muted">{{ selectedItem.retailPrice }}</td>
             <td class="small text-muted">
-              <input type="number" class="form-control small text-muted" [(ngModel)]="selectedItem.sellingPrice"  (ngModelChange)="recalculateOverallTotals()"/>
+              <input type="number" class="form-control small text-muted" [(ngModel)]="selectedItem.sellingPrice"
+                (ngModelChange)="recalculateOverallTotals()" />
             </td>
             <td class="small text-muted">
               <div class="d-flex justify-content-center align-items-center">
                 <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
-                 (click)="decrementQuantity(selectedItem)">−</button>
-                <input type="number" [(ngModel)]="selectedItem.quantity"
-                  class="form-control mx-2 text-center small text-muted" style="width: 60px;"  (ngModelChange)="recalculateOverallTotals()" />
+                  (click)="decrementQuantity(selectedItem)">−</button>
+                <input type="number" [(ngModel)]="selectedItem.quantity" [min]="1" [max]="selectedItem.quantity"
+                  class="form-control mx-2 text-center small text-muted" style="width: 60px;"
+                  (ngModelChange)="recalculateOverallTotals()" />
                 <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
                   (click)="incrementQuantity(selectedItem)">+</button>
               </div>
             </td>
             <td class="small text-muted">{{ selectedItem?.product?.stockQty }}</td>
             <td class="small text-muted">
-              <input type="number" class="form-control small text-muted" [(ngModel)]="selectedItem.discount"  (ngModelChange)="recalculateOverallTotals()" />
+              <input type="number" class="form-control small text-muted" [(ngModel)]="selectedItem.discount"
+                (ngModelChange)="recalculateOverallTotals()" />
             </td>
             <td class="small text-muted">{{ getLineTotal(selectedItem) }}</td>
             <td>
@@ -130,11 +133,12 @@
         <div class="ml-3 row g-3 small d-flex justify-content-evenly">
           <div class=" mr-3 mt-2">
             <label class="form-label">Bulk Discount</label>
-            <input class="small form-control text-muted" type="number" [(ngModel)]="bulkDiscount"  (ngModelChange)="recalculateOverallTotals()" />
+            <input class="small form-control text-muted" type="number" [(ngModel)]="bulkDiscount"
+              (ngModelChange)="recalculateOverallTotals()" />
           </div>
           <div class="mr-3 mt-2">
             <label class="form-label">Tax 15%</label>
-            <input class="small form-control text-muted" type="text" [(ngModel)]="vatTax" readonly />
+            <input class="small form-control text-muted" type="text" [(ngModel)]="totalVatTax" readonly />
           </div>
           <div class="mr-3 mt-2">
             <label class="form-label">Total (Ex. tax)</label>
@@ -142,7 +146,8 @@
           </div>
           <div class="mr-3 mt-2">
             <label class="form-label fw-bold">Total</label>
-            <input class="fw-bold small form-control text-muted" type="text" [(ngModel)]="total" readonly />
+            <input class="fw-bold small form-control text-muted" type="text" [(ngModel)]="total"
+              (ngModelChange)="onTotalChanged()" />
           </div>
         </div>
       </div>

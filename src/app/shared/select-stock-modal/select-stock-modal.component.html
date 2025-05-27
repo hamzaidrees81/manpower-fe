@@ -4,7 +4,8 @@
   </nb-card-header>
 
   <nb-card-body class="p-3">
-    <input
+  <div *ngIf="isSelectedShop">
+      <input
       type="text"
       class="form-control form-control-sm mb-3 border-secondary text-muted"
       placeholder="🔍 Search by product name"
@@ -29,11 +30,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of filteredList">
+          <tr *ngFor="let item of filteredList" (click)="handleRowClick($event, item)">
             <td class="text-center align-middle">
               <input
                 type="checkbox"
                 [(ngModel)]="item.selected"
+                (click)="$event.stopPropagation()"
                 (change)="onCheckboxChange(item)" />
             </td>
             <td>{{ item.product?.productCode }}</td>
@@ -50,13 +52,18 @@
         </tbody>
       </table>
     </div>
-  </nb-card-body>
 
+  </div>
+<div *ngIf="!isSelectedShop" class="alert alert-warning p-2 small mt-3">
+  ⚠️ الرجاء اختيار المحل لعرض المنتجات المتاحة / Please select a shop to view available products.
+</div>
+
+  </nb-card-body>
   <nb-card-footer class="d-flex justify-content-between px-3 py-2 bg-light border-top">
     <button nbButton size="small" status="basic" appearance="outline" class="text-muted border-muted" (click)="submit()">
       ❌ Cancel
     </button>
-    <button nbButton size="small" status="success" appearance="outline" class="text-muted border-muted" (click)="submit()">
+    <button *ngIf="isSelectedShop" nbButton size="small" status="success" appearance="outline" class="text-muted border-muted" (click)="submit()">
       ✔️ Confirm
     </button>
   </nb-card-footer>

@@ -22,7 +22,9 @@ export class PagesComponent implements OnInit {
       icon: 'shopping-cart-outline',
       children: [
         { title: 'Sale', link: '/pages/pos/add-sale' },
-        { title: 'Purchase', link: '/pages/pos/add-inventory' },
+         { title: 'View Sale', link: '/pages/pos/view-sale' },
+        { title: 'Purchase', link: '/pages/pos/add-purchase' },
+         { title: 'View Purchase', link: '/pages/pos/view-purchase' },
         { title: 'Shop', link: '/pages/pos/shop' },
         { title: 'Product', link: '/pages/pos/product' },
         { title: 'Stock', link: '/pages/pos/stock' },

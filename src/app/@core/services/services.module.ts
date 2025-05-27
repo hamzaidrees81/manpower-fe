@@ -21,6 +21,7 @@ import { StockService } from './pos-services/stock.service';
 import { InventoryService } from './pos-services/inventory.service';
 import { SupplierService } from './pos-services/supplier.service';
 import { DashboardService } from './dashboard.service';
+import { AddPurchaseService } from './pos-services/add-purchase.service';
 
 
 
@@ -46,7 +47,8 @@ const SERVICES = [
   CategoryService,
   BrandService,
   InventoryService,
-  SupplierService
+  SupplierService,
+  AddPurchaseService
 ];
 
 @NgModule({

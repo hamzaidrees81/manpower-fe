@@ -16,6 +16,7 @@ export class SelectStockModalComponent {
 
   @Input() initialSelected: any[] = [];
   @Input() onSelectChange: (selected: any[]) => void = () => {};
+  isSelectedShop: any;
 
   constructor(
     protected ref: NbDialogRef<SelectStockModalComponent>,
@@ -24,6 +25,7 @@ export class SelectStockModalComponent {
     this.salelist = config.salelist || [];
     this.initialSelected = config.initialSelected || [];
     this.isSale = config.isSale || false;
+    this.isSelectedShop = config.isSelectedShop || false;
     this.onSelectChange = config.onSelectChange || (() => {});
   }
 
@@ -38,11 +40,37 @@ export class SelectStockModalComponent {
   }
 
   filterTable(): void {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredList = this.salelist.filter(item =>
-      item.product?.name?.toLowerCase().includes(term)
-    );
+  const term = this.searchTerm.toLowerCase();
+  this.filteredList = this.salelist.filter(item => {
+    const nameMatch = item.product?.name?.toLowerCase().includes(term);
+    const codeMatch = item.product?.productCode?.toLowerCase().includes(term);
+    return nameMatch || codeMatch;
+  });
+}
+
+handleRowClick(event: MouseEvent, item: any): void {
+  const target = event.target as HTMLElement;
+  const row = target.closest('tr');
+  const cell = target.closest('td');
+
+  if (!row || !cell) return;
+
+  const cellIndex = Array.from(row.children).indexOf(cell);
+
+  // If clicked on the first column (checkbox), do nothing
+  if (cellIndex === 0) {
+    return;
   }
+
+  // Otherwise, add and close
+  if (!this.selectedItems.find(i => i.productId === item.productId)) {
+    item.selected = true;
+    this.selectedItems.push(item);
+    this.onSelectChange(this.selectedItems);
+  }
+
+  this.cancel(); // Replace this with actual close logic
+}
 
   onCheckboxChange(item: any): void {
     if (item.selected) {

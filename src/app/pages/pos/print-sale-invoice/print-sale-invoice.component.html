@@ -1,0 +1,192 @@
+<!-- Invoice Container -->
+<div class="d-flex justify-content-end">
+   <button nbButton status="success" class="mr-3" outline (click)="backToInvoice()">
+    <nb-icon icon="arrow-back-outline"></nb-icon> Back To Sale
+  </button>
+  <button nbButton status="primary" outline (click)="printInvoice()">
+    <nb-icon icon="printer-outline"></nb-icon> Print
+  </button>
+</div>
+
+<div class="container invoice p-5" id="invoiceSection">
+  <!-- Fixed Header -->
+  <div class="header text-center">
+    <img [src]="saleList?.company?.headerImageUrl" class="img-fluid w-100" alt="Header">
+  </div>
+
+  <!-- Center Section (Background Logo + Content) -->
+  <div class="position-relative text-center my-4 bg-container">
+    <!-- Background Image -->
+    <img src="https://i0.wp.com/ayedhalmutairi.com/wp-content/uploads/2023/01/logo_10-removebg-preview-1.png?w=602&ssl=1" class="bg-logo" alt="Background Logo">
+
+    <!-- Content Overlay -->
+    <div class="content position-relative ">
+      <!-- Invoice & QR Code Section -->
+      <div class="row align-items-center inv-detail-mt">
+        <!-- QR Code -->
+        <div class="col-md-2 text-center">
+          <img [src]="qrCodeImageUrl" class="qr-code img-fluid" alt="QR Code">
+        </div>
+
+        <!-- Invoice Title -->
+        <div class="col-md-4 text-center mobile">
+          <p class="small-title">Simplified Tax Invoice</p>
+        </div>
+
+        <!-- Invoice Table -->
+        <div class="col-md-6">
+          <table class="bank-table table table-bordered transparent-table small-table">
+            <tbody>
+              <tr>
+                <td><strong>Invoice No / رقم الفاتورة :</strong></td>
+                <td>{{saleList?.invoiceId}}</td>
+              </tr>
+              <tr>
+                <td><strong>Invoice Date / تاريخ الفاتورة :</strong></td>
+                <td>{{saleList?.invoiceDate}}</td>
+              </tr>
+              <tr>
+                <td><strong>Payment Method / طريقة الدفع :</strong></td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><strong>Salesman / البائع :</strong></td>
+                <td>-</td>
+              </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+      <!-- New Customer Information Table -->
+      <div class="row mt-2">
+        <div class="col-12">
+          <table class="table table-bordered transparent-table text-center small-table">
+            <tbody>
+              <!-- Customer ID & Name -->
+              <tr>
+                <th class="fw-bold disabled-header">Client ID / معرف العميل</th>
+                <td>{{saleList?.client?.clientId}}</td>
+                <th class="fw-bold disabled-header">Client Name / اسم العميل</th>
+                <td>{{saleList?.client?.name}}</td>
+              </tr>
+
+              <!-- Contact & Location -->
+              <tr>
+                <th class="fw-bold disabled-header">Contact / جهة الاتصال</th>
+                <td>{{saleList?.client?.contact ? saleList?.client?.contact : '-'}}</td>
+                <th class="fw-bold disabled-header">Location / الموقع</th>
+                <td>{{saleList?.client?.address ? saleList?.client?.address : '-'}}</td>
+              </tr>
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+
+
+      <!-- New Invoice Table -->
+      <!-- New Invoice Table -->
+      <div class="row mt-4">
+  <div class="col-md-12">
+    <h6>Sale Items / عناصر البيع</h6>
+    <table class="table table-bordered transparent-table text-center small-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Product Name / اسم المنتج</th>
+          <th>Quantity / الكمية</th>
+          <th>Sold Price / سعر البيع</th>
+          <th>Unit Price / سعر الوحدة</th>
+          <th>Total Price / السعر الإجمالي</th>
+          <th>Tax / الضريبة</th>
+          <th>Discount / الخصم</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of saleList?.saleItems; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td>{{ item?.product.name }}</td>
+          <td>{{ item.quantity }}</td>
+          <td>{{ item.soldPrice }}</td>
+          <td>{{ item.unitPrice }}</td>
+          <td>{{ item.totalPrice }}</td>
+          <td>{{ item.tax }}</td>
+          <td>{{ item.discount }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+      <!-- Summary Table -->
+      <div class="row">
+        <div class="col-md-6 offset-md-6">
+          <table class="table table-bordered transparent-table text-start small-table">
+            <tbody>
+              <tr>
+                <td class="fw-bold">Total Before Vat <span dir="rtl">(المبلغ الإجمالي)</span></td>
+                <td class="text-end">{{saleList?.totalAmount}}</td>
+              </tr>
+              <tr>
+                <td class="fw-bold">Total With VAT <span dir="rtl">(مبلغ الضريبة)</span></td>
+                <td class="text-end">{{saleList?.vatAmount}}</td>
+              </tr>
+
+              <tr>
+                <td class="fw-bold">VAT Amount <span dir="rtl">(الإجمالي مع الضريبة)</span></td>
+                <td class="text-end">{{saleList?.totalWithVAT}}</td>
+              </tr>
+              
+              <!-- <tr>
+                <td class="fw-bold">Eighteen Thousand, Six Hundred And Thirty-Six Point Nine Only</td>
+                <td class="text-end"></td>
+              </tr> -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+
+    </div>
+
+
+  </div>
+
+  <!-- Fixed Footer -->
+  <div class="footer text-center">
+    <div class="row container">
+      <div class="col-md-6"></div>
+      <div class="col-md-6 ">
+        <table class="bank-table table table-bordered transparent-table small-table">
+          <thead>
+            <tr>
+              <th colspan="2">Bank Account &nbsp; | &nbsp; حساب البنك</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Title / العنوان :</strong></td>
+              <td>{{saleList?.company?.bankAccountTitle}}</td>
+            </tr>
+            <tr>
+              <td><strong>ACC / رقم الحساب :</strong></td>
+              <td>{{saleList?.company?.bankAccountNumber}}</td>
+            </tr>
+            <tr>
+              <td><strong>IBAN / رقم الآيبان :</strong></td>
+              <td>{{saleList?.company?.bankIban}}</td>
+            </tr>
+            <tr>
+              <td><strong>Bank / البنك :</strong></td>
+              <td>{{saleList?.company?.bankName}}</td>
+            </tr>
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+    <img [src]="saleList?.company?.footerImageUrl" class="img-fluid w-100" alt="Footer">
+  </div>
+</div>

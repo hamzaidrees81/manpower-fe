@@ -15,11 +15,14 @@ export class StockService {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  getStocksByStatus(status): Observable<any[]> {
+  getStocksByStatus(status,shopId): Observable<any[]> {
      let params = new HttpParams();
 
   if (status !== undefined && status !== null) {
     params = params.set('stocksForPage', status);
+  }
+    if (shopId !== undefined && shopId !== null) {
+    params = params.set('shopId', shopId);
   }
     return this.http.get<any[]>(this.apiUrl,{ params });
   }

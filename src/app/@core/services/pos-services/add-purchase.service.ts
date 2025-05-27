@@ -6,36 +6,36 @@ import { environment } from '../../../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
-export class AddSaleService {
-  private apiUrl = `${environment.posApiUrl}/sales`;
+export class AddPurchaseService {
+  private apiUrl = `${environment.posApiUrl}/purchase`;
 
   constructor(private http: HttpClient) {}
 
-  getSales(): Observable<any[]> {
+  getPurchases(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
 
-  getSalesById(id): Observable<any[]> {
+  getPurchaseById(id): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${id}`);
   }
 
-  addSale(sale: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, sale);
+  addPurchase(purchase: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, purchase);
   }
 
-  updateSale(id: number, sale: any): Observable<any> {
-    return this.http.put<any>(`${this.apiUrl}/${id}`, sale);
+  updatePurchase(id: number, purchase: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/${id}`, purchase);
   }
 
-  deleteSale(id: number): Observable<any> {
+  deletePurchase(id: number): Observable<any> {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
- getFilteredSales(clientId, shopId, status, startDate, endDate): Observable<any[]> {
+ getFilteredPurchase(supplierId, shopId, status, startDate, endDate): Observable<any[]> {
   let params = new HttpParams();
 
-  if (clientId !== undefined && clientId !== null) {
-    params = params.set('clientId', clientId.toString());
+  if (supplierId !== undefined && supplierId !== null) {
+    params = params.set('supplierId', supplierId.toString());
   }
   if (shopId !== undefined && shopId !== null) {
     params = params.set('shopId', shopId.toString());
@@ -44,10 +44,10 @@ export class AddSaleService {
     params = params.set('status', status);
   }
   if (startDate) {
-    params = params.set('startDate', startDate);
+    params = params.set('dateFrom', startDate);
   }
   if (endDate) {
-    params = params.set('endDate', endDate);
+    params = params.set('dateTo', endDate);
 }
 
   return this.http.get<any[]>(`${this.apiUrl}/filter`, { params });

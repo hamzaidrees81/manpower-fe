@@ -8,10 +8,16 @@ import { CategoryComponent } from './category/category.component';
 import { StockComponent } from './stock/stock.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { ShopComponent } from './shop/shop.component';
+import { ViewSaleComponent } from './view-sale/view-sale.component';
+import { PrintSaleInvoiceComponent } from './print-sale-invoice/print-sale-invoice.component';
+import { ViewPurchaseComponent } from './view-purchase/view-purchase.component';
 
 const routes: Routes = [
   { path: 'add-sale', component: AddSaleComponent },
-  { path: 'add-inventory', component: AddInventoryComponent },
+  { path: 'view-sale', component: ViewSaleComponent },
+   { path: 'print-sale-invoice', component: PrintSaleInvoiceComponent },
+  { path: 'add-purchase', component: AddInventoryComponent },
+   { path: 'view-purchase', component: ViewPurchaseComponent },
   { path: 'brand', component: BrandComponent },
   { path: 'product', component: ProductComponent },
   { path: 'category', component: CategoryComponent },

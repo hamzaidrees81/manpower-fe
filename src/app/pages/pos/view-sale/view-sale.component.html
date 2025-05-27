@@ -1,0 +1,140 @@
+<nb-card>
+  <nb-card-header class="custom-header d-flex align-items-center">
+    <nb-icon icon="file-text-outline" class="mr-2"></nb-icon>
+    <span class="ms-2 fw-bold">Sales Management</span>
+  </nb-card-header>
+
+  <nb-card-body>
+    <!-- Filters Section -->
+    <div class="row mb-4">
+      <div class="col-12">
+        <div class="filter-section card shadow-sm border-0">
+          <div class="card-header p-3">
+            <h4 class="mb-0 d-flex align-items-center">
+              <nb-icon icon="options-2-outline" class="me-2 mr-2"></nb-icon> Filters
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-end">
+
+              <!-- Shop -->
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">
+                  <nb-icon icon="home-outline" class="me-2"></nb-icon> Select Shop
+                </label>
+                <select class="form-control" [(ngModel)]="shopId">
+                  <option [ngValue]="0">All</option>
+                  <option *ngFor="let shop of shops" [ngValue]="shop.id">{{ shop.shopName }}</option>
+                </select>
+              </div>
+
+              <!-- Client -->
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">
+                  <nb-icon icon="person-outline" class="me-2"></nb-icon> Select Client
+                </label>
+                <select class="form-control" [(ngModel)]="clientId">
+                  <option [ngValue]="0">All</option>
+                  <option *ngFor="let client of clients" [ngValue]="client.id">{{ client.name }}</option>
+                </select>
+              </div>
+
+              <!-- Status -->
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">
+                  <nb-icon icon="flag-outline" class="me-2"></nb-icon> Status
+                </label>
+                <select class="form-control" [(ngModel)]="status">
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">In Active</option>
+                  <!-- <option value="DELETED">Deleted</option> -->
+                </select>
+              </div>
+
+              <!-- Dates -->
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">Start Date</label>
+                <input nbInput fullWidth [nbDatepicker]="startPicker" [(ngModel)]="startDate">
+                <nb-datepicker #startPicker></nb-datepicker>
+              </div>
+              <div class="col-md-3 mb-3">
+                <label class="fw-bold text-muted">End Date</label>
+                <input nbInput fullWidth [nbDatepicker]="endPicker" [(ngModel)]="endDate">
+                <nb-datepicker #endPicker></nb-datepicker>
+              </div>
+
+              <!-- Button -->
+              <div class="col-md-3 mt-3">
+                <button nbButton status="primary" class="w-100 fw-bold" (click)="loadSales()">
+                  <nb-icon icon="search-outline" class="me-2"></nb-icon> Search Sales
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accordion with Table -->
+    <nb-accordion *ngIf="sales && sales.length">
+      <nb-accordion-item [expanded]="true">
+        <nb-accordion-item-header>
+          <i class="fas fa-receipt text-primary me-2 mr-2"></i> View Sales
+        </nb-accordion-item-header>
+        <nb-accordion-item-body>
+
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>#</th>
+                  <th>Date</th>
+                  <th>Client</th>
+                  <th>Shop</th>
+                  <th>Status</th>
+                  <th>Total</th>
+                  <th>PO Number</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let sale of sales; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ sale.saleDate | date: 'short' }}</td>
+                  <td>{{ sale.client?.name }}</td>
+                  <td>{{ sale.shop?.shopName }}</td>
+                  <td><span class="badge bg-info text-dark">{{ sale.status }}</span></td>
+                  <td>{{ sale.totalAmount }} SAR</td>
+                  <td>{{ sale.poNumber }}</td>
+                  <td>
+                    <button nbButton size="tiny" status="primary" (click)="editSale(sale)">
+                      <nb-icon icon="edit-outline"></nb-icon>
+                    </button>
+                    <button nbButton size="tiny" status="info" (click)="viewSale(sale)" class="mx-1">
+                      <nb-icon icon="eye-outline"></nb-icon>
+                    </button>
+                    <button nbButton size="tiny" status="warning" (click)="printSale(sale)">
+                      <nb-icon icon="printer-outline"></nb-icon>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </nb-accordion-item-body>
+      </nb-accordion-item>
+    </nb-accordion>
+
+    <!-- No Record Found -->
+    <div *ngIf="sales?.length === 0" class="row justify-content-center mt-5">
+      <div class="col-md-10">
+        <div class="card shadow-sm text-center p-4">
+          <h4 class="text-danger">No Records Found</h4>
+          <p class="text-muted">We couldn't find any sales matching your filters.</p>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

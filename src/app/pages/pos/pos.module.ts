@@ -15,6 +15,9 @@ import { ProductComponent } from './product/product.component';
 import { StockComponent } from './stock/stock.component';
 import { SupplierComponent } from './supplier/supplier.component';
 import { ShopComponent } from './shop/shop.component';
+import { ViewSaleComponent } from './view-sale/view-sale.component';
+import { PrintSaleInvoiceComponent } from './print-sale-invoice/print-sale-invoice.component';
+import { ViewPurchaseComponent } from './view-purchase/view-purchase.component';
 
 
 @NgModule({
@@ -26,7 +29,10 @@ import { ShopComponent } from './shop/shop.component';
     ProductComponent,
     StockComponent,
     SupplierComponent,
-    ShopComponent
+    ShopComponent,
+    ViewSaleComponent,
+    PrintSaleInvoiceComponent,
+    ViewPurchaseComponent
   ],
   imports: [
     CommonModule,

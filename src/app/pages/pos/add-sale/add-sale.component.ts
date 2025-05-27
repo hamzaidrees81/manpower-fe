@@ -8,6 +8,7 @@ import { ClientService } from '../../../@core/services/client.service';
 import { ShopService } from '../../../@core/services/pos-services/shop.service';
 import { StockService } from '../../../@core/services/pos-services/stock.service';
 import { SelectStockModalComponent } from '../../../shared/select-stock-modal/select-stock-modal.component';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-add-sale',
@@ -15,7 +16,6 @@ import { SelectStockModalComponent } from '../../../shared/select-stock-modal/se
   styleUrls: ['./add-sale.component.scss']
 })
 export class AddSaleComponent {
-  form: FormGroup;
 
   selectedItem: any = null;
 
@@ -29,33 +29,104 @@ export class AddSaleComponent {
   selectedProduct;
   shops: any[];
   clients: any[];
-  salelist: any[];
+  salelist;
   total: number;
 
-  constructor(private fb: FormBuilder, private saleService: AddSaleService, private toasterService: ToasterService, private dialogService: NbDialogService,
+  shopId;
+  customerId;
+  address;
+  poNumber;
+  dateCreated;
+  cashReceived;
+  paymentMode;
+
+  mode: 'add' | 'edit' | 'view' = 'add';
+  isViewMode: boolean = false;
+
+
+
+  constructor(private fb: FormBuilder, private saleService: AddSaleService, private router: Router, private toasterService: ToasterService, private dialogService: NbDialogService,
     private stockService: StockService,
     private clientService: ClientService,
-    private shopService: ShopService) {
-    this.form = this.fb.group({
-      shopName: '',
-      client: '',
-      shopAddress: '',
-      dateCreated: '',
-      poNumber: '',
-      paymentMode: 'Cash'
-    });
-  }
+    private route: ActivatedRoute,
+    private shopService: ShopService) { }
 
   removeItem(index: number): void {
     this.selectedProduct.splice(index, 1);
   }
 
-
-  ngOnInit() {
-    this.loadShops();
-    this.loadClients();
+  onShopChange() {
     this.LoadStockBySale();
   }
+
+  clearClient() {
+    this.customerId = '';
+    this.address = '';
+  }
+
+  clearShop() {
+    this.shopId = '';
+  }
+
+  ngOnInit() {
+ this.loadShops();
+    this.loadClients();
+    this.route.queryParams.subscribe(params => {
+      const mode = params['mode'];
+      const id = params['id'];
+
+      if (mode === 'edit' || mode === 'view') {
+        this.getSaleById(id);
+      }
+
+      if (mode === 'view') {
+        this.isViewMode = true; // set this boolean to true in view mode
+      }
+
+      this.mode = mode; // optional: store mode for template control
+    });
+
+    if (this.mode != 'view' && this.mode != 'edit') {
+      const now = new Date();
+      const currentDate = now.toISOString().split('T')[0];
+      this.dateCreated = currentDate;
+    }
+
+  }
+
+  getSaleById(id: number): void {
+    this.saleService.getSalesById(id).subscribe({
+      next: (data) => {
+        this.salelist = data;
+        this.shopId = this.salelist.shopId;
+        this.customerId = this.salelist.customerId;
+        this.address = this.salelist?.client?.address;
+        // this.onClientChange(this.customerId);
+        // this.address = this.salelist.address;
+        this.poNumber = this.salelist.poNumber;
+        const rawDate = this.salelist.saleDate;
+this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
+
+        this.cashReceived = this.salelist.cashReceived;
+        this.paymentMode = this.salelist.paymentMode;
+        this.total = this.salelist.totalAmount;
+        
+
+       this.selectedProduct = this.salelist?.saleItems?.map(item => {
+  return {
+    ...item,
+    retailPrice: item.totalPrice,
+    sellingPrice: item.soldPrice
+  };
+});
+
+      },
+      error: (err) => {
+        console.error('Error fetching sale by ID', err);
+      }
+    });
+  }
+
 
   loadShops(): void {
     this.shopService.getShops().subscribe(
@@ -84,7 +155,8 @@ export class AddSaleComponent {
     this.dialogService.open(SelectStockModalComponent, {
       context: {
         salelist: this.salelist,
-         isSale: true, 
+        isSale: true,
+        isSelectedShop: this.shopId ? true : false,
         initialSelected: this.selectedProduct || [],
         onSelectChange: (selectedItems: any[]) => {
           this.selectedProduct = [...selectedItems];
@@ -93,7 +165,7 @@ export class AddSaleComponent {
             sellingPrice: item.retailPrice,
             total: 0
           }));
-this.recalculateOverallTotals();
+          this.recalculateOverallTotals();
         }
       },
     });
@@ -104,7 +176,8 @@ this.recalculateOverallTotals();
 
 
   LoadStockBySale(): void {
-    this.stockService.getStocksByStatus("SALE").subscribe(
+    const shopId = this.shopId;
+    this.stockService.getStocksByStatus("SALE", +shopId).subscribe(
       (data) => {
         this.salelist = data;
         this.salelist['isSale'] = true;
@@ -114,24 +187,35 @@ this.recalculateOverallTotals();
       }
     );
   }
-  onClientChange(clientName: string) {
-    const client = this.clients.find(c => c.name === clientName);
-    this.form.patchValue({ shopAddress: client?.address || '' });
+  onClientChange(id: string) {
+    const client = this.clients.find(c => c.id === +id);
+    this.address = client?.address || '';
   }
 
   incrementQuantity(item: any): void {
-    if (item.quantity < item.product.stockQty) {
+    // Initialize quantity if not set
+    if (item.quantity == null || isNaN(item.quantity)) {
+      item.quantity = 0;
+    }
+
+    if (item.quantity < item.stockQty) {
       item.quantity += 1;
       this.recalculateOverallTotals();
     }
   }
 
   decrementQuantity(item: any): void {
+    // Initialize quantity if not set
+    if (item.quantity == null || isNaN(item.quantity)) {
+      item.quantity = 1;
+    }
+
     if (item.quantity > 1) {
       item.quantity -= 1;
       this.recalculateOverallTotals();
     }
   }
+
 
   onTotalChanged(): void {
     const subtotal = this.calculateSubtotal(); // without discount
@@ -190,22 +274,55 @@ this.recalculateOverallTotals();
     this.total = parseFloat((this.totalWithoutVat + this.totalVatTax).toFixed(2));
   }
 
+  goBack() {
+    this.router.navigate(['/pages/pos/view-sale']);
+    this.resetForm();
+  }
+
+  resetForm() {
+    this.shopId = null;
+    this.customerId = null;
+    this.address = '';
+    this.poNumber = '';
+    this.dateCreated = null;
+    this.cashReceived = null;
+    this.paymentMode = '';
+
+    this.isViewMode = false;
+    this.selectedProduct = [];
+  }
+
 
   submitSale() {
+    const shopId = this.shopId;
+    const customerId = this.customerId;
 
- const shopId = this.form.value.shopName;
- const customerId = this.form.value.client;
+
+    // Validate required fields
+    if (!shopId) {
+      this.toasterService.showError('Please select a selling shop.');
+      return;
+    }
+
+    if (!this.selectedProduct || this.selectedProduct.length === 0) {
+      this.toasterService.showError('Please select at least one product.');
+      return;
+    }
+
+    const localDateTime = this.dateCreated; // e.g. "2025-05-27T08:08"
+    const utcDateTime = new Date(localDateTime).toISOString();
+
     const payload = {
       shopId: +shopId,
-  customerId: +customerId,
-      poNumber: this.form.value.poNumber,
-      status:'ACTIVE',
-      saleDate: this.form.value.dateCreated,
-      // paymentMode: this.form.value.paymentMode,
-      paidAmount: this.form.value.paymentMode === 'Cash' ? this.form.value.cashReceived : null,
-      // bankName: this.form.value.paymentMode === 'Bank' ? this.form.value.bankName : null,
-      // bankTransactionId: this.form.value.paymentMode === 'Bank' ? this.form.value.bankTransactionId : null,
-      // dueDate: this.form.value.paymentMode === 'Credit' ? this.form.value.dueDate : null,
+      customerId: +customerId,
+      poNumber: this.poNumber,
+      status: 'ACTIVE',
+      saleDate: utcDateTime,
+      // paymentMode: this.paymentMode,
+      paidAmount: this.paymentMode === 'Cash' ? this.cashReceived : null,
+      // bankName: this.paymentMode === 'Bank' ? this.bankName : null,
+      // bankTransactionId: this.paymentMode === 'Bank' ? this.bankTransactionId : null,
+      // dueDate: this.paymentMode === 'Credit' ? this.dueDate : null,
       saleItems: this.selectedProduct?.map(item => ({
         productId: item.product?.id,
         quantity: item.quantity,
@@ -213,16 +330,15 @@ this.recalculateOverallTotals();
         soldPrice: item.sellingPrice,
         discount: item.discount,
         totalPrice: this.getLineTotal(item),
-        tax:0
+        tax: 0
       })),
-      bulkDiscount: this.bulkDiscount || 0,
+      // bulkDiscount: this.bulkDiscount || 0,
       discountPercentage: this.vatRate || 0,
       totalBeforeVat: this.totalWithoutVat || 0,
       totalAmount: this.total || 0,
-      vatAmount:this.totalVatTax //confirm
+      vatAmount: this.totalVatTax //confirm
     };
 
-    console.log('Submitting payload:', payload);
 
     // Now send to backend
     this.saleService.addSale(payload).subscribe({

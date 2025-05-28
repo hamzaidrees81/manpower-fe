@@ -38,10 +38,11 @@ export class AddSaleComponent {
   poNumber;
   dateCreated;
   cashReceived;
-  paymentMode;
+  paymentMode = "CASH";
 
   mode: 'add' | 'edit' | 'view' = 'add';
   isViewMode: boolean = false;
+  id: any;
 
 
 
@@ -51,9 +52,7 @@ export class AddSaleComponent {
     private route: ActivatedRoute,
     private shopService: ShopService) { }
 
-  removeItem(index: number): void {
-    this.selectedProduct.splice(index, 1);
-  }
+
 
   onShopChange() {
     this.LoadStockBySale();
@@ -69,7 +68,7 @@ export class AddSaleComponent {
   }
 
   ngOnInit() {
- this.loadShops();
+    this.loadShops();
     this.loadClients();
     this.route.queryParams.subscribe(params => {
       const mode = params['mode'];
@@ -84,6 +83,7 @@ export class AddSaleComponent {
       }
 
       this.mode = mode; // optional: store mode for template control
+      this.id = id;
     });
 
     if (this.mode != 'view' && this.mode != 'edit') {
@@ -103,22 +103,27 @@ export class AddSaleComponent {
         this.address = this.salelist?.client?.address;
         // this.onClientChange(this.customerId);
         // this.address = this.salelist.address;
+        this.paymentMode = this.salelist.paymentMode;
+        this.cashReceived = this.salelist.receivedAmount;
+        this.totalWithoutVat = this.salelist.totalBeforeVat;
+        this.bulkDiscount = this.salelist.bulkDiscountPercentage;
+        this.totalVatTax = this.salelist.vatAmount;
         this.poNumber = this.salelist.poNumber;
         const rawDate = this.salelist.saleDate;
-this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
+        this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
 
         this.cashReceived = this.salelist.cashReceived;
         this.paymentMode = this.salelist.paymentMode;
         this.total = this.salelist.totalAmount;
-        
 
-       this.selectedProduct = this.salelist?.saleItems?.map(item => {
-  return {
-    ...item,
-    retailPrice: item.totalPrice,
-    sellingPrice: item.soldPrice
-  };
-});
+
+        this.selectedProduct = this.salelist?.saleItems?.map(item => {
+          return {
+            ...item,
+            retailPrice: item.totalPrice,
+            sellingPrice: item.soldPrice
+          };
+        });
 
       },
       error: (err) => {
@@ -150,6 +155,23 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
     );
   }
 
+    editSale() {
+  this.router.navigate(['/pages/pos/add-sale'], {
+    queryParams: { id: this.id, mode: 'edit' }
+  });
+}
+
+viewSale() {
+  this.router.navigate(['/pages/pos/add-sale'], {
+    queryParams: { id: this.id, mode: 'view' }
+  });
+}
+
+printSale() {
+  this.router.navigate(['/pages/pos/print-sale-invoice'], {
+    queryParams: { id: this.id, mode: 'print' }
+  });
+}
 
   openStockSelector() {
     this.dialogService.open(SelectStockModalComponent, {
@@ -163,9 +185,13 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
           this.selectedProduct = this.selectedProduct.map(item => ({
             ...item,
             sellingPrice: item.retailPrice,
+            quantity: 1,
             total: 0
           }));
-          this.recalculateOverallTotals();
+          for (let item of this.selectedProduct) {
+            this.onDiscountChanged(item);
+          }
+
         }
       },
     });
@@ -217,15 +243,37 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
   }
 
 
-  onTotalChanged(): void {
-    const subtotal = this.calculateSubtotal(); // without discount
-    const newBulkDiscount = subtotal - (this.total / 1.15); // remove VAT first
-    this.bulkDiscount = newBulkDiscount;
+  onSellingPriceChanged(item: any): void {
+    const retail = item.retailPrice || item.product?.retailPrice || 0;
+    if (retail > 0) {
+      const discount = ((retail - item.sellingPrice) / retail) * 100;
+      item.discount = +discount.toFixed(2);
+    } else {
+      item.discount = 0;
+    }
 
-    this.reapplyDiscountsToRows();
     this.recalculateOverallTotals();
   }
 
+  onDiscountChanged(item: any): void {
+    const retail = item.retailPrice || item.product?.retailPrice || 0;
+    if (retail > 0) {
+      item.sellingPrice = +(retail * (1 - (item.discount || 0) / 100)).toFixed(2);
+    } else {
+      item.sellingPrice = 0;
+    }
+
+    this.recalculateOverallTotals();
+  }
+
+
+  getLineTotal(item: any): number {
+    const qty = item.quantity || 1;
+    const price = item.sellingPrice || 0;
+    const discount = item.discount || 0;
+    const lineTotal = qty * price * (1 - discount / 100);
+    return parseFloat(lineTotal.toFixed(2));
+  }
 
   calculateSubtotal(): number {
     return this.selectedProduct.reduce((sum, item) => {
@@ -233,38 +281,44 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
     }, 0);
   }
 
-
   reapplyDiscountsToRows(): void {
-    const subtotal = this.calculateSubtotal();
+    if (!this.selectedProduct || this.selectedProduct.length === 0) return;
 
-    if (subtotal <= 0) return;
+    const discountRate = (this.bulkDiscount || 0) / 100;
 
     for (let item of this.selectedProduct) {
-      const itemLineTotal = item.sellingPrice * item.quantity;
-      const itemShare = itemLineTotal / subtotal;
-      const itemDiscountAmount = this.bulkDiscount * itemShare;
+      if (!item.retailPrice || item.retailPrice <= 0) continue;
 
-      const priceBeforeDiscount = item.sellingPrice;
-      const effectiveDiscountPercent = (itemDiscountAmount / (priceBeforeDiscount * item.quantity)) * 100;
-
-      item.discount = +effectiveDiscountPercent.toFixed(2);
+      item.discount = parseFloat((discountRate * 100).toFixed(2)); // update discount %
+      item.sellingPrice = parseFloat((item.retailPrice * (1 - discountRate)).toFixed(2)); // recalculate selling price
+      item.manualDiscount = false; // mark as auto
     }
   }
 
 
 
+  onTotalChanged(): void {
+    const rawSubtotal = this.calculateSubtotal(); // sum of sellingPrice * quantity
+    if (rawSubtotal === 0) {
+      this.bulkDiscount = 0;
+      return;
+    }
 
-  getLineTotal(item: any): number {
-    const qty = item.quantity || 0;
-    const price = item.sellingPrice || 0;
-    const discount = item.discount || 0;
-    const lineTotal = qty * price * (1 - discount / 100);
-    return parseFloat(lineTotal.toFixed(2));
+    // Remove VAT from entered total to get net
+    const expectedNet = this.total / (1 + this.vatRate / 100);
+    const calculatedDiscount = ((rawSubtotal - expectedNet) / rawSubtotal) * 100;
+
+    this.bulkDiscount = parseFloat(calculatedDiscount.toFixed(2));
+
+    this.reapplyDiscountsToRows();
+    this.recalculateOverallTotals();
   }
+
 
   recalculateOverallTotals(): void {
     let subtotal = 0;
     for (const item of this.selectedProduct) {
+      if (!item.quantity || item.quantity < 1) item.quantity = 1;
       subtotal += this.getLineTotal(item);
     }
 
@@ -272,7 +326,29 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
     this.totalWithoutVat = parseFloat(discountedSubtotal.toFixed(2));
     this.totalVatTax = parseFloat((this.totalWithoutVat * this.vatRate / 100).toFixed(2));
     this.total = parseFloat((this.totalWithoutVat + this.totalVatTax).toFixed(2));
+    this.cashReceived = this.total;
   }
+
+  removeItem(index: number): void {
+    this.selectedProduct.splice(index, 1);
+
+    if (this.selectedProduct.length === 0) {
+      this.totalWithoutVat = 0;
+      this.totalVatTax = 0;
+      this.bulkDiscount = 0;
+      this.total = 0;
+      this.cashReceived = 0;
+    } else {
+      this.recalculateOverallTotals();
+    }
+  }
+
+  onBulkDiscountChanged(): void {
+    this.reapplyDiscountsToRows();
+    this.recalculateOverallTotals();
+  }
+
+
 
   goBack() {
     this.router.navigate(['/pages/pos/view-sale']);
@@ -319,7 +395,9 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
       status: 'ACTIVE',
       saleDate: utcDateTime,
       // paymentMode: this.paymentMode,
-      paidAmount: this.paymentMode === 'Cash' ? this.cashReceived : null,
+      paidAmount: this.cashReceived,
+      receivedAmount: this.cashReceived,
+      paymentMode: this.paymentMode,
       // bankName: this.paymentMode === 'Bank' ? this.bankName : null,
       // bankTransactionId: this.paymentMode === 'Bank' ? this.bankTransactionId : null,
       // dueDate: this.paymentMode === 'Credit' ? this.dueDate : null,
@@ -332,7 +410,7 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
         totalPrice: this.getLineTotal(item),
         tax: 0
       })),
-      // bulkDiscount: this.bulkDiscount || 0,
+      bulkDiscountPercentage: this.bulkDiscount || 0,
       discountPercentage: this.vatRate || 0,
       totalBeforeVat: this.totalWithoutVat || 0,
       totalAmount: this.total || 0,
@@ -344,6 +422,7 @@ this.dateCreated = rawDate ? rawDate.split('T')[0] : '';
     this.saleService.addSale(payload).subscribe({
       next: (res) => {
         this.toasterService.showSuccess('Sale created successfully!');
+        this.router.navigate(['/pages/pos/view-sale'])
       },
       error: (err) => {
         this.toasterService.showError('Failed to create sale.');

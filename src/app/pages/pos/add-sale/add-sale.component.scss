@@ -70,4 +70,19 @@
     font-weight: 400 !important;
 }
   
-  
+  button.nb-button {
+  min-width: 140px;
+}
+
+
+// Make disabled inputs look softer and consistent
+input[disabled], 
+textarea[disabled], 
+select[disabled], 
+.nb-input[disabled] {
+  background-color: #f5f7fa !important;  // Light gray-blue
+  color: #555 !important;                // Medium-dark text
+  opacity: 1 !important;                 // Prevent grayed-out appearance
+  border: 1px solid #dce3ec !important;  // Softer border
+  cursor: not-allowed;
+}

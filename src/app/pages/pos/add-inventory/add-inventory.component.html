@@ -11,21 +11,19 @@
             (ngModelChange)="onShopChange()" [disabled]="isViewMode">
             <option *ngFor="let item of shops" [value]="item.id">{{ item.shopName }}</option>
           </select>
-          <button class="btn btn-outline-secondary small text-muted" type="button" (click)="clearShop()"
-            [disabled]="isViewMode">×</button>
+          <button class="btn btn-outline-secondary small text-muted" type="button" (click)="clearShop()"  [disabled]="isViewMode">×</button>
         </div>
       </div>
 
       <!-- Client Name -->
       <div class="mr-3 mt-2">
-        <label class="form-label">اسم العميل / Client Name</label>
+        <label class="form-label">اسم العميل / Supplier Name</label>
         <div class="input-group">
           <select class="form-select form-control small text-muted" [(ngModel)]="supplierId"
             (ngModelChange)="onClientChange($event)" [disabled]="isViewMode">
-            <option *ngFor="let item of supplier" [value]="item.id">{{ item.name }}</option>
+            <option *ngFor="let client of supplier" [value]="client.id">{{ client.name }}</option>
           </select>
-          <button class="btn btn-outline-secondary small text-muted" type="button" (click)="clearClient()"
-            [disabled]="isViewMode">×</button>
+          <button class="btn btn-outline-secondary small text-muted" type="button" (click)="clearClient()"  [disabled]="isViewMode">×</button>
         </div>
       </div>
 
@@ -33,23 +31,22 @@
       <div class="mr-3 mt-2">
         <label class="form-label">رقم الطلب / Supplier Invoice No.</label>
         <div class="input-group">
-          <input type="text" class="form-control small text-muted" [(ngModel)]="supplierInvoiceNo"
-            [disabled]="isViewMode" />
-          <!-- <button class="btn btn-outline-secondary" type="button" (click)="form.patchValue({ supplierInvoiceNo: '' })">×</button> -->
+          <input type="text" class="form-control small text-muted" [(ngModel)]="supplierInvoiceNo" [disabled]="isViewMode" status="control"/>
+          <!-- <button class="btn btn-outline-secondary" type="button" (click)="form.patchValue({ poNumber: '' })">×</button> -->
         </div>
       </div>
 
       <!-- Client Address -->
       <div class="mr-3 mt-2">
         <label class="form-label">عنوان العميل / Client Address</label>
-        <input class="form-control small text-muted" [value]="address" readonly />
+        <input class="form-control small text-muted" [(ngModel)]="address" readonly />
       </div>
 
       <!-- Date -->
       <div class="mr-3 mt-2">
         <label class="form-label">التاريخ والوقت / Date & Time</label>
         <div class="input-group">
-          <input type="date" class="form-control small text-muted" [(ngModel)]="purchaseDate" [disabled]="isViewMode" />
+          <input type="date" class="form-control small text-muted" [(ngModel)]="purchaseDate" [disabled]="isViewMode"/>
         </div>
       </div>
 
@@ -60,12 +57,12 @@
 
 
   <!-- 🧺 Item Selection -->
-  <div class="mb-4 p-3  bg-white  classic-box1">
+  <div class="mb-4 p-3  bg-white  classic-box1" >
     <h6 class="mb-3 small text-muted" *ngIf="!isViewMode">🧺 اختيار الصنف / Item Selection</h6>
     <div class="row" *ngIf="!isViewMode">
       <div class="col-md-4">
         <!-- <label class="form-label small text-muted">الصنف / Select Item</label> -->
-        <button nbButton status="basic" class="small text-muted " appearance="outline" size="medium"
+        <button nbButton status="basic" class="small text-muted "  appearance="outline" size="medium"
           (click)="openStockSelector()">
           اختر الصنف / Choose Item
         </button>
@@ -76,7 +73,7 @@
 
 
     <!-- Table -->
-    <div class="table-responsive mt-3">
+     <div class="table-responsive mt-3">
       <table class="table table-bordered table-sm text-center" style="border-color: #ccc; font-size: 0.85rem;">
         <thead class="table-light">
           <tr>
@@ -84,18 +81,18 @@
             <th class="small text-muted">الرقم التسلسلي / Stock Move ID</th>
             <th class="small text-muted">رقم الدفعة / Batch No</th>
             <th class="small text-muted">الرف / Rack</th>
-            <th class="small text-muted">سعر الشراء / Buy Price</th>
+            <!-- <th class="small text-muted">سعر الشراء / Buy Price</th> -->
             <th class="small text-muted">أقل سعر / Min Sale Price</th>
             <th class="small text-muted">السعر التجزئة / Retail Price</th>
-            <th class="small text-muted">سعر البيع / Selling</th>
+            <th class="small text-muted">سعر البيع / Buy Price</th>
             <th class="small text-muted">الكمية / Qty</th>
             <th class="small text-muted">المخزون / Stock</th>
             <th class="small text-muted">الضريبة / VAT</th>
             <th class="small text-muted">الخصم % / Discount %</th>
             <th class="small text-muted">الإجمالي / Total</th>
-            <th class="small text-muted">الاستراتيجية / Strategy</th>
-            <th class="small text-muted">ملاحظات / Comments</th>
-            <th class="small text-muted">🗑️</th>
+            <!-- <th class="small text-muted">الاستراتيجية / Strategy</th>
+            <th class="small text-muted">ملاحظات / Comments</th> -->
+            <th class="small text-muted" *ngIf="!isViewMode">🗑️</th>
           </tr>
         </thead>
         <tbody *ngFor="let selectedItem of selectedProduct; let i = index">
@@ -104,24 +101,24 @@
             <td class="small text-muted">{{ selectedItem.stockMovementId }}</td>
             <td class="small text-muted">{{ selectedItem.batchNo }}</td>
             <td class="small text-muted">{{ selectedItem.storageRack }}</td>
-            <td class="small text-muted">{{ selectedItem.buyPrice }}</td>
+            <!-- <td class="small text-muted">{{ selectedItem.buyPrice }}</td> -->
             <td class="small text-muted">{{ selectedItem.minSalePrice }}</td>
             <td class="small text-muted">{{ selectedItem.retailPrice }}</td>
 
             <td class="small text-muted">
               <input type="number" class="form-control small text-muted" [disabled]="isViewMode"
-                [(ngModel)]="selectedItem.sellingPrice" (ngModelChange)="recalculateOverallTotals()" />
+                [(ngModel)]="selectedItem.buyPrice"  (ngModelChange)="onSellingPriceChanged(selectedItem)"/>
             </td>
 
             <td class="small text-muted">
               <div class="d-flex justify-content-center align-items-center">
-                <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
-                  (click)="decrementQuantity(selectedItem)" [disabled]="isViewMode">−</button>
-                <input type="number" [disabled]="isViewMode" [(ngModel)]="selectedItem.quantity" [min]="1"
+                <!-- <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
+                  (click)="decrementQuantity(selectedItem)" *ngIf="!isViewMode" [disabled]="isViewMode">−</button> -->
+                <input type="number" readonly [disabled]="isViewMode" [(ngModel)]="selectedItem.quantity" [min]="1"
                   class="form-control mx-2 text-center small text-muted" style="width: 60px;"
                   (ngModelChange)="recalculateOverallTotals()" />
-                <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
-                  (click)="incrementQuantity(selectedItem)" [disabled]="isViewMode">+</button>
+                <!-- <button nbButton size="tiny" *ngIf="!isViewMode" class="small text-muted" status="basic" appearance="outline"
+                  (click)="incrementQuantity(selectedItem)" [disabled]="isViewMode">+</button> -->
               </div>
             </td>
 
@@ -129,16 +126,16 @@
             <td class="small text-muted">{{ selectedItem.vatAmount }}</td>
 
             <td class="small text-muted">
-              <input type="number" class="form-control small text-muted" [(ngModel)]="selectedItem.discount"
+              <input type="number" class="form-control small text-muted" readonly [(ngModel)]="selectedItem.discount"
                 (ngModelChange)="recalculateOverallTotals()" [disabled]="isViewMode" />
             </td>
 
             <td class="small text-muted">{{ getLineTotal(selectedItem) }}</td>
-            <td class="small text-muted">{{ selectedItem.pricingStrategy }}</td>
-            <td class="small text-muted">{{ selectedItem.comments }}</td>
+            <!-- <td class="small text-muted">{{ selectedItem.pricingStrategy }}</td>
+            <td class="small text-muted">{{ selectedItem.comments }}</td> -->
 
             <td>
-              <button nbButton size="tiny" [disabled]="isViewMode" status="danger" (click)="removeItem(i)">
+              <button nbButton size="tiny" *ngIf="!isViewMode" [disabled]="isViewMode" status="danger" (click)="removeItem(i)">
                 <i class="nb-trash"></i>
               </button>
             </td>
@@ -146,7 +143,6 @@
         </tbody>
       </table>
     </div>
-
   </div>
 
   <!-- 💰 Summary Section -->
@@ -156,9 +152,9 @@
         <h6 class="mb-3 small text-muted">💰 الملخص / Summary</h6>
         <div class="ml-3 row g-3 small d-flex justify-content-evenly">
           <div class=" mr-3 mt-2">
-            <label class="form-label">Bulk Discount</label>
-            <input class="small form-control text-muted" type="number" [disabled]="isViewMode"
-              [(ngModel)]="bulkDiscount" (ngModelChange)="recalculateOverallTotals()" />
+            <label class="form-label">Bulk Discount</label> 
+            <input class="small form-control text-muted" type="number" [disabled]="isViewMode" [(ngModel)]="bulkDiscount"
+              (ngModelChange)="onBulkDiscountChanged()" />
           </div>
           <div class="mr-3 mt-2">
             <label class="form-label">Tax 15%</label>
@@ -188,8 +184,8 @@
 
       <!-- Cash Option -->
       <div class="form-check mr-3 mt-2">
-        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentCash"
-          value="Cash" [(ngModel)]="paymentMode" />
+        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentCash" value="CASH"
+          [(ngModel)]="paymentMode" />
         <label class="form-check-label text-muted small" for="paymentCash">
           Cash / نقداً
         </label>
@@ -197,8 +193,8 @@
 
       <!-- Bank Option -->
       <div class="form-check mr-3 mt-2">
-        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentBank"
-          value="Bank" [(ngModel)]="paymentMode" />
+        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentBank" value="BANK"
+          [(ngModel)]="paymentMode" />
         <label class="form-check-label text-muted small" for="paymentBank">
           Bank / تحويل
         </label>
@@ -206,8 +202,8 @@
 
       <!-- Credit Option -->
       <div class="form-check mr-3 mt-2">
-        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentCredit"
-          value="Credit" [(ngModel)]="paymentMode" />
+        <input class="form-check-input" type="radio" [disabled]="isViewMode" name="paymentMode" id="paymentCredit" value="CREDIT"
+          [(ngModel)]="paymentMode" />
         <label class="form-check-label text-muted small" for="paymentCredit">
           Credit / آجل
         </label>
@@ -215,10 +211,9 @@
     </div>
 
     <!-- Cash Details -->
-    <div *ngIf="paymentMode === 'Cash'" class="mt-3 col-md-4">
+    <div *ngIf="paymentMode === 'CASH'" class="mt-3 col-md-4">
       <label class="form-label small text-muted">Received Amount / المبلغ المستلم</label>
-      <input type="number" class="form-control form-control-sm" [disabled]="isViewMode" [(ngModel)]="cashReceived"
-        name="cashReceived" />
+      <input type="number" class="form-control form-control-sm" [disabled]="isViewMode" [(ngModel)]="cashReceived" name="cashReceived" />
     </div>
 
     <!-- Bank Details -->
@@ -239,15 +234,64 @@
 
 
 
-  <!-- Submit -->
-  <button (click)="submitSale()" *ngIf="!isViewMode" nbButton status="basic" class="small text-muted ml-5"
-    appearance="outline" size="medium">
+<div class=" ml-3 d-flex flex-wrap gap-2 mt-3">
+
+  <button 
+    *ngIf="!isViewMode && this.mode != 'edit'"
+    (click)="submitSale()" 
+    nbButton 
+    status="basic" 
+    appearance="outline"
+    class="text-muted mr-2 small" 
+    size="medium">
     💾 حفظ الفاتورة / Save Purchase
   </button>
 
-  <button (click)="goBack()" *ngIf="isViewMode" nbButton status="basic" class="small text-muted ml-5"
-    appearance="outline" size="medium">
-    Back
+    <button 
+    *ngIf="this.mode === 'edit'"
+    (click)="submitSale()" 
+    nbButton 
+    status="basic" 
+    appearance="outline"
+    class="text-muted mr-2 small" 
+    size="medium">
+    💾 حفظ الفاتورة / Edit Purchase
   </button>
+
+  <button 
+    *ngIf="isViewMode"
+    (click)="goBack()" 
+    nbButton 
+    status="basic" 
+    appearance="outline"
+    class="text-muted mr-2 small" 
+    size="medium">
+    ⬅️ Back
+  </button>
+
+  <button 
+    *ngIf="isViewMode"
+    (click)="editSale()" 
+    nbButton 
+    status="basic" 
+    appearance="outline"
+    class="text-muted mr-2 small" 
+    size="medium">
+    ✏️ Edit
+  </button>
+
+  <button 
+    *ngIf="isViewMode"
+    (click)="printSale()" 
+    nbButton 
+    status="basic" 
+    appearance="outline"
+    class="text-muted mr-2 small" 
+    size="medium">
+    🖨️ Print
+  </button>
+
+</div>
+
 
 </div>

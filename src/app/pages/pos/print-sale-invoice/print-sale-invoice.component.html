@@ -39,19 +39,20 @@
             <tbody>
               <tr>
                 <td><strong>Invoice No / رقم الفاتورة :</strong></td>
-                <td>{{saleList?.invoiceId}}</td>
+                <td>{{saleList?.invoiceNumber}}</td>
               </tr>
               <tr>
                 <td><strong>Invoice Date / تاريخ الفاتورة :</strong></td>
-                <td>{{saleList?.invoiceDate}}</td>
+                <td>{{saleList?.saleDate | date}}</td>
               </tr>
               <tr>
                 <td><strong>Payment Method / طريقة الدفع :</strong></td>
-                <td>-</td>
+                <td>{{saleList?.paymentMode}}</td>
               </tr>
               <tr>
                 <td><strong>Salesman / البائع :</strong></td>
-                <td>-</td>
+                <td>{{saleList?.sellerName
+}}</td>
               </tr>
             </tbody>
 
@@ -75,7 +76,7 @@
               <!-- Contact & Location -->
               <tr>
                 <th class="fw-bold disabled-header">Contact / جهة الاتصال</th>
-                <td>{{saleList?.client?.contact ? saleList?.client?.contact : '-'}}</td>
+                <td>{{saleList?.client?.phoneNumber ? saleList?.client?.phoneNumber : '-'}}</td>
                 <th class="fw-bold disabled-header">Location / الموقع</th>
                 <td>{{saleList?.client?.address ? saleList?.client?.address : '-'}}</td>
               </tr>
@@ -125,19 +126,20 @@
         <div class="col-md-6 offset-md-6">
           <table class="table table-bordered transparent-table text-start small-table">
             <tbody>
+               <tr>
+                <td class="fw-bold">VAT Amount <span dir="rtl">(الإجمالي مع الضريبة)</span></td>
+                <td class="text-end">{{saleList?.vatAmount}}</td>
+              </tr>
               <tr>
                 <td class="fw-bold">Total Before Vat <span dir="rtl">(المبلغ الإجمالي)</span></td>
-                <td class="text-end">{{saleList?.totalAmount}}</td>
+                <td class="text-end">{{saleList?.totalAmountBeforeVAT}}</td>
               </tr>
               <tr>
                 <td class="fw-bold">Total With VAT <span dir="rtl">(مبلغ الضريبة)</span></td>
-                <td class="text-end">{{saleList?.vatAmount}}</td>
+                <td class="text-end">{{saleList?.totalAmount}}</td>
               </tr>
 
-              <tr>
-                <td class="fw-bold">VAT Amount <span dir="rtl">(الإجمالي مع الضريبة)</span></td>
-                <td class="text-end">{{saleList?.totalWithVAT}}</td>
-              </tr>
+             
               
               <!-- <tr>
                 <td class="fw-bold">Eighteen Thousand, Six Hundred And Thirty-Six Point Nine Only</td>

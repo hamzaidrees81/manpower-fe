@@ -21,7 +21,6 @@ export class AddInventoryComponent{
 
   selectedItem: any = null;
 
-  sellingPrice = 0;
   discount = 0;
   bulkDiscount = 0;
   totalWithoutVat = 0;
@@ -40,10 +39,11 @@ export class AddInventoryComponent{
   supplierInvoiceNo;
   purchaseDate;
   cashReceived;
-  paymentMode;
+  paymentMode = "CASH"
 
   mode: 'add' | 'edit' | 'view' = 'add';
   isViewMode: boolean = false;
+  id: any;
 
 
 
@@ -53,12 +53,9 @@ export class AddInventoryComponent{
     private route: ActivatedRoute,
     private shopService: ShopService) { }
 
-  removeItem(index: number): void {
-    this.selectedProduct.splice(index, 1);
-  }
 
   onShopChange() {
-    this.LoadStockBySale();
+    this.loadStockByPurchase();
   }
 
   clearClient() {
@@ -85,7 +82,8 @@ export class AddInventoryComponent{
         this.isViewMode = true; // set this boolean to true in view mode
       }
 
-      this.mode = mode; // optional: store mode for template control
+      this.mode = mode; // optional: store mode for template 
+       this.id = id;
     });
 
     if (this.mode != 'view' && this.mode != 'edit') {
@@ -96,6 +94,24 @@ export class AddInventoryComponent{
 
   }
 
+      editSale() {
+  this.router.navigate(['/pages/pos/add-purchase'], {
+    queryParams: { id: this.id, mode: 'edit' }
+  });
+}
+
+viewSale() {
+  this.router.navigate(['/pages/pos/add-purchase'], {
+    queryParams: { id: this.id, mode: 'view' }
+  });
+}
+
+printSale() {
+  this.router.navigate(['/pages/pos/print-purchase-invoice'], {
+    queryParams: { id: this.id, mode: 'print' }
+  });
+}
+
   getSaleById(id: number): void {
     this.purchaseService.getPurchaseById(id).subscribe({
       next: (data) => {
@@ -105,6 +121,12 @@ export class AddInventoryComponent{
         this.address = this.salelist?.client?.address;
         // this.onClientChange(this.supplierId);
         // this.address = this.salelist.address;
+         this.paymentMode = this.salelist.paymentMode;
+        this.cashReceived = this.salelist.receivedAmount;
+        this.totalWithoutVat = this.salelist.totalBeforeVat;
+        this.bulkDiscount = this.salelist.bulkDiscountPercentage;
+        this.totalVatTax = this.salelist.vatAmount;
+
         this.supplierInvoiceNo = this.salelist.supplierInvoiceNo;
         const rawDate = this.salelist.saleDate;
 this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
@@ -118,7 +140,6 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
   return {
     ...item,
     retailPrice: item.totalPrice,
-    sellingPrice: item.soldPrice
   };
 });
 
@@ -153,6 +174,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
   }
 
 
+
   openStockSelector() {
     this.dialogService.open(SelectStockModalComponent, {
       context: {
@@ -164,20 +186,19 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
           this.selectedProduct = [...selectedItems];
           this.selectedProduct = this.selectedProduct.map(item => ({
             ...item,
-            sellingPrice: item.retailPrice,
+            quantity: 1,
             total: 0
           }));
-          this.recalculateOverallTotals();
+          for (let item of this.selectedProduct) {
+            this.onDiscountChanged(item);
+          }
+
         }
       },
     });
   }
 
-
-
-
-
-  LoadStockBySale(): void {
+  loadStockByPurchase(): void {
     const shopId = this.shopId;
     this.stockService.getStocksByStatus("PURCHASE", +shopId).subscribe(
       (data) => {
@@ -193,6 +214,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
     const client = this.supplier.find(c => c.id === +id);
     this.address = client?.address || '';
   }
+
 
   incrementQuantity(item: any): void {
     // Initialize quantity if not set
@@ -219,54 +241,82 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
   }
 
 
+  onSellingPriceChanged(item: any): void {
+    const retail = item.retailPrice || item.product?.retailPrice || 0;
+    if (retail > 0) {
+      const discount = ((retail - item.buyPrice) / retail) * 100;
+      item.discount = +discount.toFixed(2);
+    } else {
+      item.discount = 0;
+    }
+
+    this.recalculateOverallTotals();
+  }
+
+  onDiscountChanged(item: any): void {
+    const retail = item.retailPrice || item.product?.retailPrice || 0;
+    if (retail > 0) {
+      item.buyPrice = +(retail * (1 - (item.discount || 0) / 100)).toFixed(2);
+    } else {
+      item.buyPrice = 0;
+    }
+
+    this.recalculateOverallTotals();
+  }
+
+
+  getLineTotal(item: any): number {
+    const qty = item.quantity || 1;
+    const price = item.buyPrice || 0;
+    const discount = item.discount || 0;
+    const lineTotal = qty * price * (1 - discount / 100);
+    return parseFloat(lineTotal.toFixed(2));
+  }
+
+  calculateSubtotal(): number {
+    return this.selectedProduct.reduce((sum, item) => {
+      return sum + (item.buyPrice * item.quantity);
+    }, 0);
+  }
+
+  reapplyDiscountsToRows(): void {
+    if (!this.selectedProduct || this.selectedProduct.length === 0) return;
+
+    const discountRate = (this.bulkDiscount || 0) / 100;
+
+    for (let item of this.selectedProduct) {
+      if (!item.retailPrice || item.retailPrice <= 0) continue;
+
+      item.discount = parseFloat((discountRate * 100).toFixed(2)); // update discount %
+      item.buyPrice = parseFloat((item.retailPrice * (1 - discountRate)).toFixed(2)); // recalculate selling price
+      item.manualDiscount = false; // mark as auto
+    }
+  }
+
+
+
   onTotalChanged(): void {
-    const subtotal = this.calculateSubtotal(); // without discount
-    const newBulkDiscount = subtotal - (this.total / 1.15); // remove VAT first
-    this.bulkDiscount = newBulkDiscount;
+    const rawSubtotal = this.calculateSubtotal(); // sum of buyPrice * quantity
+    if (rawSubtotal === 0) {
+      this.bulkDiscount = 0;
+      return;
+    }
+
+    // Remove VAT from entered total to get net
+    const expectedNet = this.total / (1 + this.vatRate / 100);
+    const calculatedDiscount = ((rawSubtotal - expectedNet) / rawSubtotal) * 100;
+
+    this.bulkDiscount = parseFloat(calculatedDiscount.toFixed(2));
 
     this.reapplyDiscountsToRows();
     this.recalculateOverallTotals();
   }
 
 
-  calculateSubtotal(): number {
-    return this.selectedProduct.reduce((sum, item) => {
-      return sum + (item.sellingPrice * item.quantity);
-    }, 0);
-  }
-
-
-  reapplyDiscountsToRows(): void {
-    const subtotal = this.calculateSubtotal();
-
-    if (subtotal <= 0) return;
-
-    for (let item of this.selectedProduct) {
-      const itemLineTotal = item.sellingPrice * item.quantity;
-      const itemShare = itemLineTotal / subtotal;
-      const itemDiscountAmount = this.bulkDiscount * itemShare;
-
-      const priceBeforeDiscount = item.sellingPrice;
-      const effectiveDiscountPercent = (itemDiscountAmount / (priceBeforeDiscount * item.quantity)) * 100;
-
-      item.discount = +effectiveDiscountPercent.toFixed(2);
-    }
-  }
-
-
-
-
-  getLineTotal(item: any): number {
-    const qty = item.quantity || 0;
-    const price = item.sellingPrice || 0;
-    const discount = item.discount || 0;
-    const lineTotal = qty * price * (1 - discount / 100);
-    return parseFloat(lineTotal.toFixed(2));
-  }
-
   recalculateOverallTotals(): void {
     let subtotal = 0;
     for (const item of this.selectedProduct) {
+      if (!item.quantity || item.quantity < 1) item.quantity = 1;
       subtotal += this.getLineTotal(item);
     }
 
@@ -274,6 +324,26 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
     this.totalWithoutVat = parseFloat(discountedSubtotal.toFixed(2));
     this.totalVatTax = parseFloat((this.totalWithoutVat * this.vatRate / 100).toFixed(2));
     this.total = parseFloat((this.totalWithoutVat + this.totalVatTax).toFixed(2));
+    this.cashReceived = this.total;
+  }
+
+  removeItem(index: number): void {
+    this.selectedProduct.splice(index, 1);
+
+    if (this.selectedProduct.length === 0) {
+      this.totalWithoutVat = 0;
+      this.totalVatTax = 0;
+      this.bulkDiscount = 0;
+      this.total = 0;
+      this.cashReceived = 0;
+    } else {
+      this.recalculateOverallTotals();
+    }
+  }
+
+  onBulkDiscountChanged(): void {
+    this.reapplyDiscountsToRows();
+    this.recalculateOverallTotals();
   }
 
   goBack() {
@@ -296,6 +366,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
 
 
   submitSale() {
+    console.log("sel",this.selectedProduct)
     const shopId = this.shopId;
     const supplierId = this.supplierId;
 
@@ -319,26 +390,23 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
       supplierId: +supplierId,
       supplierInvoiceNo: this.supplierInvoiceNo,
       status: 'ACTIVE',
-      saleDate: utcDateTime,
-      // paymentMode: this.paymentMode,
-      paidAmount: this.paymentMode === 'Cash' ? this.cashReceived : null,
+      purchaseDate: utcDateTime,
+     paidAmount: this.cashReceived,
+      receivedAmount: this.cashReceived,
+      paymentMode: this.paymentMode,
       // bankName: this.paymentMode === 'Bank' ? this.bankName : null,
       // bankTransactionId: this.paymentMode === 'Bank' ? this.bankTransactionId : null,
       // dueDate: this.paymentMode === 'Credit' ? this.dueDate : null,
       items: this.selectedProduct?.map(item => ({
-        productId: item.product?.id,
-        quantity: item.quantity,
-        unitPrice: item.retailPrice,
-        soldPrice: item.sellingPrice,
-        discount: item.discount,
+        ...item,
+        buyPrice: item.buyPrice,
         totalPrice: this.getLineTotal(item),
-        tax: 0
       })),
-      // bulkDiscount: this.bulkDiscount || 0,
+     bulkDiscountPercentage: this.bulkDiscount || 0,
       discountPercentage: this.vatRate || 0,
       totalBeforeVat: this.totalWithoutVat || 0,
       totalAmount: this.total || 0,
-      vatAmount: this.totalVatTax //confirm
+      totalVATAmount: this.totalVatTax //confirm
     };
 
 
@@ -346,6 +414,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
     this.purchaseService.addPurchase(payload).subscribe({
       next: (res) => {
         this.toasterService.showSuccess('Purchase created successfully!');
+         this.router.navigate(['/pages/pos/view-purchase'])
       },
       error: (err) => {
         this.toasterService.showError('Failed to create purchase.');

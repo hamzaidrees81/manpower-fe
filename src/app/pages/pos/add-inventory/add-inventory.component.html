@@ -78,7 +78,7 @@
         <thead class="table-light">
           <tr>
             <th class="small text-muted">الصنف / Item</th>
-            <th class="small text-muted">الرقم التسلسلي / Stock Move ID</th>
+            <!-- <th class="small text-muted">الرقم التسلسلي / Stock Move ID</th> -->
             <th class="small text-muted">رقم الدفعة / Batch No</th>
             <th class="small text-muted">الرف / Rack</th>
             <!-- <th class="small text-muted">سعر الشراء / Buy Price</th> -->
@@ -88,7 +88,7 @@
             <th class="small text-muted">الكمية / Qty</th>
             <th class="small text-muted">المخزون / Stock</th>
             <th class="small text-muted">الضريبة / VAT</th>
-            <th class="small text-muted">الخصم % / Discount %</th>
+            <!-- <th class="small text-muted">الخصم % / Discount %</th> -->
             <th class="small text-muted">الإجمالي / Total</th>
             <!-- <th class="small text-muted">الاستراتيجية / Strategy</th>
             <th class="small text-muted">ملاحظات / Comments</th> -->
@@ -96,83 +96,76 @@
           </tr>
         </thead>
         <tbody *ngFor="let selectedItem of selectedProduct; let i = index">
-          <tr>
-            <td class="small text-muted">{{ selectedItem?.product?.name }}</td>
-            <td class="small text-muted">{{ selectedItem.stockMovementId }}</td>
-            <td class="small text-muted">{{ selectedItem.batchNo }}</td>
-            <td class="small text-muted">{{ selectedItem.storageRack }}</td>
-            <!-- <td class="small text-muted">{{ selectedItem.buyPrice }}</td> -->
-            <td class="small text-muted">{{ selectedItem.minSalePrice }}</td>
-            <td class="small text-muted">{{ selectedItem.retailPrice }}</td>
+  <tr>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.product.name" /></td>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.batchNo" /></td>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.storageRack" /></td>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.minSalePrice" /></td>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.retailPrice" /></td>
 
-            <td class="small text-muted">
-              <input type="number" class="form-control small text-muted" [disabled]="isViewMode"
-                [(ngModel)]="selectedItem.buyPrice"  (ngModelChange)="onSellingPriceChanged(selectedItem)"/>
-            </td>
+    <td>
+      <input type="number" class="form-control small text-muted" [disabled]="isViewMode"
+        [(ngModel)]="selectedItem.buyPrice" (ngModelChange)="onBuyPriceChanged(selectedItem)" />
+    </td>
 
-            <td class="small text-muted">
-              <div class="d-flex justify-content-center align-items-center">
-                <!-- <button nbButton size="tiny" class="small text-muted" status="basic" appearance="outline"
-                  (click)="decrementQuantity(selectedItem)" *ngIf="!isViewMode" [disabled]="isViewMode">−</button> -->
-                <input type="number" readonly [disabled]="isViewMode" [(ngModel)]="selectedItem.quantity" [min]="1"
-                  class="form-control mx-2 text-center small text-muted" style="width: 60px;"
-                  (ngModelChange)="recalculateOverallTotals()" />
-                <!-- <button nbButton size="tiny" *ngIf="!isViewMode" class="small text-muted" status="basic" appearance="outline"
-                  (click)="incrementQuantity(selectedItem)" [disabled]="isViewMode">+</button> -->
-              </div>
-            </td>
+    <td>
+      <div class="d-flex justify-content-center align-items-center">
+        <button nbButton size="tiny" status="basic" appearance="outline" *ngIf="!isViewMode"
+          (click)="decrementQuantity(selectedItem)">−</button>
 
-            <td class="small text-muted">{{ selectedItem?.product?.stockQty }}</td>
-            <td class="small text-muted">{{ selectedItem.vatAmount }}</td>
+        <input type="number" readonly class="form-control mx-2 text-center small text-muted" style="width: 60px;"
+          [disabled]="isViewMode" [(ngModel)]="selectedItem.quantity" [min]="1"
+          (ngModelChange)="onQuantityChanged(selectedItem)" />
 
-            <td class="small text-muted">
-              <input type="number" class="form-control small text-muted" readonly [(ngModel)]="selectedItem.discount"
-                (ngModelChange)="recalculateOverallTotals()" [disabled]="isViewMode" />
-            </td>
+        <button nbButton size="tiny" status="basic" appearance="outline" *ngIf="!isViewMode"
+          (click)="incrementQuantity(selectedItem)">+</button>
+      </div>
+    </td>
 
-            <td class="small text-muted">{{ getLineTotal(selectedItem) }}</td>
-            <!-- <td class="small text-muted">{{ selectedItem.pricingStrategy }}</td>
-            <td class="small text-muted">{{ selectedItem.comments }}</td> -->
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.product.stockQty" /></td>
+    <td><input class="form-control small text-muted" [disabled]="isViewMode" [(ngModel)]="selectedItem.vatAmount" /></td>
 
-            <td>
-              <button nbButton size="tiny" *ngIf="!isViewMode" [disabled]="isViewMode" status="danger" (click)="removeItem(i)">
-                <i class="nb-trash"></i>
-              </button>
-            </td>
-          </tr>
-        </tbody>
+    <td>
+      <input class="form-control small text-muted" [disabled]="true" [value]="getLineTotal(selectedItem)" />
+    </td>
+
+    <td>
+      <button nbButton size="tiny" status="danger" *ngIf="!isViewMode" (click)="removeItem(i)">
+        <i class="nb-trash"></i>
+      </button>
+    </td>
+  </tr>
+</tbody>
+
       </table>
     </div>
   </div>
 
   <!-- 💰 Summary Section -->
-  <div class="row">
-    <div class="col-md-6 offset-md-6">
-      <div class="p-3 bg-light  rounded  classic-box1">
-        <h6 class="mb-3 small text-muted">💰 الملخص / Summary</h6>
-        <div class="ml-3 row g-3 small d-flex justify-content-evenly">
-          <div class=" mr-3 mt-2">
-            <label class="form-label">Bulk Discount</label> 
-            <input class="small form-control text-muted" type="number" [disabled]="isViewMode" [(ngModel)]="bulkDiscount"
-              (ngModelChange)="onBulkDiscountChanged()" />
-          </div>
-          <div class="mr-3 mt-2">
-            <label class="form-label">Tax 15%</label>
-            <input class="small form-control text-muted" type="text" [(ngModel)]="totalVatTax" readonly />
-          </div>
-          <div class="mr-3 mt-2">
-            <label class="form-label">Total (Ex. tax)</label>
-            <input class="small form-control text-muted" type="text" [(ngModel)]="totalWithoutVat" readonly />
-          </div>
-          <div class="mr-3 mt-2">
-            <label class="form-label fw-bold">Total</label>
-            <input class="fw-bold small form-control text-muted" type="text" [disabled]="isViewMode" [(ngModel)]="total"
-              (ngModelChange)="onTotalChanged()" />
-          </div>
+ <div class="row">
+  <div class="col-md-6 offset-md-6">
+    <div class="p-3 bg-light rounded classic-box1">
+      <h6 class="mb-3 small text-muted">💰 الملخص / Summary</h6>
+      <div class="ml-3 row g-3 small d-flex justify-content-evenly">
+
+        <div class="mr-3 mt-2">
+          <label class="form-label">Tax 15%</label>
+          <input class="form-control small text-muted" type="number" readonly [(ngModel)]="totalVatTax" />
+        </div>
+
+        <div class="mr-3 mt-2">
+          <label class="form-label">Total (Ex. tax)</label>
+          <input class="form-control small text-muted" type="number" readonly [(ngModel)]="totalWithoutVat" />
+        </div>
+
+        <div class="mr-3 mt-2">
+          <label class="form-label fw-bold">Total</label>
+          <input class="form-control fw-bold small text-muted" type="number" readonly [(ngModel)]="total" />
         </div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- 💳 Payment Section -->
   <div class="ml-3 mb-4 p-3 bg-white classic-box1">

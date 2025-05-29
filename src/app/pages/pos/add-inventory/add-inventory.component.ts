@@ -190,7 +190,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
             total: 0
           }));
           for (let item of this.selectedProduct) {
-            this.onDiscountChanged(item);
+            this.onQuantityChanged(item);
           }
 
         }
@@ -224,7 +224,7 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
 
     if (item.quantity < item.stockQty) {
       item.quantity += 1;
-      this.recalculateOverallTotals();
+      this.onQuantityChanged(item);
     }
   }
 
@@ -236,96 +236,45 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
 
     if (item.quantity > 1) {
       item.quantity -= 1;
-      this.recalculateOverallTotals();
+      this.onQuantityChanged(item);
     }
   }
 
 
-  onSellingPriceChanged(item: any): void {
-    const retail = item.retailPrice || item.product?.retailPrice || 0;
-    if (retail > 0) {
-      const discount = ((retail - item.buyPrice) / retail) * 100;
-      item.discount = +discount.toFixed(2);
-    } else {
-      item.discount = 0;
-    }
-
+  onBuyPriceChanged(item: any): void {
+    this.updateItemTotal(item);
     this.recalculateOverallTotals();
   }
 
-  onDiscountChanged(item: any): void {
-    const retail = item.retailPrice || item.product?.retailPrice || 0;
-    if (retail > 0) {
-      item.buyPrice = +(retail * (1 - (item.discount || 0) / 100)).toFixed(2);
-    } else {
-      item.buyPrice = 0;
-    }
-
+  onQuantityChanged(item: any): void {
+    this.updateItemTotal(item);
     this.recalculateOverallTotals();
   }
 
+  updateItemTotal(item: any): void {
+    const quantity = +item.quantity || 0;
+    const price = +item.buyPrice || 0;
+    item.totalPrice = quantity * price;
+  }
 
   getLineTotal(item: any): number {
-    const qty = item.quantity || 1;
-    const price = item.buyPrice || 0;
-    const discount = item.discount || 0;
-    const lineTotal = qty * price * (1 - discount / 100);
-    return parseFloat(lineTotal.toFixed(2));
+    const quantity = +item.quantity || 0;
+    const price = +item.buyPrice || 0;
+    return quantity * price;
   }
-
-  calculateSubtotal(): number {
-    return this.selectedProduct.reduce((sum, item) => {
-      return sum + (item.buyPrice * item.quantity);
-    }, 0);
-  }
-
-  reapplyDiscountsToRows(): void {
-    if (!this.selectedProduct || this.selectedProduct.length === 0) return;
-
-    const discountRate = (this.bulkDiscount || 0) / 100;
-
-    for (let item of this.selectedProduct) {
-      if (!item.retailPrice || item.retailPrice <= 0) continue;
-
-      item.discount = parseFloat((discountRate * 100).toFixed(2)); // update discount %
-      item.buyPrice = parseFloat((item.retailPrice * (1 - discountRate)).toFixed(2)); // recalculate selling price
-      item.manualDiscount = false; // mark as auto
-    }
-  }
-
-
-
-  onTotalChanged(): void {
-    const rawSubtotal = this.calculateSubtotal(); // sum of buyPrice * quantity
-    if (rawSubtotal === 0) {
-      this.bulkDiscount = 0;
-      return;
-    }
-
-    // Remove VAT from entered total to get net
-    const expectedNet = this.total / (1 + this.vatRate / 100);
-    const calculatedDiscount = ((rawSubtotal - expectedNet) / rawSubtotal) * 100;
-
-    this.bulkDiscount = parseFloat(calculatedDiscount.toFixed(2));
-
-    this.reapplyDiscountsToRows();
-    this.recalculateOverallTotals();
-  }
-
 
   recalculateOverallTotals(): void {
-    let subtotal = 0;
-    for (const item of this.selectedProduct) {
-      if (!item.quantity || item.quantity < 1) item.quantity = 1;
-      subtotal += this.getLineTotal(item);
-    }
+    const VAT_RATE = 0.15;
 
-    const discountedSubtotal = subtotal * (1 - (this.bulkDiscount || 0) / 100);
-    this.totalWithoutVat = parseFloat(discountedSubtotal.toFixed(2));
-    this.totalVatTax = parseFloat((this.totalWithoutVat * this.vatRate / 100).toFixed(2));
-    this.total = parseFloat((this.totalWithoutVat + this.totalVatTax).toFixed(2));
+    this.totalWithoutVat = this.selectedProduct.reduce((sum, item) => {
+      return sum + this.getLineTotal(item);
+    }, 0);
+
+    this.totalVatTax = this.totalWithoutVat * VAT_RATE;
+    this.total = this.totalWithoutVat + this.totalVatTax;
     this.cashReceived = this.total;
   }
+
 
   removeItem(index: number): void {
     this.selectedProduct.splice(index, 1);
@@ -339,11 +288,6 @@ this.purchaseDate = rawDate ? rawDate.split('T')[0] : '';
     } else {
       this.recalculateOverallTotals();
     }
-  }
-
-  onBulkDiscountChanged(): void {
-    this.reapplyDiscountsToRows();
-    this.recalculateOverallTotals();
   }
 
   goBack() {

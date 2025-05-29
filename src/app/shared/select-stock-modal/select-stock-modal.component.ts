@@ -1,5 +1,6 @@
 import { Component, Inject, Input } from '@angular/core';
 import { NbDialogRef, NB_DIALOG_CONFIG } from '@nebular/theme';
+import { ToasterService } from '../../@core/services/toaster.service';
 
 @Component({
   selector: 'ngx-select-stock-modal',
@@ -19,6 +20,7 @@ export class SelectStockModalComponent {
   isSelectedShop: any;
 
   constructor(
+    private toasterService : ToasterService,
     protected ref: NbDialogRef<SelectStockModalComponent>,
     @Inject(NB_DIALOG_CONFIG) private config: any
   ) {
@@ -49,6 +51,13 @@ export class SelectStockModalComponent {
 }
 
 handleRowClick(event: MouseEvent, item: any): void {
+
+   if (item.product?.stockQty === 0) {
+    // event.stopPropagation();
+     this.toasterService.showError('⚠️ Stock is 0. This item cannot be selected.');
+    return;
+  }
+
   const target = event.target as HTMLElement;
   const row = target.closest('tr');
   const cell = target.closest('td');

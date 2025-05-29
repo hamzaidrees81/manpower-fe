@@ -26,15 +26,17 @@
             <th>Quantity</th>
              <th>Discount</th>
               <th>Tax</th>
+              <th>Stock QTY</th>
             <th>Storage Rack</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let item of filteredList" (click)="handleRowClick($event, item)">
+          <tr *ngFor="let item of filteredList" (click)="handleRowClick($event, item)" [class.table-danger]="item.product?.stockQty === 0">
             <td class="text-center align-middle">
               <input
                 type="checkbox"
                 [(ngModel)]="item.selected"
+                [disabled]="item.product?.stockQty === 0"
                 (click)="$event.stopPropagation()"
                 (change)="onCheckboxChange(item)" />
             </td>
@@ -47,6 +49,7 @@
             <td>{{ item.quantity }}</td>
              <td>{{ item.discount }}</td>
               <td>{{ item.tax }}</td>
+              <td>{{ item.stockQty }}</td>
             <td>{{ item.storageRack }}</td>
           </tr>
         </tbody>

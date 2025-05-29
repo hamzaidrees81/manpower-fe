@@ -12,3 +12,9 @@
 input[type="checkbox"] {
   transform: scale(1.2);
 }
+
+
+.table-danger {
+  background-color: #f8d7da !important;
+  cursor: not-allowed;
+}
